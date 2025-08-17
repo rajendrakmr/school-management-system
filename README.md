@@ -1,54 +1,39 @@
-# React + TypeScript + Vite
+# 📘 School ERP SaaS – React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a **School/College ERP SaaS Platform** built with **React + TypeScript + Vite**.  
+The system allows multi-school/college management, subscription-based SaaS packages, and complete ERP modules (Students, Teachers, Fees, Exams, Library, Transport, HR, etc.).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tech Stack
+- **Frontend**: React + TypeScript + Vite  
+- **State Management**: Redux Toolkit / Zustand (configurable)  
+- **UI Components**: TailwindCSS + ShadCN + FontAwesome Icons  
+- **Backend (recommended)**: Node.js (Express/NestJS) or Python (FastAPI/Django)  
+- **Database**: PostgreSQL (MVP) / Oracle (Enterprise clients)  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📦 Features
+✅ Multi-school support (multi-tenancy)  
+✅ SaaS subscription packages (Plans, Billing, Subscriptions)  
+✅ Role-based authentication (Admin, Teacher, Student, Parent)  
+✅ Student Management (admissions, attendance, ID cards, report cards)  
+✅ Teacher & Employee Management (payroll, leaves, attendance)  
+✅ Fees & Finance Module (collection, dues, scholarships, reports)  
+✅ Exams & Grading  
+✅ Library Management  
+✅ Transport & Hostel  
+✅ Events & Academic Calendar  
+✅ Communication (messages, notices, announcements)  
+✅ Reports & Analytics  
+✅ System Settings (Roles, Permissions, Integrations, API access)  
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ⚡ Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### 1️⃣ Clone the repo
+```bash
+git clone https://github.com/your-org/school-erp-saas.git
+cd school-erp-saas
