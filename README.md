@@ -35,5 +35,5 @@ The system allows multi-school/college management, subscription-based SaaS packa
 
 ### 1️⃣ Clone the repo
 ```bash
-git clone https://github.com/your-org/school-erp-saas.git
-cd school-erp-saas
+git clone https://github.com/rajendrakmr/school-management-system.git
+cd school-management-system
