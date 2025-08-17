@@ -1,0 +1,23 @@
+/* modalAnimations.css */
+.modal-3d-unfold-enter {
+    opacity: 0;
+    transform: perspective(600px) rotateX(-90deg);
+  }
+  
+  .modal-3d-unfold-enter-active {
+    opacity: 1;
+    transform: perspective(600px) rotateX(0deg);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  
+  .modal-3d-unfold-exit {
+    opacity: 1;
+    transform: perspective(600px) rotateX(0deg);
+  }
+  
+  .modal-3d-unfold-exit-active {
+    opacity: 0;
+    transform: perspective(600px) rotateX(90deg);
+    transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+  }
+  
