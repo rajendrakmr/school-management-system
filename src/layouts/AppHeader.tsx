@@ -12,6 +12,7 @@ import {
     faCompress,
 } from "@fortawesome/free-solid-svg-icons";
 import "./Header.css";
+import BredCrumbs from "./BredCrumbs";
 
 interface HeaderProps<T = any> {
     toggleSidebar?: () => void;
@@ -83,9 +84,10 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
                 <button className="sidebar-toggle btn btn-light me-2" onClick={() => setIsToggle(!isToggle)}>
                     <FontAwesomeIcon icon={faBars} size="lg" />
                 </button>
-                <div className="breadcrumbs d-flex align-items-center ms-1">
-                    <span className="breadcrumb-item">Dashboard | School Details</span>
-                </div>
+                {/* <div className="breadcrumbs d-flex align-items-center ms-1">
+                    <span className="breadcrumb-item">Dashboard | Scdhool Details</span>
+                </div> */}
+                <BredCrumbs /> 
             </div>
 
             {/* Right Section: Notifications, Theme, Language, and Profile */}

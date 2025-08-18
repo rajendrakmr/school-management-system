@@ -2,15 +2,15 @@ import React from "react";
 
 interface PageSizeSelectorProps {
   pageSize: number;
+  itemsPerPage: number;
   setPageSize: (value: number) => void;
 }
 
 const pageSizes = [10, 25, 50,75,100];
 
-const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({ pageSize, setPageSize }) => {
+const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({ pageSize,itemsPerPage, setPageSize }) => {
   return (
-    <div style={{ marginBottom: "8px" }}>
-      {/* <label style={{ fontWeight: "bold", marginRight: "8px" }}>Page size:</label> */}
+    <div style={{ marginBottom: "8px" }}> 
       {pageSizes.map((size) => (
         <label key={size} style={{ marginRight: "16px" }}>
           <input
@@ -20,7 +20,7 @@ const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({ pageSize, setPageSi
             onChange={() => setPageSize(size)}
             style={{ marginRight: "4px" }}
           />
-          {size} resources
+          {size} items
         </label>
       ))}
     </div>

@@ -22,47 +22,31 @@ const ColumnDefault: React.FC<ColumnSelectorProps> = ({ allColumns, setSelectedC
     }, [allColumns]);
 
      
-    useEffect(() => {
-        console.log('tempColumnstempColumnstempColumnstempColumns',tempColumns)
+    useEffect(() => { 
         if (JSON.stringify(tempColumns) !== JSON.stringify(prevColumnsRef.current)) {
             setSelectedColumns(tempColumns);
             prevColumnsRef.current = tempColumns;
         }
     }, [tempColumns, setSelectedColumns]);
  
-    const handleCheckboxChange = (colKey: string,isActive:boolean) => { 
+    const handleCheckboxChange = (colKey: string,is_active:boolean) => { 
         setTempColumns((prevColumns) =>
             prevColumns.map((col) =>
-                col.key === colKey ? { ...col, isActive: !isActive } : col
+                col.column_key === colKey ? { ...col, is_active: !is_active } : col
             )
         );
     };
-
  
-    // const handleDragEnd = (event: DragEndEvent) => {
-    //     const { active, over } = event;
-    //     console.log("active",active, 'over',over)
-    //     if (!over || active.id === over.id) return; 
-    //     setTempColumns((prevColumns) => {
-    //         const oldIndex = prevColumns.findIndex((col) => col.key === active.id);
-    //         const newIndex = prevColumns.findIndex((col) => col.key === over.id);
-    //         return arrayMove(prevColumns, oldIndex, newIndex);
-    //     });
-    // };
     const handleDragEnd = (event: DragEndEvent) => {
-        const { active, over } = event;
-        console.log("active", active, "over", over);
-        if (!over || active.id === over.id) return;
-      
+        const { active, over } = event; 
+        if (!over || active.id === over.id) return; 
         setTempColumns((prevColumns) => {
-          const oldIndex = prevColumns.findIndex((col) => col.key === active.id);
-          const newIndex = prevColumns.findIndex((col) => col.key === over.id);
-          const newColumns = arrayMove(prevColumns, oldIndex, newIndex);
-      
-          // Update the order property based on new array position
+          const oldIndex = prevColumns.findIndex((col) => col.column_key === active.id);
+          const newIndex = prevColumns.findIndex((col) => col.column_key === over.id);
+          const newColumns = arrayMove(prevColumns, oldIndex, newIndex); 
           return newColumns.map((col, index) => ({
             ...col,
-            order: index + 1, // or simply index if you prefer starting at 0
+            column_order: index + 1,
           }));
         });
       };
@@ -71,18 +55,18 @@ const ColumnDefault: React.FC<ColumnSelectorProps> = ({ allColumns, setSelectedC
     return (
         <div style={{ maxHeight: "300px", overflowY: "auto" }}> 
             <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={tempColumns.map(({ key }) => key)} strategy={verticalListSortingStrategy}>
+                <SortableContext items={tempColumns.map(({ column_key }) => column_key)} strategy={verticalListSortingStrategy}>
                     {tempColumns.map((col) => (
-                        <SortableItem key={col.key} id={col.key}>
+                        <SortableItem key={col.id} id={col.column_key}>
                             <label style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
                                 <ToggleSwitch
-                                    checked={col.isActive}
+                                    checked={col.is_active}
                                     onChange={(e) => {
                                         e.stopPropagation();
-                                        handleCheckboxChange(col.key,col.isActive);
+                                        handleCheckboxChange(col.column_key,col.is_active);
                                     }}
                                 />
-                                {col.label}
+                                {col.column_label}
                             </label>
                         </SortableItem>
                     ))}

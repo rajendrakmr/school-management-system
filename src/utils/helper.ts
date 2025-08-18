@@ -171,8 +171,28 @@ export const rowSelectdOption: StylesConfig = {
 };
 
 export interface Column {
-    key: string;
-    label: string;
-    order: number;
-    isActive: boolean;
+    column_key: string;
+    column_label: string;
+    column_order: number;
+    is_active: boolean;
+    id: number;
   }
+
+interface BadgeProps {
+  text: string;
+  color: string;
+}
+
+export const getBadgeProps = (status: string): BadgeProps => {
+  switch (status) {
+    case "Y":
+      return { text: "Active", color: "bg-success" };
+    case "N":
+      return { text: "In Active", color: "bg-danger" };
+    case "T":
+      return { text: "Terminated", color: "bg-warning" };
+    default:
+      return { text: "Unknown", color: "bg-secondary" };
+  }
+};
+

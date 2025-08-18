@@ -35,8 +35,7 @@ const Index: React.FC = () => {
         currentPage * ITEMS_PER_PAGE,
         (currentPage + 1) * ITEMS_PER_PAGE
     );
-    const handleRefresh = () => {
-        console.log("Refreshing data...");
+    const handleRefresh = () => { 
         // Add your refresh logic here (API call, state update, etc.)
     };
 
@@ -61,9 +60,7 @@ const Index: React.FC = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
-        }
-
-        console.log("Submitted Data:", formData);
+        } 
         handleClose();
     };
 

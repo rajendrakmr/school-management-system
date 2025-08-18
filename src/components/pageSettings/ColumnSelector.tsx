@@ -31,15 +31,12 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
   }, [selectedColumnKeys]);
 
   // Handle vertical drag-and-drop ordering.
-  const handleDragEnd = (event: DragEndEvent) => {
-    console.log("handleDragEnd triggered:", event);
+  const handleDragEnd = (event: DragEndEvent) => { 
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = tempSelectedKeys.findIndex((key) => key === active.id);
     const newIndex = tempSelectedKeys.findIndex((key) => key === over.id);
-    const newOrder = arrayMove(tempSelectedKeys, oldIndex, newIndex);
-    console.log("Old Order:", tempSelectedKeys);
-    console.log("New Order:", newOrder);
+    const newOrder = arrayMove(tempSelectedKeys, oldIndex, newIndex); 
     setTempSelectedKeys(newOrder);
   };
 

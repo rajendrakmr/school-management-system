@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryMeta } from "@reduxjs/toolkit/query";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:8000/api",
+    baseUrl: "http://localhost:5000/api/v1",
     prepareHeaders: (headers) => {
         const token = localStorage.getItem("authToken");
         if (token) {
@@ -36,6 +36,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const apiSlice = createApi({
     reducerPath: "api",
     baseQuery: baseQueryWithReauth, // ✅ Use the correctly typed function
-    tagTypes: ["Users", "Departments", "LeaveType", "AuthType"], // Caching identifiers
+    tagTypes: ["Users", "Departments", "LeaveType","Permission", "AuthType","Role","Column","Breadcrumb","School","Dropdown"], // Caching identifiers
     endpoints: () => ({}), // Empty as it will be extended
 });

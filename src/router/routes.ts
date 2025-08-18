@@ -20,7 +20,7 @@ interface NavGroup extends BaseNavItem {
 }
 type NavItem = BaseNavItem | NavGroup;
 
- 
+
 
 const routes: NavItem[] = [
   {
@@ -29,7 +29,25 @@ const routes: NavItem[] = [
     url: '/',
     id: 'menu_item1',
   },
-   {
+  {
+    component: lazy(() => import('@/pages/rbac/permissions/Index')),
+    name: 'Dashboard',
+    url: '/permissions',
+    id: 'permissions',
+  },
+  {
+    component: lazy(() => import('@/pages/rbac/roles/Index')),
+    name: 'Dashboard',
+    url: '/roles',
+    id: 'role_detail',
+  },
+  {
+    component: lazy(() => import('@/pages/rbac/hasPermissions/Index')),
+    name: 'Dashboard',
+    url: '/has-permissions',
+    id: 'has-permissions',
+  },
+  {
     component: lazy(() => import('@/pages/academic/schools/Index')),
     name: 'Dashboard',
     url: '/schools',

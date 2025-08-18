@@ -64,17 +64,30 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
           {required && <span className="text-danger">*</span>}
         </label>
 
-        {/* select box */}
         <Select
           className={`w-100 ${error ? "is-invalid" : ""}`}
           id={name}
           name={name}
           options={options}
-          value={
-            isEdit
-              ? { value: value, label: value }
-              : options.find((option) => option.value === value) || null
+          value={options?.find((option) => option.value === value) || null}
+          onChange={(selectedOption) =>
+            onChange(selectedOption as OptionType | null, name)
           }
+          menuPortalTarget={document.body}
+          styles={name === "selectedLoginId" ? rowSelectdOption : customSelectOption1}
+          onMenuScrollToBottom={() => onMenuScroll(formData, pgNo)}
+          isLoading={isLoading}
+          isDisabled={isTrue}
+          onKeyDown={onKeyDown}
+        />
+
+        {/* <Select
+          className={`w-100 ${error ? "is-invalid" : ""}`}
+          id={name}
+          name={name}
+          options={options}
+          
+          value={isEdit? { value: value, label: value }: options.find((option) => option.value === value) || null}
           onChange={(selectedOption) =>
             onChange(selectedOption as OptionType | null, name)
           }
@@ -86,7 +99,7 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
           isLoading={isLoading}
           isDisabled={isTrue}
           onKeyDown={onKeyDown}
-        />
+        /> */}
 
         {/* success copy msg */}
         {copySuccess && (

@@ -4,7 +4,7 @@ import { Button, InputGroup, FormControl } from "react-bootstrap";
 import Pagination from "./Pagination";
 
 interface PageHeaderProps {
-    title: string,
+    title?: string,
     currentPage: number;
     totalPages: number;
     totalCount?: number;
@@ -20,8 +20,7 @@ interface PageHeaderProps {
 const Toolbar: React.FC<PageHeaderProps> = ({ title, currentPage, totalPages, totalCount = 0, onPageChange, onAdd, onRefresh, onPreference, advancedSearch, itemsPerPage }) => {
     return (
         <>
-            <div className="d-flex align-items-center primary-light-bg text-bold position-relative p-2">
-                {/* Left group */}
+            <div className="d-flex align-items-center primary-light-bg text-bold position-relative p-2"> 
                 <div className="d-flex gap-2">
                     {onAdd && (
                         <Button variant="primary" className="cbtn-sm" onClick={onAdd}>

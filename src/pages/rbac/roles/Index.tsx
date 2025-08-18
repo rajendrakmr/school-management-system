@@ -5,7 +5,7 @@ import PageNumber from "@/components/PageNumber";
 import SettingsModal from "@/components/Table/SettingsModal";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import InputFormField from "@/components/InputFormField";
-import { useGetSchoolsQuery } from "@/store/slice/school";
+import { useGetRolesQuery } from "@/store/slice/role";
 import { Column } from "@/utils/helper";
 import AddEditForm from "./AddEditForm";
 import { useGetColumnsQuery } from "@/store/slice/columns";
@@ -16,17 +16,17 @@ import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
 const Index: React.FC = () => {
   const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const dispatch = useDispatch();
-
+  const dispatch = useDispatch(); 
+  
   useEffect(() => {
-    dispatch(setBreadcrumbs(["School Details"]));
+    dispatch(setBreadcrumbs([ "Role Details"]));
   }, [dispatch]);
   const { data: referenceRecord, isFetching: isRefFetching } = useGetColumnsQuery(
-    { type: "schools", user_id: 1 },
+    { type: "roles", user_id: 1 },
     { refetchOnMountOrArgChange: true }
   );
 
-  const allColumns: Column[] = referenceRecord?.columns || [];
+  const allColumns: Column[] = referenceRecord?.columns || []; 
   const [itemsPerPage, setItemsPerPage] = useState<number | undefined>(undefined);
   useEffect(() => {
     if (referenceRecord?.page_size) {
@@ -35,7 +35,7 @@ const Index: React.FC = () => {
   }, [referenceRecord]);
 
   // roles API call tabhi trigger ho jab itemsPerPage set ho
-  const { data: dataRecords, isFetching, refetch } = useGetSchoolsQuery(
+  const { data: dataRecords, isFetching, refetch } = useGetRolesQuery(
     itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken,
     { refetchOnMountOrArgChange: true }
   );
@@ -44,7 +44,13 @@ const Index: React.FC = () => {
   // Console log for debugging
 
 
- 
+
+  // Extract roles and total count from API response
+  // const { totalCount = 0 } = dataRecords || {};
+  // const { items = [] } = dataRecords?.items || {};
+  // console.log('dataRecords?.items', dataRecords?.items)
+  // const totalPages = Math.ceil(totalCount / itemsPerPage);
+  // 
   // Extract roles and total count from API response
   const items = dataRecords?.items || [];
   const totalCount = dataRecords?.totalCount || 0; // adjust to your API field
@@ -64,10 +70,7 @@ const Index: React.FC = () => {
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [openForm, setOpenForm] = useState(false);
   const [editData, setEditData] = useState<any>(null);
-  const [formData, setFormData] = useState<any>(null);
-  useEffect(() => {
-    setFormData(formData);
-  }, [formData]);
+
   // const allColumns: Column[] = [ 
   //   { key: "role_name", label: "Role Name", order: 2, isActive: true },
   //   { key: "role_description", label: "Description", order: 3, isActive: true },
@@ -84,10 +87,6 @@ const Index: React.FC = () => {
   //   return userCol ? { ...defaultCol, ...userCol } : defaultCol;
   // });
 
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
-
-  console.log('formData', formData)
   return (
     <>
       <SettingsModal
@@ -96,12 +95,13 @@ const Index: React.FC = () => {
         itemsPerPage={safeItemsPerPage}
         setItemsPerPage={setItemsPerPage}
         allColumns={allColumns}
-        type="schools"
+        type="roles"
       />
 
       <div className="shadow-lg p-2">
         {/* Toolbar */}
         <Toolbar
+          title="Roles"
           currentPage={currentPage}
           totalPages={totalPages}
           totalCount={totalCount}
@@ -116,12 +116,8 @@ const Index: React.FC = () => {
           onPreference={() => setIsSettingsOpen(true)}
           advancedSearch={() => setIsPreferencesOpen(!isPreferencesOpen)}
         />
-        {selectedIds.length > 0 && (
-          <span className="small p-2">
-            ✅ {selectedIds.length} selected from this page.
-          </span>
-        )}
 
+        {/* Advanced Filter */}
         {isPreferencesOpen && (
           <AdvancedFilter isOpen={isPreferencesOpen} onClose={() => setIsPreferencesOpen(false)}>
             <div className="row">
@@ -148,21 +144,21 @@ const Index: React.FC = () => {
         {/* Table */}
         <TableComponent
           setOpenSliderForm={setOpenForm}
-          setFormData={setFormData}
+          setFormData={setEditData}
           isFetching={isFetching}
           data={items}
           allColumns={allColumns}
-          selectedIds={selectedIds}
-          setSelectedIds={setSelectedIds}
-          setSelectedItems={setSelectedItems}
-          rowIdKey="trn_school_id"
+          selectedIds={[]}
+          setSelectedIds={() => { }}
+          setSelectedItems={() => { }}
+          rowIdKey="mst_role_id"
         />
 
         {/* Add/Edit Form */}
         <AddEditForm
           open={openForm}
           onClose={() => setOpenForm(false)}
-          initialData={formData}
+          initialData={editData}
           onSuccess={refetch}
         />
 

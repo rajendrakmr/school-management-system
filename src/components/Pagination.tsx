@@ -3,14 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface PaginationProps {
     currentPage: number;
-    
+
     totalPages: number;
     totalCount?: number;
     itemsPerPage?: number;
     handlePageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handlePageChange, totalCount = 0,itemsPerPage=10 }) => {
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handlePageChange, totalCount = 0, itemsPerPage = 10 }) => {
     return (
         <div className="pagination d-flex align-items-center gap-3">
             {/* Previous Button */}
@@ -34,18 +34,21 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
             >
                 <FontAwesomeIcon icon={faCaretLeft} />
             </button>
-
-            {/* Page Info */}
             <span className="text-secondary">
-                {/* Showing: {itemsPerPage}/{totalCount} ( Page: {currentPage }/{totalPages} ) Records  */}
-                Showing 1 to 25 of {totalCount} Records
+                📊 {totalCount === 0
+                    ? "0/0"
+                    : `${Math.min(itemsPerPage, totalCount)}/${totalCount}`} shown |
+                📝 Page {totalPages > 0 ? currentPage : 0}/{totalPages > 0 ? totalPages : 0} |
+                📁 Total: {totalCount}
             </span>
 
-            {/* Next Button */}
+
+
+
             <button
-                className={`pagination-button btn btn-sm ${currentPage >= totalPages - 1 ? 'disabled' : 'btn-outline-primary'}`}
+                className={`pagination-button btn btn-sm ${currentPage >= totalPages ? 'disabled' : 'btn-outline-primary'}`}
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage >= totalPages - 1}
+                disabled={currentPage >= totalPages}
                 style={{
                     borderRadius: "50%",
                     width: "35px",
@@ -54,9 +57,9 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #007bff",
-                    backgroundColor: currentPage >= totalPages - 1 ? "#ccc" : "transparent",
-                    color: currentPage >= totalPages - 1 ? "#666" : "#007bff",
-                    cursor: currentPage >= totalPages - 1 ? "not-allowed" : "pointer",
+                    backgroundColor: currentPage >= totalPages ? "#ccc" : "transparent",
+                    color: currentPage >= totalPages ? "#666" : "#007bff",
+                    cursor: currentPage >= totalPages ? "not-allowed" : "pointer",
                     transition: "0.3s",
                 }}
             >

@@ -7,8 +7,7 @@ const DefaultLayout: FC = () => {
     const [isToggle, setIsToggle] = useState<boolean>(() => { 
         return localStorage.getItem("sidebarToggle") === "true";
       });
-      useEffect(() => {
-        console.log("console .log ",isToggle)
+      useEffect(() => { 
         localStorage.setItem("sidebarToggle", String(isToggle));
       }, [isToggle]);
     return (<>

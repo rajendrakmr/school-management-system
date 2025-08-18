@@ -90,7 +90,7 @@ const Index: React.FC = () => {
             }
 
             toast.success(response.message || "Operation successful!", { position: "top-right", autoClose: 3000 });
-            console.log("Success:", response);
+         
 
             setOpenSliderForm(false);
         } catch (err: any) {

@@ -4,15 +4,22 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 
-const BaseUrl: string = "https://dummyjson.com";
+const BaseUrl: string = "http://localhost:5000/api/v1";
 
 const instance = axios.create({
     baseURL: BaseUrl,
-    headers: {
-        "Content-Type": "application/json",
-    },
+    // headers: {
+    //     "Content-Type": "application/json",
+    // },
 });
 
+instance.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    // Let browser set Content-Type with proper boundary
+    delete config.headers["Content-Type"];
+  }
+  return config;
+});
 // Request Interceptor
 instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {

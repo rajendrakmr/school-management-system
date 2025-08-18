@@ -13,9 +13,7 @@ interface SidebarProps<T = any> {
 const Sidebar: React.FC<SidebarProps> = ({ isToggle }) => {
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   const location = useLocation();
-  const currentPath = location.pathname;
-  console.log('isToggleisToggleisToggleisToggle', isToggle)
-
+  const currentPath = location.pathname; 
   // Function to toggle menu
   const toggleMenu = (path: string) => {
     setOpenMenus((prevOpenMenus) => {

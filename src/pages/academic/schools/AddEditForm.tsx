@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SliderForm from "@/components/Form/SliderForm";
@@ -6,9 +6,10 @@ import InputFormField from "@/components/Form/InputFormField";
 import InputSelectField from "@/components/Form/InputSelectField";
 import InputFileField from "@/components/Form/InputFileField";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
- 
+import { useUpdateSchoolMutation } from "@/store/slice/school";
+
 interface SchoolFormData {
-    id: string;
+    trn_school_id: string;
     name: string;
     code: string;
     address: string;
@@ -21,8 +22,9 @@ interface SchoolFormData {
     principal_name: string;
     established_year: number | string;
     type: string;
-    status: string;
+    is_active: string;
     logo?: File | null;
+    image_path?: string;
 }
 
 // ✅ Errors type (all string messages)
@@ -46,21 +48,22 @@ interface FieldConfig {
 }
 
 const fieldConfigs: Record<keyof SchoolFormData, FieldConfig> = {
-    id: { required: false, label: "ID" },
+    trn_school_id: { required: false, label: "ID" },
     name: { required: false, minLength: 2, maxLength: 50, label: "School Name" },
     code: { required: true, label: "School Code" },
     address: { required: false, label: "Address" },
-    city: { required: true, label: "City" },
-    state: { required: true, label: "State" },
-    country: { required: true, label: "Country" },
-    pincode: { required: true, label: "Pincode" },
+    city: { required: false, label: "City" },
+    state: { required: false, label: "State" },
+    country: { required: false, label: "Country" },
+    pincode: { required: false, label: "Pincode" },
     phone: { required: true, label: "Phone" },
     email: { required: true, label: "Email" },
     principal_name: { required: false, label: "Principal Name" },
     established_year: { required: false, label: "Established Year" },
-    type: { required: true, label: "School Type" },
-    status: { required: true, label: "Status" },
+    type: { required: false, label: "School Type" },
+    is_active: { required: false, label: "Status" },
     logo: { required: false, label: "School Logo" },
+    image_path: { required: false, label: "School Logo" },
 };
 
 
@@ -88,7 +91,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
 }) => {
     // Default form
     const formBody: SchoolFormData = initialData || {
-        id: "",
+        trn_school_id: "",
         name: "",
         code: "",
         address: "",
@@ -99,12 +102,12 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
         phone: "",
         email: "",
         principal_name: "",
-        established_year: "",
+        established_year: "2021",
         type: "",
-        status: "Active",
+        is_active: "Y",
         logo: null,
+        image_path: "",
     };
-
     const [formData, setFormData] = useState<SchoolFormData>(formBody);
     const [errors, setErrors] = useState<SchoolFormErrors>({});
     const [preview, setPreview] = useState<string>("");
@@ -141,55 +144,91 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
         setErrors({});
     };
 
-    // Submit
+
+
+    const timeoutRef = useRef<number | null>(null);
+    const [updateSchool, { isLoading: isLoading }] = useUpdateSchoolMutation();
+
     const handleFormSubmit = async () => {
         const { isValid, errors } = validationRequest(formData, validationRules);
         setErrors(errors);
 
         if (!isValid) {
             toast.error("Please fill in all mandatory fields.", {
-                position: "top-right",
                 autoClose: 3000,
+                position: "top-right",
             });
             return;
         }
 
         try {
-            // ✅ Convert to FormData for API
-            const payload = new FormData();
-            Object.keys(formData).forEach((key) => {
-                const value = formData[key as keyof SchoolFormData];
-                if (value !== null && value !== undefined) {
+
+            const formPayload = new FormData();
+
+            Object.entries(formData).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
                     if (key === "logo" && value instanceof File) {
-                        payload.append("logo", value);
+                        formPayload.append("logo", value);
                     } else {
-                        payload.append(key, String(value));
+                        formPayload.append(key, String(value));
                     }
                 }
             });
 
-            // TODO: API call with payload
 
-            toast.success("School details saved successfully!", {
-                position: "top-right",
+            const response = await updateSchool({
+                id: formPayload.has("trn_school_id")
+                    ? String(formPayload.get("trn_school_id"))
+                    : undefined,
+                schoolData: formPayload,
+            }).unwrap();
+
+            // const response = await saveSchool(formPayload).unwrap();
+
+            toast.success(response.message || "School details saved successfully!", {
                 autoClose: 3000,
+                position: "top-right",
             });
 
-            onSuccess();
             resetForm();
-            onClose();
+            onSuccess();
+            timeoutRef.current = window.setTimeout(() => {
+                onClose();
+            }, 2000);
         } catch (err: any) {
-            toast.error("Unable to save school details.", {
-                position: "top-right",
-                autoClose: 3000,
-            });
+            console.error("Save School Error:", errors, err);
+            if (err?.data?.errors) {
+                setErrors(err.data.errors);
+                toast.error("Please fix the highlighted errors.", {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
+            } else {
+                toast.error(err?.data?.message || "Unable to save school details.", {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
+            }
         }
     };
 
+
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+
+
+
     // Dropdown options
     const statusOptions = [
-        { value: "Active", label: "Active" },
-        { value: "Inactive", label: "Inactive" },
+        { value: "Y", label: "Active" },
+        { value: "N", label: "Inactive" },
     ];
 
     const typeOptions = [
@@ -198,6 +237,37 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
         { value: "Government", label: "Government" },
     ];
 
+
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+            // if (typeof initialData.image_path === "string" && initialData.image_path !== "") {
+            //     setPreview(initialData.image_path); // set preview to server URL
+            // } else {
+            //     setPreview("");
+            // }
+        }
+    }, [initialData]);
+    const renderImage = (src: string) => (
+        <img
+            style={{
+                width: "90px",
+                height: "90px",
+                borderRadius: "50px",
+                border: "1px solid #ccc",
+                objectFit: "cover",
+            }}
+            src={`http://localhost:5000/uploads/logos/${src}`}
+            alt="School Logo"
+            onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                    "https://via.placeholder.com/90?text=No+Logo";
+            }}
+        />
+    );
+
+
     return (
         <SliderForm
             show={open}
@@ -205,11 +275,11 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
                 resetForm();
                 onClose();
             }}
-            title={formData?.id ? "Edit School Details" : "Add School Details"}
+            title={formData?.trn_school_id ? "Edit School Details" : "Add School Details"}
             errors={errors}
             onSubmit={handleFormSubmit}
             onChange={handleChange}
-            isSubmitting={false}
+            isSubmitting={isLoading}
         >
             <div className="row">
                 {/* Input Fields */}
@@ -318,39 +388,50 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
                 />
 
                 <InputSelectField
-                    name="status"
-                    label={fieldConfigs.status.label}
+                    name="is_active"
+                    label={fieldConfigs.is_active.label}
                     options={statusOptions}
-                    value={formData.status}
+                    value={formData.is_active}
                     onChange={handleSelectChange}
                     isEdit={true}
-                    error={errors.status}
-                    required={fieldConfigs.status.required}
+                    error={errors.is_active}
+                    required={fieldConfigs.is_active.required}
                 />
 
-                {/* ✅ School Logo Upload */}
+
                 <InputFileField
                     label={fieldConfigs.logo.label}
                     name="logo"
                     accept="image/*"
-                    onChange={handleFileChange}
+                    onChange={(e) => {
+                        handleFileChange(e);
+                        setFormData((prev) => ({ ...prev, logo: null }));
+                    }}
                     error={errors.logo}
                 />
 
-                {preview && (
+                {/* Agar naya image select kiya hai */}
+                {preview ? (
                     <div className="col-md-3 mt-3">
                         <div className="position-relative d-inline-block">
                             <img
                                 src={preview}
                                 alt="Logo Preview"
                                 className="img-thumbnail"
-                                style={{ maxWidth: "120px" }}
+                                style={{
+                                    width: "90px",
+                                    height: "90px",
+                                    borderRadius: "50px",
+                                    border: "1px solid #ccc",
+                                    objectFit: "cover",
+                                }}
                             />
                             <button
                                 type="button"
                                 className="btn btn-sm btn-danger position-absolute top-0 end-0"
                                 onClick={() => {
-                                    setFormData((prev) => ({ ...prev, logo: null }));
+                                    // 🛑 FormData se bhi remove karo
+                                    setFormData((prev) => ({ ...prev, logo: null, image_path: "" }));
                                     setPreview("");
                                 }}
                             >
@@ -358,7 +439,46 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
                             </button>
                         </div>
                     </div>
+                ) : (
+                    <div className="col-md-3 mt-3">
+                        <div className="position-relative d-inline-block">
+                            {formData.image_path && formData.image_path !== "" ? (
+                                <>
+                                    {renderImage(formData.image_path as string)}
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                                        onClick={() => {
+                                            // 🛑 Purana bhi formData se hata do
+                                            setFormData((prev) => ({ ...prev, logo: null }));
+                                        }}
+                                    >
+                                        ✕
+                                    </button>
+                                </>
+                            ) : (
+                                // ❌ Agar image_path bhi nahi hai toh blank circle dikhao
+                                <div
+                                    style={{
+                                        width: "90px",
+                                        height: "90px",
+                                        borderRadius: "50px",
+                                        border: "1px solid #ccc",
+                                        backgroundColor: "#f0f0f0",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "12px",
+                                        color: "#999",
+                                    }}
+                                >
+                                    No Logo
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 )}
+
             </div>
         </SliderForm>
     );

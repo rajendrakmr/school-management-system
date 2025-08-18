@@ -5,7 +5,7 @@ import PageNumber from "@/components/PageNumber";
 import SettingsModal from "@/components/Table/SettingsModal";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import InputFormField from "@/components/InputFormField";
-import { useGetSchoolsQuery } from "@/store/slice/school";
+import { useGetPermissionsQuery } from "@/store/slice/permissions";
 import { Column } from "@/utils/helper";
 import AddEditForm from "./AddEditForm";
 import { useGetColumnsQuery } from "@/store/slice/columns";
@@ -19,10 +19,10 @@ const Index: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(["School Details"]));
+    dispatch(setBreadcrumbs(["Permissions Details"]));
   }, [dispatch]);
   const { data: referenceRecord, isFetching: isRefFetching } = useGetColumnsQuery(
-    { type: "schools", user_id: 1 },
+    { type: "permissions", user_id: 1 },
     { refetchOnMountOrArgChange: true }
   );
 
@@ -35,23 +35,15 @@ const Index: React.FC = () => {
   }, [referenceRecord]);
 
   // roles API call tabhi trigger ho jab itemsPerPage set ho
-  const { data: dataRecords, isFetching, refetch } = useGetSchoolsQuery(
+  const { data: dataRecords, isFetching, refetch } = useGetPermissionsQuery(
     itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken,
     { refetchOnMountOrArgChange: true }
   );
 
-
-  // Console log for debugging
-
-
  
-  // Extract roles and total count from API response
   const items = dataRecords?.items || [];
-  const totalCount = dataRecords?.totalCount || 0; // adjust to your API field
-  //  const totalPages = Math.ceil(totalCount / (itemsPerPage || 10));
-  const safeItemsPerPage: number = itemsPerPage ?? 10;
-
-  // totalPages calculate karte waqt
+  const totalCount = dataRecords?.totalCount || 0;  
+  const safeItemsPerPage: number = itemsPerPage ?? 10; 
   const totalPages = Math.ceil(totalCount / safeItemsPerPage);
 
   const handlePageChange = (newPage: number) => {
@@ -63,26 +55,15 @@ const Index: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [openForm, setOpenForm] = useState(false);
-  const [editData, setEditData] = useState<any>(null);
+  const [isEdidForm, setIsEditForm] = useState<any>(false);
   const [formData, setFormData] = useState<any>(null);
   useEffect(() => {
     setFormData(formData);
-  }, [formData]);
-  // const allColumns: Column[] = [ 
-  //   { key: "role_name", label: "Role Name", order: 2, isActive: true },
-  //   { key: "role_description", label: "Description", order: 3, isActive: true },
-  //   { key: "isActive", label: "Status", order: 3, isActive: true },
-  //   { key: "action", label: "Action", order: 4, isActive: true },
-  // ];
+  }, [formData]); 
 
-
-
-  // const savedColumns = localStorage.getItem("selectedColumns");
-  // let userColumns: Column[] = savedColumns ? JSON.parse(savedColumns) : [];
-  // const mergedColumns = allColumns.map((defaultCol) => {
-  //   const userCol = userColumns.find((col: Column) => col.column_key === defaultCol.column_key);
-  //   return userCol ? { ...defaultCol, ...userCol } : defaultCol;
-  // });
+  useEffect(() => {
+    setIsEditForm(isEdidForm);
+  }, [isEdidForm]); 
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
@@ -96,7 +77,7 @@ const Index: React.FC = () => {
         itemsPerPage={safeItemsPerPage}
         setItemsPerPage={setItemsPerPage}
         allColumns={allColumns}
-        type="schools"
+        type="permissions"
       />
 
       <div className="shadow-lg p-2">
@@ -109,10 +90,7 @@ const Index: React.FC = () => {
           onPageChange={handlePageChange}
           onSearch={(query) => setFilter(query)}
           onRefresh={refetch}
-          onAdd={() => {
-            setEditData(null);
-            setOpenForm(true);
-          }}
+          onAdd={() => { setIsEditForm(false);setOpenForm(true); }}
           onPreference={() => setIsSettingsOpen(true)}
           advancedSearch={() => setIsPreferencesOpen(!isPreferencesOpen)}
         />
@@ -154,8 +132,9 @@ const Index: React.FC = () => {
           allColumns={allColumns}
           selectedIds={selectedIds}
           setSelectedIds={setSelectedIds}
+          setIsEditForm={setIsEditForm}
           setSelectedItems={setSelectedItems}
-          rowIdKey="trn_school_id"
+          rowIdKey="mst_permission_id"
         />
 
         {/* Add/Edit Form */}
@@ -163,7 +142,9 @@ const Index: React.FC = () => {
           open={openForm}
           onClose={() => setOpenForm(false)}
           initialData={formData}
+          isEdit={isEdidForm}
           onSuccess={refetch}
+          setIsEditForm={setIsEditForm}
         />
 
 

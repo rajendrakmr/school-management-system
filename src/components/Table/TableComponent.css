@@ -32,3 +32,13 @@
 .table-container input[type="checkbox"] {
   cursor: pointer;
 }
+.cursoredit.btn-sm {
+    padding: 2px 4px !important;      /* chhoti padding */
+    font-size: 0.75rem !important;    /* icon size */
+    border: none !important;          /* border hatao */
+    background: transparent !important; /* background hatao */
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

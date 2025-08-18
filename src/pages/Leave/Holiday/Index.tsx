@@ -31,8 +31,7 @@ const Index: React.FC = () => {
 
 
 
-    const handleRefresh = () => {
-        console.log("Refreshing data...");
+    const handleRefresh = () => { 
     };
 
 
@@ -68,11 +67,10 @@ const Index: React.FC = () => {
     };
     const handleFormSubmit = async () => {
         const { isValid, errors } = validationRequest(formData, validationRules);
-        setErrors(errors);
-        console.log('errorserrorserrors',errors)
+        setErrors(errors); 
         if (!isValid) {
             toast.error("Please fill in all mandatory fields.", { position: "top-right", autoClose: 3000 });
-            console.log("Created Successfully Successfully:", errors);
+            
             return;
         }
 
@@ -80,7 +78,7 @@ const Index: React.FC = () => {
             const newLeave = { title: formData.title };
             const response = await createLeaveType(newLeave).unwrap();
             toast.success("Leave type created successfully!", { position: "top-right", autoClose: 3000 });
-            console.log("Created Successfully:", response);
+            
 
         } catch (err: any) {
             const apiError = err?.data?.message || "Error creating leave type. Please try again.";

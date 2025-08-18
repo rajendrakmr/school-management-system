@@ -25,7 +25,7 @@ const AuthLogin: React.FC = () => {
         
         if (!isValid) {
             toast.error("Please fill in all mandatory fields.", { position: "top-right", autoClose: 3000 });
-            console.log("Validation Errors:", errors);
+            
             return;
         }
     
@@ -36,8 +36,7 @@ const AuthLogin: React.FC = () => {
             if (response?.access_token) {
                 toast.success("Login successful!", { position: "top-left", autoClose: 3000 });
                 localStorage.setItem("authToken", response.access_token);
-                console.log("Login Successful:", response);
-
+                
                 // Redirect using navigate
                 navigate("/backend");
             } else {
