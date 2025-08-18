@@ -1,0 +1,30 @@
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
+
+const Role = sequelize.define(
+  'erp_mst_roles',
+  {
+    mst_role_id: { 
+      type: DataTypes.INTEGER, 
+      primaryKey: true, 
+      autoIncrement: true 
+    },
+    role_name: { 
+      type: DataTypes.STRING, 
+      allowNull: false,  
+    },
+    role_description: { type: DataTypes.STRING },
+    is_active: {
+      type: DataTypes.ENUM('Y', 'N'),
+      allowNull: false,
+      defaultValue: 'Y',
+    },
+  },
+  {
+    timestamps: false,
+    freezeTableName: true,  // prevent pluralizing
+    indexes: []              // explicitly empty to avoid auto-creating extra indexes
+  }
+);
+
+module.exports = Role;
