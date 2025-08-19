@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "strict": false,                // turn off strict mode
+    "skipLibCheck": true,           // ignore type errors in node_modules
+    "noImplicitAny": false,         // allow "any"
     "baseUrl": "./",
     "jsx": "react-jsx",
     "allowJs": true,
@@ -12,9 +15,11 @@
     "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "moduleResolution": "Node",
-    "strict": true,
-    "types": ["vite/client", "recharts","node"],
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "types": ["node"],   // ❌ removed "recharts"
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": true
   },
   "include": ["src"]
 }

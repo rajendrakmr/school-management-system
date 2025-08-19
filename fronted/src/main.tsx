@@ -9,7 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "react-toastify/dist/ReactToastify.css"; // Import Toast styles
 
-import App from "@/App.tsx"; // Ensure alias is set up
+import App from "@/App"; // Ensure alias is set up
 import "@/components/pageSettings/ToggleSwitch.css"
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

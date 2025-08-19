@@ -58,24 +58,7 @@ const routes: NavItem[] = [
     url: '/employees',
     id: 'menu_item1',
   },
-  {
-    component: lazy(() => import('@/pages/Leave/Holiday/Index')),
-    name: 'Leave',
-    url: '/holidays',
-    id: 'menu_item1',
-  },
-  {
-    component: lazy(() => import('@/pages/Leave/Application/Index')),
-    name: 'Leave Application',
-    url: '/leaves',
-    id: 'menu_item1',
-  },
-  {
-    component: lazy(() => import('@/pages/Leave/LeaveType/Index')),
-    name: 'Leave Type',
-    url: '/leave/types',
-    id: 'menu_item1',
-  },
+   
   {
     component: lazy(() => import('@/pages/admin/Dashboard')),
     name: 'Dashboard',
