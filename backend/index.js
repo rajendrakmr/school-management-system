@@ -1,9 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const sequelize = require('./src/config/db');
-const authRoutes = require('./src/routes/authRoutes');
-const rbacRoutes = require('./src/routes/rbacRoutes');
-
+const sequelize = require('./src/config/db'); 
 const cors = require('cors');
 const app = express();
 
@@ -13,20 +10,23 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
 app.use(express.json());
 const PORT = process.env.PORT || 5000;
 app.use("/uploads/logos", express.static("uploads/logos"));
 sequelize.sync({ alter: true })
-  .then(() => {
-    console.log('DB Synced'); 
-    app.use('/api/v1/auth', authRoutes);
-    app.use('/api/v1/roles', rbacRoutes);
+
+.then(() => {
+  console.log('DB Synced'); 
+    app.get('/health', (req, res) => { res.status(200).send('OK');});
+    app.get('/api/v1', (req, res) => res.send('Welcome to erp saas school management backend service...'));
+    app.use('/api/v1/auth', require('./src/routes/authRoutes'));
+    app.use('/api/v1/roles', require('./src/routes/rbacRoutes'));
     app.use('/api/v1/columns', require('./src/routes/columnRoutes'));
     app.use('/api/v1/schools', require('./src/routes/schoolRoutes'));
     app.use('/api/v1/permissions', require('./src/routes/permissionRoutes'));
     app.use('/api/v1/modules', require('./src/routes/moduleRoutes'));
     app.use('/api/v1/mediums', require('./src/routes/academics/mediumRoutes'));
-    app.get('/', (req, res) => res.send('School ERP API Running'));
 
 
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
