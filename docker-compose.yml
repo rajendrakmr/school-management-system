@@ -58,6 +58,8 @@ services:
       start_period: 10s
     networks:
       - school-erp
+    volumes:
+    - ./fronted/nginx.conf:/etc/nginx/conf.d/default.conf
 volumes:
   mysql-data:
 networks:

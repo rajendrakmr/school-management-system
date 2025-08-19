@@ -23,3 +23,8 @@ module.exports = {
     dialect: process.env.DB_DIALECT || "mysql"
   }
 };
+
+// docker exec -it backendjs sh
+// npx sequelize-cli db:migrate
+// npx sequelize-cli db:seed:all
+
