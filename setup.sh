@@ -13,11 +13,11 @@ fi
  
 
  # Step 0: Check backend .env
-if [ ! -f ./frontend/.env ]; then
+if [ ! -f ./fronted/.env ]; then
   echo "📄 backend/.env not found. Creating from backend/.env.example..."
-  cp ./frontend/.env.example ./frontend/.env
+  cp ./fronted/.env.example ./fronted/.env
 else
-  echo "frontend/.env already exists."
+  echo "fronted/.env already exists."
 fi
 
 
@@ -31,9 +31,9 @@ PUBLIC_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
   http://169.254.169.254/latest/meta-data/public-ipv4)
 
 # Step 3: Generate frontend .env with dynamic public IP
-echo "Generating frontend/.env with IP: $PUBLIC_IP"
+echo "Generating fronted/.env with IP: $PUBLIC_IP"
 
-cat <<EOF > ./frontend/.env
+cat <<EOF > ./fronted/.env
 REACT_APP_API_URL=http://$PUBLIC_IP:5000
 REACT_APP_NAME=ChichuApp
 EOF
