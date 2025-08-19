@@ -44,7 +44,7 @@ services:
   frontend:
     container_name: reactjs
     build:
-      context: ./frontend
+      context: ./fronted
     depends_on:
       backend:
         condition: service_healthy 
