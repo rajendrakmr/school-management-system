@@ -5,7 +5,7 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: TEST@1998 
+      MYSQL_ROOT_PASSWORD: root 
       MYSQL_DATABASE: school_erp_db 
     volumes:
       - mysql-data:/var/lib/mysql 
@@ -26,7 +26,7 @@ services:
         PORT: 5000
         DB_HOST: mysql
         DB_USER: root
-        DB_PASSWORD: TEST@1998  
+        DB_PASSWORD: root  
         DB_NAME: school_erp_db
     networks:
       - school-erp 
