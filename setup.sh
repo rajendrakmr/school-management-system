@@ -34,7 +34,7 @@ PUBLIC_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
 echo "Generating fronted/.env with IP: $PUBLIC_IP"
 
 cat <<EOF > ./fronted/.env
-REACT_APP_API_URL=http://$PUBLIC_IP:5000
+REACT_APP_API_URL=http://$PUBLIC_IP:5000/api/v1
 REACT_APP_NAME=ChichuApp
 EOF
 
