@@ -38,4 +38,7 @@ REACT_APP_API_URL=http://$PUBLIC_IP:5000/api/v1
 REACT_APP_NAME=ChichuApp
 EOF
 
+sed -i "s|^DB_HOST=.*|DB_HOST=mysql|" ./backend/.env
+
+
 echo ".env files ready. You can now run Docker Compose."
