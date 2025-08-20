@@ -45,24 +45,50 @@ exports.getAllPermissionsTree = async (req, res) => {
     });
 
     // Transform into tree nodes
-    const nodes = modules.map(mod => {
-      if (mod.permissions && mod.permissions.length > 0) {
-        return {
-          value: mod.module_name.toLowerCase().replace(/\s+/g, '-'),
-          label: mod.module_name,
-          children: mod.permissions.map(p => ({
+    const nodes = modules
+  .map((mod) => {
+    if (mod.permissions && mod.permissions.length > 0) {
+      return {
+        value: mod.module_name
+          ? mod.module_name.toLowerCase().replace(/\s+/g, "-")
+          : null, // if missing, set null
+        label: mod.module_name || "Unnamed Module",
+        children: mod.permissions
+          .filter((p) => p.mst_permission_id) // ✅ skip empty values
+          .map((p) => ({
             value: p.mst_permission_id,
-            label: p.permission_name
-          }))
-        };
-      } else {
+            label: p.permission_name || "Unnamed Permission",
+          })),
+      };
+    } else if (mod.mst_permission_id) {
+      // ✅ only return if it has a valid value
+      return {
+        value: mod.mst_permission_id,
+        label: mod.module_name || "Unnamed Module",
+      };
+    }
+    return null; // ❌ don't include if value missing
+  })
+  .filter(Boolean); // ✅ remove nulls
+
+    // const nodes = modules.map(mod => {
+    //   if (mod.permissions && mod.permissions.length > 0) {
+    //     return {
+    //       value: mod.module_name.toLowerCase().replace(/\s+/g, '-'),
+    //       label: mod.module_name,
+    //       children: mod.permissions.map(p => ({
+    //         value: p.mst_permission_id,
+    //         label: p.permission_name
+    //       }))
+    //     };
+    //   } else {
         
-        return {
-          value: mod.mst_permission_id,
-          label: mod.module_name
-        };
-      }
-    });
+    //     return {
+    //       value: mod.mst_permission_id,
+    //       label: mod.module_name
+    //     };
+    //   }
+    // });
 
     res.json(nodes);
   } catch (err) {

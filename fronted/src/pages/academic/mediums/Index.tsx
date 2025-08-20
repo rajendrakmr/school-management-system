@@ -69,21 +69,7 @@ const Index: React.FC = () => {
   useEffect(() => {
     setFormData(formData);
   }, [formData]);
-  // const allColumns: Column[] = [ 
-  //   { key: "role_name", label: "Role Name", order: 2, isActive: true },
-  //   { key: "role_description", label: "Description", order: 3, isActive: true },
-  //   { key: "isActive", label: "Status", order: 3, isActive: true },
-  //   { key: "action", label: "Action", order: 4, isActive: true },
-  // ];
-
-
-
-  // const savedColumns = localStorage.getItem("selectedColumns");
-  // let userColumns: Column[] = savedColumns ? JSON.parse(savedColumns) : [];
-  // const mergedColumns = allColumns.map((defaultCol) => {
-  //   const userCol = userColumns.find((col: Column) => col.column_key === defaultCol.column_key);
-  //   return userCol ? { ...defaultCol, ...userCol } : defaultCol;
-  // });
+   
   const [isEdidForm, setIsEditForm] = useState<any>(false);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -101,8 +87,7 @@ const Index: React.FC = () => {
         type="mediums"
       />
 
-      <div className="shadow-lg p-2">
-        {/* Toolbar */}
+      <div className="shadow-lg p-2"> 
         <Toolbar
           currentPage={currentPage}
           totalPages={totalPages}
@@ -163,10 +148,12 @@ const Index: React.FC = () => {
 
         {/* Add/Edit Form */}
         <AddEditForm
-          open={openForm}
+         open={openForm}
           onClose={() => setOpenForm(false)}
           initialData={formData}
+          isEdit={isEdidForm}
           onSuccess={refetch}
+          setIsEditForm={setIsEditForm}
         />
 
 

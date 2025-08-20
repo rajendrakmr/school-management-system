@@ -83,7 +83,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
     };
 
      const { data: modulesOptions, isFetching } = useGetModulesQuery({ refetchOnMountOrArgChange: true });
-    console.log("modulesOptions",modulesOptions)
+  
     const formBody: FormRecordItem = isEdit ? initialKey : initialData || initialKey;
 
     // const formBody: FormRecordItem = initialData || {

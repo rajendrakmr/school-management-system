@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const schoolController = require('../controllers/schoolController');
-const multer = require('multer');
 const path = require('path');
+const multer = require('multer');
 
 // Set storage engine
 const storage = multer.diskStorage({
@@ -27,11 +27,11 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter });
 
 // Routes
-router.get('/', schoolController.getAllSchools);
+router.get('/', schoolController.gets);
 
 // Use `upload.single('logo')` for POST & PUT
-router.post('/', upload.single('logo'), schoolController.validateSchool, schoolController.createSchool);
-router.put('/:id', upload.single('logo'), schoolController.validateSchool, schoolController.updateSchool);
+router.post('/', upload.single('logo'), schoolController.validate, schoolController.create);
+router.put('/:id', upload.single('logo'), schoolController.validate, schoolController.update);
 
 router.delete('/:id', schoolController.deleteSchool);
 

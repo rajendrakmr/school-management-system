@@ -183,6 +183,17 @@ interface BadgeProps {
   color: string;
 }
 
+export type StatusValue = "Y" | "N";
+
+export interface StatusOption {
+  value: StatusValue;
+  label: string;
+}
+
+export const isActiveOptions: StatusOption[] = [
+  { value: "Y", label: "Active" },
+  { value: "N", label: "In Active" },
+];
 export const getBadgeProps = (status: string): BadgeProps => {
   switch (status) {
     case "Y":

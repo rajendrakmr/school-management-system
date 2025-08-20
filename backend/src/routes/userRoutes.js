@@ -1,14 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const verifyToken = require('../middlewares/authMiddleware');
+const roleHasPermissionController = require('../controllers/accessPermission/roleHasPermissionController');
+// const verifyToken = require('../middlewares/authMiddleware');
 
 // Public routes
-router.post('/signup', userController.signup);
-router.post('/login', userController.login);
-
-// Protected routes
-router.get('/', verifyToken, userController.getAllUsers);
-router.post('/assign-role', verifyToken, userController.assignRole);
-
+router.get('/list', userController.lists); 
+router.get('/roles', roleHasPermissionController.getUserHasRole); 
 module.exports = router;

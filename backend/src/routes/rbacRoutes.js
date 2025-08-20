@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const rbacController = require('../controllers/rbacController');
+const rbacController = require('../controllers/accessPermission/rbacController');
 const verifyToken = require('../middlewares/authMiddleware'); // agar token verify karna ho
-const roleHasPermissionController = require('../controllers/roleHasPermissionController');
+const roleHasPermissionController = require('../controllers/accessPermission/roleHasPermissionController');
 // Create role with validation
 router.post(
     '/',             // optional middleware
@@ -19,7 +19,7 @@ router.put(
 
 // Get all roles
 router.get('/', rbacController.getAllRoles);
-router.get('/list', rbacController.getRoleList); 
+router.get('/list', rbacController.lists); 
 router.post('/assign', roleHasPermissionController.createRoleHasPermission);
 router.get('/has-permissions', roleHasPermissionController.getRoleHasPermissions);
 

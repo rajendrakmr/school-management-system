@@ -54,7 +54,7 @@ const TableComponent = <T extends Record<string, any>>({
   };
 
   const handleSelectRow = useCallback((e: React.ChangeEvent<HTMLInputElement>, item: T) => {
-    const id = String(item[rowIdKey]); 
+    const id = String(item[rowIdKey]);
     if (e.target.checked) {
       setSelectedIds((prev) => [...prev, id]);
       setSelectedItems((prev) => [...prev, item]);
@@ -92,7 +92,9 @@ const TableComponent = <T extends Record<string, any>>({
   );
 
 
-  const renderImage = (src: string) => (
+  const renderImage = (src: string) =>
+  // console.log("srcsrcsrcsrc",src)
+  (
     <img
       style={{
         width: "90px",
@@ -101,7 +103,7 @@ const TableComponent = <T extends Record<string, any>>({
         border: "1px solid #ccc",
         objectFit: "cover",
       }}
-      src={`http://localhost:5000/uploads/logos/${src}`}
+      src={`http://localhost:5000/uploads${src}`}
       alt="School Logo"
       onError={(e) => {
         (e.target as HTMLImageElement).src =
@@ -166,9 +168,30 @@ const TableComponent = <T extends Record<string, any>>({
                 </td>
                 {activeColumns.map((col) => {
                   const cellValue = item[col.column_key];
-                  return (
-                    <td key={col.id} className="p-2">
-                      {col.column_key === "action" ? (
+
+                  // If the value is an array, render as badges
+                  if (Array.isArray(cellValue)) {
+                    return (
+                      <td key={col.id} className="p-2">
+                        <div className="flex flex-wrap gap-1">
+                          {cellValue.map((val: any, index: number) => (
+                            <span
+                              key={index}
+                              className={`badge m-1 ${col.column_key.includes("role") ? "bg-primary" : "bg-secondary"
+                                }`}
+                            >
+                              {val}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    );
+                  }
+
+                  // Specific custom rendering
+                  if (col.column_key === "action") {
+                    return (
+                      <td key={col.id} className="p-2">
                         <div className="d-flex align-items-center gap-2">
                           <a
                             className="cursor-pointer px-2 cursoredit btn-sm"
@@ -177,10 +200,7 @@ const TableComponent = <T extends Record<string, any>>({
                             {isFormLoading ? (
                               <Spinner animation="border" size="sm" />
                             ) : (
-                              <FontAwesomeIcon
-                                icon={faPenToSquare}
-                                style={{ color: "#007bff" }}
-                              />
+                              <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#007bff" }} />
                             )}
                           </a>
                           <Dropdown align="end">
@@ -195,31 +215,24 @@ const TableComponent = <T extends Record<string, any>>({
                             </Dropdown.Menu>
                           </Dropdown>
                         </div>
-                      ) : col.column_key === "is_active" ? (
-                        <IsActiveBadge status={cellValue} />
-                      ) : col.column_key === "permission" ? (item.permissions && (
-                        <div className="flex flex-wrap gap-1">
-                          {item.permissions.map((perm: any, index: number) => (
-                            <>
-                              <span key={perm.mst_permission_id} className="badge m-2 bg-secondary">
-                                {perm.permission_name}
-                              </span>
-                              {index < item.permissions.length - 1 ? ',' : ''}
-                            </>
-                          ))}
-                        </div>
+                      </td>
+                    );
+                  }
 
-                      )
-                      ) : col.column_key === "image_path" ? (
-                        renderImage(cellValue)
-                      ) : (
-                        cellValue
-                      )}
-                    </td>
-                  );
+                  if (col.column_key === "is_active") {
+                    return <td key={col.id} className="p-2"><IsActiveBadge status={cellValue} /></td>;
+                  }
+
+                  if (col.column_key === "image_path") {
+                    return <td key={col.id} className="p-2">{renderImage(cellValue)}</td>;
+                  }
+
+                  // Default: show value as-is
+                  return <td key={col.id} className="p-2">{cellValue}</td>;
                 })}
               </tr>
             ))
+
 
           )}
         </tbody>

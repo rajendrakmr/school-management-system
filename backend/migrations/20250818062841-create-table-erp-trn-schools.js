@@ -9,25 +9,13 @@ module.exports = {
         primaryKey: true,
         allowNull: false
       },
-      name: {
+      school_name: {
         type: Sequelize.STRING(255),
         allowNull: false
       },
-      code: {
+      school_code: {
         type: Sequelize.STRING(50),
         allowNull: false
-      },
-      principal_name: {
-        type: Sequelize.STRING(255),
-        allowNull: true
-      },
-      phone: {
-        type: Sequelize.STRING(20),
-        allowNull: true
-      },
-      email: {
-        type: Sequelize.STRING(255),
-        allowNull: true
       },
       city: {
         type: Sequelize.STRING(100),
@@ -53,6 +41,14 @@ module.exports = {
         type: Sequelize.ENUM('Y', 'N'),
         allowNull: false,
         defaultValue: 'Y'
+      },
+      created_by: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      updated_by: {
+        type: Sequelize.INTEGER,
+        allowNull: true
       },
       created_at: {
         type: Sequelize.DATE,

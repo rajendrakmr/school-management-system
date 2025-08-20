@@ -2,37 +2,50 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('erp_mst_medium', {
-      mst_medium_id: {
+    await queryInterface.createTable('erp_mst_sections', {
+      mst_section_id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
       },
-      name: {
-        type: Sequelize.STRING(50),
-        allowNull: false
-      },
-      code: {
-        type: Sequelize.STRING(50),
-        allowNull: false
-      },
       trn_school_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'erp_trn_schools',
           key: 'trn_school_id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+      }, 
+      name: {
+        type: Sequelize.STRING(10),
+        allowNull: false
       },
-      is_default: {
-        type: Sequelize.ENUM('Y', 'N'),
-        defaultValue: 'N'
-      },
+
       is_active: {
         type: Sequelize.ENUM('Y', 'N'),
         defaultValue: 'Y'
+      },
+      created_by: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'erp_trn_users',
+          key: 'trn_user_id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      updated_by: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'erp_trn_users',
+          key: 'trn_user_id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       created_at: {
         type: Sequelize.DATE,
@@ -46,6 +59,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('erp_mst_medium');
+    await queryInterface.dropTable('erp_mst_sections');
   }
 };

@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const School = require('./School'); // make sure School model exists
+const User = require('./User');
 
 const Medium = sequelize.define('Medium', {
   mst_medium_id: {
@@ -26,13 +27,29 @@ const Medium = sequelize.define('Medium', {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE'
   },
-  is_default: {
-    type: DataTypes.ENUM('Y', 'N'),
-    defaultValue: 'Y'
-  },
   is_active: {
     type: DataTypes.ENUM('Y', 'N'),
     defaultValue: 'Y'
+  },
+  created_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: User,
+      key: 'trn_user_id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
+  },
+  updated_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: User,
+      key: 'trn_user_id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
   },
   created_at: {
     type: DataTypes.DATE,
@@ -43,7 +60,7 @@ const Medium = sequelize.define('Medium', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'erp_mst_medium',
+  tableName: 'erp_mst_mediums',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',

@@ -10,16 +10,7 @@ export const permissionApi = apiSlice.injectEndpoints({
             },
             providesTags: ["Permission"],
         }),
-        saveRoleHasPermission: builder.mutation<any, any>({
-            query: (permissionData) => { 
-                return {
-                    url: "/roles/assign",
-                    method: "POST",
-                    body: permissionData,
-                }; 
-            },
-            invalidatesTags: ["Permission"],
-        }), 
+        
         deletePermission: builder.mutation<any, number>({
             query: (permissionId) => ({
                 url: `/permissions/${permissionId}`,
@@ -33,5 +24,4 @@ export const permissionApi = apiSlice.injectEndpoints({
 export const {
     useGetHasPermissionsQuery, 
     useDeletePermissionMutation,
-    useSaveRoleHasPermissionMutation,
 } = permissionApi;

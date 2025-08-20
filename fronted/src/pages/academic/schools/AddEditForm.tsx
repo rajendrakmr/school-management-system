@@ -10,8 +10,8 @@ import { useUpdateSchoolMutation } from "@/store/slice/school";
 
 interface SchoolFormData {
     trn_school_id: string;
-    name: string;
-    code: string;
+    school_name: string;
+    school_code: string;
     address: string;
     city: string;
     state: string;
@@ -49,16 +49,16 @@ interface FieldConfig {
 
 const fieldConfigs: Record<keyof SchoolFormData, FieldConfig> = {
     trn_school_id: { required: false, label: "ID" },
-    name: { required: false, minLength: 2, maxLength: 50, label: "School Name" },
-    code: { required: true, label: "School Code" },
+    school_name: { required: true, minLength: 2, maxLength: 50, label: "School Name" },
+    school_code: { required: true, label: "School Code" },
+    email: { required: true, label: "Email" },
+    principal_name: { required: true, label: "Principal Name" },
     address: { required: false, label: "Address" },
     city: { required: false, label: "City" },
     state: { required: false, label: "State" },
     country: { required: false, label: "Country" },
     pincode: { required: false, label: "Pincode" },
     phone: { required: true, label: "Phone" },
-    email: { required: true, label: "Email" },
-    principal_name: { required: false, label: "Principal Name" },
     established_year: { required: false, label: "Established Year" },
     type: { required: false, label: "School Type" },
     is_active: { required: false, label: "Status" },
@@ -92,8 +92,8 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
     // Default form
     const formBody: SchoolFormData = initialData || {
         trn_school_id: "",
-        name: "",
-        code: "",
+        school_name: "",
+        school_code: "",
         address: "",
         city: "",
         state: "",
@@ -282,22 +282,41 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
             isSubmitting={isLoading}
         >
             <div className="row">
+                   <InputFormField
+                    label={fieldConfigs.principal_name.label}
+                    name="principal_name"
+                    inputValue={formData.principal_name}
+                    error={errors.principal_name}
+                    required={fieldConfigs.principal_name.required}
+                    onChange={handleChange}
+                />
+                 <InputFormField
+                    label={fieldConfigs.email.label}
+                    name="email"
+                    type="email"
+                    inputValue={formData.email}
+                    error={errors.email}
+                    required={fieldConfigs.email.required}
+                    onChange={handleChange}
+                />
+
+             
                 {/* Input Fields */}
                 <InputFormField
-                    label={fieldConfigs.name.label}
-                    name="name"
-                    inputValue={formData.name}
-                    error={errors.name}
-                    required={fieldConfigs.name.required}
+                    label={fieldConfigs.school_name.label}
+                    name="school_name"
+                    inputValue={formData.school_name}
+                    error={errors.school_name}
+                    required={fieldConfigs.school_name.required}
                     onChange={handleChange}
                 />
 
                 <InputFormField
-                    label={fieldConfigs.code.label}
-                    name="code"
-                    inputValue={formData.code}
-                    error={errors.code}
-                    required={fieldConfigs.code.required}
+                    label={fieldConfigs.school_code.label}
+                    name="school_code"
+                    inputValue={formData.school_code}
+                    error={errors.school_code}
+                    required={fieldConfigs.school_code.required}
                     onChange={handleChange}
                 />
 
@@ -356,24 +375,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
                     onChange={handleChange}
                 />
 
-                <InputFormField
-                    label={fieldConfigs.email.label}
-                    name="email"
-                    type="email"
-                    inputValue={formData.email}
-                    error={errors.email}
-                    required={fieldConfigs.email.required}
-                    onChange={handleChange}
-                />
-
-                <InputFormField
-                    label={fieldConfigs.principal_name.label}
-                    name="principal_name"
-                    inputValue={formData.principal_name}
-                    error={errors.principal_name}
-                    required={fieldConfigs.principal_name.required}
-                    onChange={handleChange}
-                />
+               
 
                 {/* Dropdowns */}
                 <InputSelectField

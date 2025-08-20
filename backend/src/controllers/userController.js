@@ -3,8 +3,24 @@ const UserHasRole = require('../models/UserHasRole');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const { body, validationResult } = require('express-validator');
+const { fn, col } = require('sequelize');
 
-// Get all users
+exports.validatePermission = [
+    body('permission_name')
+        .notEmpty().withMessage('Permission name is required')
+        .isLength({ min: 3 }).withMessage('Permission must be at least 3 characters'),
+    body('permission_description')
+        .optional()
+        .isLength({ max: 255 }).withMessage('Permission description cannot exceed 255 characters'),
+    body('path_url')
+        .optional()
+        .isLength({ max: 50 }).withMessage('Path URL cannot exceed 50 characters'),
+    body('is_active')
+        .optional()
+        .isIn(['Y', 'N']).withMessage('is_active must be "Y" or "N"')
+];
+
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll();
@@ -14,22 +30,50 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
+
+exports.lists = async (req, res) => {
+    try {
+        const { limit = 10, page = 1, search = "" } = req.query;
+        const offset = (page - 1) * limit;
+        const where = search
+            ? {
+                [Op.or]: [
+                    { name: { [Op.like]: `%${search}%` } },
+                    { email: { [Op.like]: `%${search}%` } }
+                ]
+            }
+            : {};
+        const { rows: users, count: total } = await User.findAndCountAll({
+            where,
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            order: [["created_at", "DESC"]],
+            attributes: [
+                ['trn_user_id', 'value'],
+                [fn("concat", col("first_name"), "-", col("email")), "label"]
+            ]
+        });
+        res.json({
+            data: users,
+            total,
+            page: parseInt(page),
+            totalPages: Math.ceil(total / limit)
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 // Signup / Create user
 exports.signup = async (req, res) => {
     try {
         const { first_name, last_name, email, password } = req.body;
-
-        // Check if user exists
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already registered' });
         }
-
-        // Hash password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        // Create user
         const newUser = await User.create({
             first_name,
             last_name,
@@ -46,11 +90,11 @@ exports.signup = async (req, res) => {
 // Login user
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body; 
+        const { email, password } = req.body;
         const user = await User.findOne({ where: { email } });
-        if (!user) return res.status(400).json({ error: 'Invalid credentials' }); 
+        if (!user) return res.status(400).json({ error: 'Invalid credentials' });
         const match = await bcrypt.compare(password, user.password_hash);
-        if (!match) return res.status(400).json({ error: 'Invalid credentials' }); 
+        if (!match) return res.status(400).json({ error: 'Invalid credentials' });
         const token = jwt.sign(
             { user_id: user.trn_user_id, email: user.email },
             process.env.JWT_SECRET,

@@ -1,20 +1,21 @@
 import RowFormInputField from "@/components/Form/RowFormInputField";
 import { useAuthLoginMutation } from "@/store/slice/AuthType";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const AuthLogin: React.FC = () => {
     const navigate = useNavigate();
     const [authLogin, { isLoading: isSubmitting }] = useAuthLoginMutation();
-    const [formData, setFormData] = useState({ password: "password123", email: "john@example.com" });
+    const [formData, setFormData] = useState({ password: "password123", email: "root@gmail.com" });
     const [errors, setErrors] = useState<{ password?: string; email?: string; apiError?: string }>({});
 
     const validationRules: ValidationRules = {
         password: { required: true, minLength: 2, maxLength: 20 },
     };
 
+    const timeoutRef = useRef<number | null>(null);
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const { isValid, errors } = validationRequest(formData, validationRules);
@@ -27,10 +28,11 @@ const AuthLogin: React.FC = () => {
 
         try {
             const response = await authLogin({ email: formData.email, password: formData.password }).unwrap();
-            if (response?.access_token) {
+            if (response?.token) {
                 toast.success("Login successful!", { position: "top-left", autoClose: 3000 });
-                localStorage.setItem("authToken", response.access_token);
-                navigate("/backend");
+                timeoutRef.current = window.setTimeout(() => {
+                    navigate("/");
+                }, 2000);
             } else {
                 toast.error("Invalid response format, token missing.", { position: "top-right", autoClose: 3000 });
             }
@@ -46,6 +48,13 @@ const AuthLogin: React.FC = () => {
             toast.error(apiError, { position: "top-right", autoClose: 3000 });
         }
     };
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
@@ -90,6 +99,7 @@ const AuthLogin: React.FC = () => {
                             inputValue={formData.password}
                             error={errors.password}
                             required
+                            type="password"
                             onChange={handleChange}
                         />
                         {errors.apiError && <p className="text-red-500 text-sm">{errors.apiError}</p>}

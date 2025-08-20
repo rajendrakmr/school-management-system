@@ -15,9 +15,7 @@ export const schoolApi = apiSlice.injectEndpoints({
 
         // Save school: Create or Update
         saveSchool: builder.mutation<any, any>({
-            query: (schoolData) => {
-                console.log("trn_school_id:", schoolData.get("name"));
-
+            query: (schoolData) => { 
                 if (schoolData instanceof FormData) {
                     return {
                         url: schoolData.get("id") ? `/schools/${schoolData.get("id")}` : "/schools",

@@ -4,7 +4,6 @@ import {
   customSelectOption,
   customSelectOption1,
   rowSelectdOption,
-  SelectOption,
 } from "@/utils/helper";
 
 interface OptionType {
@@ -16,20 +15,23 @@ interface SelectFormInputProps {
   name: string;
   label: string;
   options: OptionType[];
-  value: string;
+  value: string | number | null;
   onChange: (selectedOption: OptionType | null, name: string) => void;
   isEdit?: boolean;
   error?: string;
   required?: boolean;
   isLoading?: boolean;
+  isSearchingLoader?: boolean;   // 🔹 new for search loader
   pgNo?: number;
   formData?: any;
   onMenuScroll?: (formData: any, pgNo?: number) => void;
+  onInputChange?: (input: string) => void; // 🔹 new for search
   col?: string;
   isTrue?: boolean;
   onKeyDown?: (event: React.KeyboardEvent) => void;
   childCol?: string;
   chiCol?: string;
+  height?: string; // 🔹 new for dropdown height
 }
 
 const InputSelectField: React.FC<SelectFormInputProps> = ({
@@ -42,19 +44,22 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
   error,
   required = false,
   isLoading = false,
+  isSearchingLoader = false,
   pgNo,
   formData,
   onMenuScroll = () => console.log("Default"),
+  onInputChange,
   col = "col-md-3",
   isTrue = false,
   onKeyDown,
+  height = "50vh",
 }) => {
   const [copySuccess, setCopySuccess] = useState<string>("");
 
   return (
     <div className={`${col} mt-3`}>
       <div className="form-group">
-        {/* label top */}
+        {/* label */}
         <label
           htmlFor={name}
           className="form-label fw-semibold"
@@ -73,35 +78,28 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
           onChange={(selectedOption) =>
             onChange(selectedOption as OptionType | null, name)
           }
-          menuPortalTarget={document.body}
-          styles={name === "selectedLoginId" ? rowSelectdOption : customSelectOption1}
           onMenuScrollToBottom={() => onMenuScroll(formData, pgNo)}
-          isLoading={isLoading}
-          isDisabled={isTrue}
+          onInputChange={(input) => {
+            if (onInputChange) onInputChange(input);
+            return input;
+          }}
+          isLoading={isLoading || isSearchingLoader}
+          isDisabled={isTrue || isEdit}
           onKeyDown={onKeyDown}
+          menuPortalTarget={document.body}
+          styles={{
+            ...(name === "selectedLoginId"
+              ? rowSelectdOption
+              : customSelectOption1),
+            menu: (base) => ({
+              ...base,
+              maxHeight: height,
+              overflowY: "auto",
+            }),
+          }}
+          placeholder={isLoading ? "Loading..." : "Select option"}
         />
 
-        {/* <Select
-          className={`w-100 ${error ? "is-invalid" : ""}`}
-          id={name}
-          name={name}
-          options={options}
-          
-          value={isEdit? { value: value, label: value }: options.find((option) => option.value === value) || null}
-          onChange={(selectedOption) =>
-            onChange(selectedOption as OptionType | null, name)
-          }
-          menuPortalTarget={document.body}
-          styles={
-            name === "selectedLoginId" ? rowSelectdOption : customSelectOption1
-          }
-          onMenuScrollToBottom={() => onMenuScroll(formData, pgNo)}
-          isLoading={isLoading}
-          isDisabled={isTrue}
-          onKeyDown={onKeyDown}
-        /> */}
-
-        {/* success copy msg */}
         {copySuccess && (
           <span className="text-success ms-2">{copySuccess}</span>
         )}

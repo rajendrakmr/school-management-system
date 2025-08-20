@@ -4,7 +4,7 @@ export const roleApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getRoles: builder.query<any, { limit: number; page: number; filter?: string }>({
             query: ({ limit, page, filter }) => {
-               
+
                 const skip = (page - 1) * limit;
                 let url = `/roles?limit=${limit}&page=${page}`;
                 if (filter) url += `&search=${filter}`;
@@ -30,6 +30,14 @@ export const roleApi = apiSlice.injectEndpoints({
                     };
                 }
             },
+            invalidatesTags: ["Role"],
+        }),
+        saveAccessPolicy: builder.mutation<any, number>({
+            query: (requestData) => ({
+                url: `/roles/assign`,
+                method: "POST",
+                body: requestData,
+            }),
             invalidatesTags: ["Role"],
         }),
         createRole: builder.mutation<any, any>({
@@ -63,5 +71,7 @@ export const {
     useCreateRoleMutation,
     useUpdateRoleMutation,
     useDeleteRoleMutation,
-    useSaveRoleMutation
+    useSaveRoleMutation,
+    useSaveAccessPolicyMutation
+
 } = roleApi;

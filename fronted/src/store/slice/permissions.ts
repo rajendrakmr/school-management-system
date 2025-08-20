@@ -27,7 +27,7 @@ export const permissionApi = apiSlice.injectEndpoints({
                 }
             },
             invalidatesTags: ["Permission"],
-        }), 
+        }),  
         deletePermission: builder.mutation<any, number>({
             query: (permissionId) => ({
                 url: `/permissions/${permissionId}`,

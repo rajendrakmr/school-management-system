@@ -13,9 +13,18 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+      tag: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        unique: true,
+      },
       role_description: {
         type: Sequelize.STRING(255),
         allowNull: true,
+      },
+      is_default: {
+        type: Sequelize.ENUM("Y", "N"),
+        defaultValue: "N",
       },
       is_active: {
         type: Sequelize.ENUM("Y", "N"),

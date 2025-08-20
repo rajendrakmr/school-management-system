@@ -14,6 +14,11 @@ const Role = sequelize.define(
       allowNull: false,  
     },
     role_description: { type: DataTypes.STRING },
+    is_default: {
+      type: DataTypes.ENUM('Y', 'N'),
+      allowNull: false,
+      defaultValue: 'Y',
+    },
     is_active: {
       type: DataTypes.ENUM('Y', 'N'),
       allowNull: false,

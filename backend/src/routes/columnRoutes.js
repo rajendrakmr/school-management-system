@@ -3,8 +3,8 @@ const router = express.Router();
 const settingController = require('../controllers/settingController');
 const verifyToken = require('../middlewares/authMiddleware');
 
-router.get('/', settingController.getColumn); 
-router.post('/', settingController.updateColumn); 
+router.get('/',verifyToken, settingController.getColumn); 
+router.post('/',verifyToken, settingController.updateColumn); 
 // router.put('/:type', settingController.updateColumn); 
-router.delete('/:id', settingController.deleteColumn); 
+router.delete('/:id',verifyToken, settingController.deleteColumn); 
 module.exports = router;

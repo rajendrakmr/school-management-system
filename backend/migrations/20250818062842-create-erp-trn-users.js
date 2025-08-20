@@ -8,18 +8,31 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       }, 
+      trn_school_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'erp_trn_schools',
+          key: 'trn_school_id'
+        },
+        onDelete: 'CASCADE'
+      },
       first_name: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
       last_name: {
         type: Sequelize.STRING(100),
-        allowNull: false,
+        allowNull: true,
       },
       email: {
         type: Sequelize.STRING(150),
         allowNull: false,
         unique: true,
+      },
+      phone: {
+        type: Sequelize.STRING(12),
+        allowNull: true, 
       },
       password_hash: {
         type: Sequelize.STRING(255),

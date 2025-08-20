@@ -1,17 +1,11 @@
 import { createApi, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryMeta } from "@reduxjs/toolkit/query";
-const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
 
+const baseUrl = "http://localhost:5000/api/v1";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: baseUrl,
-    prepareHeaders: (headers) => {
-        const token = localStorage.getItem("authToken");
-        if (token) {
-            headers.set("Authorization", `Bearer ${token}`);
-        }
-        return headers;
-    },
+    credentials: "include", // 👈 important for cookies
 });
 
 // ✅ Correctly typed wrapper function for handling 401 errors
@@ -25,19 +19,20 @@ const baseQueryWithReauth: BaseQueryFn<
     const result = await baseQuery(args, api, extraOptions);
 
     if (result.error?.status === 401) {
-        console.error("Session expired. Redirecting to login...");
-        localStorage.removeItem("authToken"); // Clear token
-        sessionStorage.setItem("sessionExpired", "true"); // Store flag
-
-        window.location.href = "/apps/login"; // Redirect to login page
-    }
-
+        console.error("Session expired. Redirecting to login..."); 
+        api.dispatch({ type: "auth/logout" });  
+        window.location.href = "/apps/login";
+    } 
     return result;
 };
 
 export const apiSlice = createApi({
     reducerPath: "api",
-    baseQuery: baseQueryWithReauth, // ✅ Use the correctly typed function
-    tagTypes: ["Users", "Departments", "LeaveType", "Permission", "AuthType", "Role", "Column", "Breadcrumb", "School", "Dropdown", "Medium"], // Caching identifiers
-    endpoints: () => ({}), // Empty as it will be extended
+    baseQuery: baseQueryWithReauth,
+    tagTypes: [
+        "Users", "Departments", "LeaveType", "Permission",
+        "AuthType", "Role", "Column", "Breadcrumb",
+        "School", "Policy","Dropdown", "Medium","Section","Subject","Semester"
+    ],
+    endpoints: () => ({}),
 });

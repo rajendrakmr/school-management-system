@@ -8,19 +8,18 @@ const RoleHasPermission = sequelize.define(
   {
     mst_role_id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,  // <-- composite PK
+      // primaryKey: true,  
       references: { model: Role, key: 'mst_role_id' }
     },
     mst_permission_id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,  // <-- composite PK
+      // primaryKey: true, 
       references: { model: Permission, key: 'mst_permission_id' }
     }
   },
   {
     timestamps: false,
-    freezeTableName: true,  // prevents Sequelize from pluralizing
-    // DO NOT let Sequelize auto-add `id`
+    freezeTableName: true,  
   }
 );
 

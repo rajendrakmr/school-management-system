@@ -29,11 +29,19 @@ const routes: NavItem[] = [
     url: '/',
     id: 'menu_item1',
   },
-  {name: 'Dashboard',url: '/permissions',id: 'permissions',component: lazy(() => import('@/pages/rbac/permissions/Index')),},
-  {name: 'Dashboard',url: '/roles',id: 'roles',component: lazy(() => import('@/pages/rbac/roles/Index')),},
-  {name: 'Dashboard',url: '/schools-inquiry',id: 'schools-inquiry',component: lazy(() => import('@/pages/academic/schoolsInquiries/Index')),},
-   {name: 'Dashboard',url: '/mediums',id: 'mediums',component: lazy(() => import('@/pages/academic/mediums/Index')),},
-  
+  { name: 'Dashboard', url: '/role-permissions', id: 'permissions', component: lazy(() => import('@/pages/rbac/hasPermissions/Index')), },
+  { name: 'Dashboard', url: '/permissions', id: 'permissions', component: lazy(() => import('@/pages/rbac/permissions/Index')), },
+  { name: 'Dashboard', url: '/roles', id: 'roles', component: lazy(() => import('@/pages/rbac/roles/Index')), },
+  { name: 'Dashboard', url: '/access-policies', id: 'access-policies', component: lazy(() => import('@/pages/rbac/accessPolicy/Index')), },
+  { name: 'Dashboard', url: '/schools-inquiry', id: 'schools-inquiry', component: lazy(() => import('@/pages/academic/schoolsInquiries/Index')), },
+  { name: 'Dashboard', url: '/medium', id: 'mediums', component: lazy(() => import('@/pages/academic/mediums/Index')), },
+  { name: 'Dashboard', url: '/section', id: 'sections', component: lazy(() => import('@/pages/academic/sections/Index')), },
+  { name: 'Dashboard', url: '/class', id: 'classes', component: lazy(() => import('@/pages/academic/classes/Index')), },
+  { name: 'Dashboard', url: '/semester', id: 'semesters', component: lazy(() => import('@/pages/academic/semesters/Index')), },
+  { name: 'Dashboard', url: '/stream', id: 'streams', component: lazy(() => import('@/pages/academic/streams/Index')), },
+  { name: 'Dashboard', url: '/subject', id: 'subjects', component: lazy(() => import('@/pages/academic/subjects/Index')), },
+  { name: 'Dashboard', url: '/shift', id: 'shifts', component: lazy(() => import('@/pages/academic/shifts/Index')), },
+
   {
     component: lazy(() => import('@/pages/rbac/hasPermissions/Index')),
     name: 'Dashboard',
@@ -58,7 +66,7 @@ const routes: NavItem[] = [
     url: '/employees',
     id: 'menu_item1',
   },
-   
+
   {
     component: lazy(() => import('@/pages/admin/Dashboard')),
     name: 'Dashboard',

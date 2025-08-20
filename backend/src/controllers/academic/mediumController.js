@@ -3,16 +3,13 @@ const Medium = require('../../models/Medium');
 const { body, validationResult } = require('express-validator');
 
 // Validation rules for Medium creation
-exports.validateMedium = [
-    body('name')
-        .notEmpty().withMessage('Name is required')
-        .isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
-    // body('trn_school_id').notEmpty().withMessage('School ID is required'),
+exports.validateCreate = [
+    body('name').notEmpty().withMessage('Name is required').isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
     body('is_active').optional().isIn(['Y', 'N']).withMessage('Status must be "Y" or "N"')
 ];
 
 // Get all Medium options (id and name)
-exports.getMediumList = async (req, res) => {
+exports.lists = async (req, res) => {
     try {
         const rows = await Medium.findAll({
             attributes: [
@@ -28,13 +25,14 @@ exports.getMediumList = async (req, res) => {
 };
 
 // Paginated list of Mediums
-exports.getAllMediums = async (req, res) => {
+exports.gets = async (req, res) => {
     try {
+        const { trn_school_id } = req
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
 
-        const { count, rows } = await Medium.findAndCountAll({ limit, offset, order: [['mst_medium_id', 'ASC']] });
+        const { count, rows } = await Medium.findAndCountAll({ where: { trn_school_id }, limit, offset, order: [['mst_medium_id', 'ASC']] });
         const totalPages = Math.ceil(count / limit);
 
         res.json({
@@ -49,7 +47,7 @@ exports.getAllMediums = async (req, res) => {
 };
 
 // Create Medium
-exports.createMedium = async (req, res) => {
+exports.create = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -59,16 +57,15 @@ exports.createMedium = async (req, res) => {
             });
             return res.status(422).json({ errors: formattedErrors });
         }
+        const { trn_school_id, created_by } = req
 
-        // Default trn_school_id is null and is_active = 'Y' if not provided
-        const { name, trn_school_id = null, is_active = 'Y' } = req.body;
-
+        const { name, code, is_active = 'Y' } = req.body;
         const existing = await Medium.findOne({ where: { name, trn_school_id } });
         if (existing) {
-            return res.status(422).json({ errors: { name: `${name} already exists.` } });
+            return res.status(422).json({ errors: { name: `${name} already taken.` } });
         }
-
-        const response = await Medium.create({ name, code: name, trn_school_id, is_active });
+        const name_code = name.slice(0, 3).toUpperCase();
+        const response = await Medium.create({ name, code: code ? code : name_code, trn_school_id, is_active, created_by });
         res.status(200).json({
             message: `Medium "${name}" has been successfully created.`,
             item: response
@@ -78,8 +75,9 @@ exports.createMedium = async (req, res) => {
     }
 };
 
+
 // Update Medium
-exports.updateMedium = async (req, res) => {
+exports.update = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -88,19 +86,18 @@ exports.updateMedium = async (req, res) => {
             });
         }
 
+        const { trn_school_id, updated_by } = req
         const { name, is_active } = req.body;
         const { id } = req.params;
 
         const medium = await Medium.findByPk(id);
-        if (!medium) return res.status(404).json({ error: 'Medium not found' });
-
-        // Check for duplicate name except current medium
+        if (!medium) return res.status(404).json({ error: 'Medium not found' }); 
         if (name && name !== medium.name) {
             const existing = await Medium.findOne({
                 where: {
                     name,
-                    trn_school_id: medium.trn_school_id,
-                    mst_medium_id: { [Op.ne]: id }  // Exclude current ID
+                    trn_school_id: trn_school_id,
+                    mst_medium_id: { [Op.ne]: id }   
                 }
             });
             if (existing) {
@@ -109,13 +106,13 @@ exports.updateMedium = async (req, res) => {
         }
 
         // Update fields
-        medium.name = name || medium.name;
-        medium.is_active = is_active || medium.is_active;
+        medium.name = name;
+        medium.is_active = is_active;
+        medium.updated_by = updated_by;
         await medium.save();
 
         res.status(200).json({
-            message: `Medium "${medium.name}" has been successfully updated.`,
-            item: medium
+            message: `Medium "${medium.name}" has been successfully updated.`, 
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

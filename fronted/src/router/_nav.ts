@@ -112,9 +112,10 @@ const _nav: NavItem[] = [
     path: '/rbac',
     icon: faFingerprint,
     children: [
-      { name: 'Role Details', path: '/roles' },
-      { name: 'Permission Details', path: '/permissions' },
-      { name: 'Role Access Control', path: '/has-permissions' }
+      { name: 'Roles', path: '/roles' },
+      { name: 'Permissions', path: '/permissions' },
+      { name: 'Role Permissions', path: '/role-permissions' },
+      { name: 'Access Policies', path: '/access-policies' }
 
     ],
   },
@@ -123,7 +124,7 @@ const _nav: NavItem[] = [
     path: '/schools',
     icon: faSchool,
     children: [
-      { name: 'School Details', path: '/schools' }, 
+      { name: 'School Details', path: '/schools' },
       { name: 'School Inquiries', path: '/schools-inquiry' },
     ],
   },
@@ -132,11 +133,16 @@ const _nav: NavItem[] = [
     path: '/academics',
     icon: faBank,
     children: [
-      { name: 'Medium', path: '/mediums' }, 
-      { name: 'Section', path: '/sections' },
+      { name: 'Medium', path: '/medium' },
+      { name: 'Section', path: '/section' },
+      { name: 'Subject', path: '/subject' },
+      { name: 'Semester', path: '/semester' },
+      { name: 'Stream', path: '/stream' },
+      { name: 'Shift', path: '/shift' },
+      { name: 'Class', path: '/class' },
     ],
   }
-  
+
 
   // {
   //   name: 'Students',

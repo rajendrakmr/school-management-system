@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const permissionController = require('../controllers/permissionController');
+const permissionController = require('../controllers/accessPermission/permissionController');
 const moduleController = require('../controllers/moduleController');
 // Validation middleware
 const { validatePermission } = permissionController;

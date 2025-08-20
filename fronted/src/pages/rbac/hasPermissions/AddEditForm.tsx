@@ -8,7 +8,8 @@ import { useGetPermissionsMenuQuery, useRolesQuery } from "@/store/slice/dropdow
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import CheckboxTree from 'react-checkbox-tree';
 import { FaCheck, FaRegCheckSquare, FaRegSquare, FaFingerprint, FaMinus, FaPlus } from 'react-icons/fa';
-import { useSaveRoleHasPermissionMutation } from "@/store/slice/roleHasPermissions";
+import { useSaveRoleHasPermissionMutation } from "@/store/slice/access-policy/policies";
+// import { useSaveRoleHasPermissionMutation } from "@/store/slice/roleHasPermissions";
 
 interface FormRecordItem {
     permissions: string[];
@@ -198,6 +199,7 @@ useEffect(() => {
         setFormData((prev) => ({ ...prev, permissions: newChecked })); // Update formData
     };
 
+    console.log(nodes)
     return (
         <SliderForm
             show={open}
@@ -241,18 +243,11 @@ useEffect(() => {
                             icons={{
                                 check: <FaCheck />,
                                 uncheck: <FaRegSquare />,
-                                halfCheck: <FaRegCheckSquare />,
-
-                                // Use plus/minus instead of arrows
+                                halfCheck: <FaRegCheckSquare />, 
                                 expandClose: <FaPlus />,
-                                expandOpen: <FaMinus />,
-                                // parentClose: <FaPlus />,
-                                // parentOpen: <FaMinus />,
-
+                                expandOpen: <FaMinus />, 
                                 expandAll: <FaPlus />,
-                                collapseAll: <FaMinus />,
-
-                                // Leaf icon
+                                collapseAll: <FaMinus />, 
                                 leaf: <FaFingerprint />
                             }}
                         />

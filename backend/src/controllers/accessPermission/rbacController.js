@@ -1,9 +1,7 @@
 const { Op } = require('sequelize');
-const Role = require('../models/Role');
+const Role = require('../../models/Role');
 const { body, validationResult } = require('express-validator');
-const TableColumn = require('../models/TableColumn');
-
-// Validation rules for role creation
+ 
 exports.validateRole = [
     body('role_name')
         .notEmpty().withMessage('Role name is required')
@@ -16,7 +14,7 @@ exports.validateRole = [
         .isIn(['Y', 'N']).withMessage('isActive must be "Y" or "N"')
 ];
 
-exports.getRoleList = async (req, res) => {
+exports.lists = async (req, res) => {
     try {
 
         const { rows } = await Role.findAndCountAll({
@@ -50,6 +48,7 @@ exports.getAllRoles = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 exports.createRole = async (req, res) => {
     try {

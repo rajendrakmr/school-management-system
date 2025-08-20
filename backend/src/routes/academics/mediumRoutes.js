@@ -1,7 +1,5 @@
 const express = require('express');
-const router = express.Router();
-// const rbacController = require('../controllers/rbacController');
-// const verifyToken = require('../middlewares/authMiddleware'); // agar token verify karna ho
+const router = express.Router();  
 const mediumController = require('../../controllers/academic/mediumController');
  
 
