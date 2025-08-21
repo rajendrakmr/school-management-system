@@ -23,8 +23,8 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      permission_description: {
-        type: Sequelize.STRING(255),
+      order_no: {
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       path_url: {

@@ -40,10 +40,10 @@ const Index: React.FC = () => {
     { refetchOnMountOrArgChange: true }
   );
 
- 
+
   const items = dataRecords?.items || [];
-  const totalCount = dataRecords?.totalCount || 0;  
-  const safeItemsPerPage: number = itemsPerPage ?? 10; 
+  const totalCount = dataRecords?.totalCount || 0;
+  const safeItemsPerPage: number = itemsPerPage ?? 10;
   const totalPages = Math.ceil(totalCount / safeItemsPerPage);
 
   const handlePageChange = (newPage: number) => {
@@ -59,16 +59,15 @@ const Index: React.FC = () => {
   const [formData, setFormData] = useState<any>(null);
   useEffect(() => {
     setFormData(formData);
-  }, [formData]); 
+  }, [formData]);
 
   useEffect(() => {
     setIsEditForm(isEdidForm);
-  }, [isEdidForm]); 
+  }, [isEdidForm]);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
 
-  console.log('formData', formData)
   return (
     <>
       <SettingsModal
@@ -90,7 +89,7 @@ const Index: React.FC = () => {
           onPageChange={handlePageChange}
           onSearch={(query) => setFilter(query)}
           onRefresh={refetch}
-          onAdd={() => { setIsEditForm(false);setOpenForm(true); }}
+          onAdd={() => { setIsEditForm(false); setOpenForm(true); }}
           onPreference={() => setIsSettingsOpen(true)}
           advancedSearch={() => setIsPreferencesOpen(!isPreferencesOpen)}
         />

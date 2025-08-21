@@ -5,6 +5,9 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { body, validationResult } = require('express-validator');
 const sequelize = require('../config/db');
+const RoleHasPermission = require('../models/RoleHasPermission');
+const { Permission, Module } = require('../models');
+const Role = require('../models/Role');
 
 exports.validateSignUp = [
     body('email')
@@ -85,8 +88,19 @@ exports.signup = async (req, res) => {
 // const { validationResult } = require('express-validator');
 // const User = require('../models/User');
 
+
+
+
+User.hasMany(UserHasRole, { foreignKey: 'trn_user_id' });
+UserHasRole.belongsTo(User, { foreignKey: 'trn_user_id' });
+Role.hasMany(UserHasRole, { foreignKey: 'mst_role_id' });
+UserHasRole.belongsTo(Role, { foreignKey: 'mst_role_id' });
+
 exports.login = async (req, res) => {
     try {
+
+
+
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             const formattedErrors = {};
@@ -101,6 +115,8 @@ exports.login = async (req, res) => {
             where: { email },
             attributes: ['trn_user_id', 'email', "trn_school_id", "password_hash", "first_name", "last_name", "phone"]
         });
+
+
 
         if (!user) {
             return res.status(422).json({
@@ -121,13 +137,70 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ trn_user_id: user.trn_user_id, trn_school_id: user?.trn_school_id || null, password_hash: user.password_hash }, process.env.JWT_SECRET,
             { expiresIn: '12h' }
         );
+        const trn_user_id = user.trn_user_id
+        const query = `          
+                    SELECT ur.mst_role_id,
+                    JSON_ARRAYAGG(rp.mst_permission_id) as permissionID
+                    FROM   erp_trn_user_has_roles ur 
+                    JOIN erp_mst_role_has_permissions as rp
+                        ON rp.mst_role_id = ur.mst_role_id 
+                    WHERE ur.trn_user_id=:trn_user_id
+                    GROUP BY ur.mst_role_id;
+                `;
+
+        const menu = await sequelize.query(query, {
+            replacements: { trn_user_id },
+            type: sequelize.QueryTypes.SELECT
+        });
+        const permissionID = menu.length > 0 ? menu[0]?.permissionID : [];
+        const modules = await Module.findAll({
+            attributes: ['module_name', 'has_child'],
+            order: [['mst_module_id', 'ASC']],
+            include: [{
+                model: Permission,
+                as: 'permissions',
+                attributes: ['permission_name', 'path_url'],
+                where: {
+                    mst_permission_id: permissionID
+                },
+                required: true
+            }]
+        });
+        const nav = modules.map(mod => {
+            if (mod.has_child === 'Y' && mod.permissions.length > 0) {
+                return {
+                    name: mod.module_name,
+                    path: `/${mod.module_name.toLowerCase().replace(/\s+/g, '-')}`,
+                    icon: null,
+                    children: mod.permissions.map(p => ({
+                        name: p.permission_name,
+                        path: p.path_url
+                    }))
+                };
+            } else {
+                return {
+                    name: mod.module_name,
+                    path: mod.permissions[0]?.path_url || '/',
+                    icon: null, // optional
+                    isParent: true
+                };
+            }
+        });
         res.cookie("authToken", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",
             maxAge: 12 * 60 * 60 * 1000
         });
-        res.json({ message: 'Login successful', token, user });
+        const currentUrl = `${req.protocol}://${req.get('host')}`; // e.g., http://localhost:5000
+       const userObj = user.toJSON ? user.toJSON() : { ...user };
+
+// Add logo URL
+userObj.logo = `${currentUrl}/uploads/logos/logo.png`;
+
+// Remove sensitive data
+delete userObj.password_hash;
+        res.json({ message: 'Logins successful', token, user:userObj, menu: nav });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -10,8 +10,11 @@ export const dropdown = apiSlice.injectEndpoints({
             providesTags: ["Dropdown"],
         }),
         getPermissionsMenu: builder.query({
-            query: () => {
-                let url = `/permissions/menu`;
+            query: (roleId?: string) => {
+                let url = `/permissions/lists`;
+                if (roleId) {
+                    url += `?role_id=${roleId}`;
+                }
                 return url;
             },
             providesTags: ["Dropdown"],
@@ -30,7 +33,7 @@ export const dropdown = apiSlice.injectEndpoints({
             },
             providesTags: ["Dropdown"],
         }),
-         getUsers: builder.query({
+        getUsers: builder.query({
             query: ({ page, limit, search }) => {
                 let url = `/users/list?page=${page}&limit=${limit}`;
                 if (search) url += `&search=${search}`;
@@ -60,5 +63,5 @@ export const {
     useGetPermissionsMenuQuery,
     useRolesQuery,
     useMediumsQuery,
-      useGetUsersQuery,
+    useGetUsersQuery,
 } = dropdown;

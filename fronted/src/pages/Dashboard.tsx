@@ -26,7 +26,9 @@ import {
 } from "recharts";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import DashboardHeader from "./DashboardHeader";
 const ResponsiveLayout = WidthProvider(ResponsiveGridLayout);
 
 // ✅ Card Component
@@ -74,11 +76,11 @@ const attendanceData = [
 ];
 
 const Dashboard: React.FC = () => {
+  const usersInfo = useSelector((state: RootState) => state.user.user || {});
+
   return (
-    <div className="_rkContentBorder">
-      <div className="d-flex justify-content-between align-items-center grid-margin mb-4">
-        <h4>Welcome to ERP SaaS : School Management System</h4>
-      </div>
+    <div className="_rkContentBorder p-2 shadow-lg">
+      <DashboardHeader />
 
       {/* 🔥 Drag & Drop Grid */}
       <ResponsiveLayout
@@ -155,26 +157,26 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
         {/* Monthly Transactions Chart */}
-<div key="transactions" data-grid={{ x: 0, y: 5, w: 12, h: 3 }}>
-  <div className="card h-100">
-    <div className="card-body">
-      <h5 className="mb-3">Monthly Transactions</h5>
-      <LineChart width={1000} height={300} data={transactionData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line
-          type="monotone"
-          dataKey="transactions"
-          stroke="#ffc107"
-          strokeWidth={3}
-        />
-      </LineChart>
-    </div>
-  </div>
-</div>
+        <div key="transactions" data-grid={{ x: 0, y: 5, w: 12, h: 3 }}>
+          <div className="card h-100">
+            <div className="card-body">
+              <h5 className="mb-3">Monthly Transactions</h5>
+              <LineChart width={1000} height={300} data={transactionData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="transactions"
+                  stroke="#ffc107"
+                  strokeWidth={3}
+                />
+              </LineChart>
+            </div>
+          </div>
+        </div>
 
 
         {/* Punch Section */}

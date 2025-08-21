@@ -19,7 +19,7 @@ RoleHasPermission.belongsTo(Permission, { foreignKey: 'mst_permission_id' });
 
 
 exports.getRoleHasPermissions = async (req, res) => {
-     try {
+    try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
@@ -57,7 +57,7 @@ exports.getRoleHasPermissions = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
-     
+
 };
 
 
@@ -168,6 +168,7 @@ exports.getUserHasRole = async (req, res) => {
     }
 };
 
+
 exports.createRoleHasPermission = async (req, res) => {
     const t = await sequelize.transaction();
     try {
@@ -180,54 +181,60 @@ exports.createRoleHasPermission = async (req, res) => {
             return res.status(422).json({ errors: formattedErrors });
         }
 
-        const { trn_user_id, mst_role_id } = req.body;
+        const { mst_role_id, permissions } = req.body;
 
-        if (Array.isArray(mst_role_id) && mst_role_id.length > 0) {
-            // Fetch current roles for the user
-            const existingRoles = await UserHasRole.findAll({
-                where: { trn_user_id },
-                transaction: t
-            });
-
-            const existingRoleIds = existingRoles.map(r => r.mst_role_id);
-
-            // Delete roles that are no longer in the new list
-            const rolesToDelete = existingRoleIds.filter(id => !mst_role_id.includes(id));
-            if (rolesToDelete.length > 0) {
-                await UserHasRole.destroy({
-                    where: {
-                        trn_user_id,
-                        mst_role_id: rolesToDelete
-                    },
-                    transaction: t
-                });
-            }
-
-            // Insert only new roles that the user doesn't already have
-            const rolesToAdd = mst_role_id.filter(id => !existingRoleIds.includes(id)).map(roleId => ({
-                trn_user_id,
-                mst_role_id: roleId
-            }));
-
-            if (rolesToAdd.length > 0) {
-                await UserHasRole.bulkCreate(rolesToAdd, { transaction: t });
-            }
-
-        } else {
-            // If empty array, remove all roles for this user
-            await UserHasRole.destroy({
-                where: { trn_user_id },
-                transaction: t
-            });
+        if (!mst_role_id || !Array.isArray(permissions)) {
+            return res.status(400).json({ error: "Role ID and permissions are required." });
         }
 
+        // Filter permissions: only include if at least one can_* field is 'Y'
+        const filteredPermissions = permissions.filter(perm =>
+            perm.can_view === 'Y' ||
+            perm.can_create === 'Y' ||
+            perm.can_update === 'Y' ||
+            perm.can_delete === 'Y' ||
+            perm.can_edit === 'Y'
+        );
+
+        if (filteredPermissions.length === 0) {
+
+            return res.status(422).json({ errors: { permissions: "At least one permission must be checked." } });
+        }
+
+        // Prepare array for bulk insert/update
+        const bulkData = filteredPermissions.map(perm => ({
+            mst_role_id,
+            mst_permission_id: perm.mst_permission_id,
+            can_view: perm.can_view || 'N',
+            can_create: perm.can_create || 'N',
+            can_update: perm.can_update || 'N',
+            can_delete: perm.can_delete || 'N',
+            can_edit: perm.can_edit || 'N',
+            created_at: new Date(),
+            updated_at: new Date(),
+        }));
+
+        await RoleHasPermission.bulkCreate(bulkData, {
+            updateOnDuplicate: ['can_view', 'can_create', 'can_update', 'can_delete', 'can_edit', 'updated_at'],
+            transaction: t
+        });
+
+        // Remove permissions not included in the request
+        const permIds = filteredPermissions.map(p => p.mst_permission_id);
+        await RoleHasPermission.destroy({
+            where: {
+                mst_role_id,
+                mst_permission_id: { [Op.notIn]: permIds },
+            },
+            transaction: t
+        });
+
         await t.commit();
-        res.status(200).json({ message: `Access policies successfully updated.` });
+        res.status(200).json({ message: "Role permissions successfully updated." });
 
     } catch (err) {
         await t.rollback();
-        console.error('Error updating roles:', err);
+        console.error('Error updating role permissions:', err);
         res.status(500).json({ error: err.message });
     }
 };
-

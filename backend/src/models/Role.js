@@ -4,14 +4,18 @@ const sequelize = require('../config/db');
 const Role = sequelize.define(
   'erp_mst_roles',
   {
-    mst_role_id: { 
-      type: DataTypes.INTEGER, 
-      primaryKey: true, 
-      autoIncrement: true 
+    mst_role_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    role_name: { 
-      type: DataTypes.STRING, 
-      allowNull: false,  
+    role_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    tag: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     role_description: { type: DataTypes.STRING },
     is_default: {

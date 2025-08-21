@@ -16,17 +16,17 @@ import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
 const Index: React.FC = () => {
   const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const dispatch = useDispatch(); 
-  
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(setBreadcrumbs([ "Role Details"]));
+    dispatch(setBreadcrumbs(["Role Details"]));
   }, [dispatch]);
   const { data: referenceRecord, isFetching: isRefFetching } = useGetColumnsQuery(
     { type: "roles", user_id: 1 },
     { refetchOnMountOrArgChange: true }
   );
 
-  const allColumns: Column[] = referenceRecord?.columns || []; 
+  const allColumns: Column[] = referenceRecord?.columns || [];
   const [itemsPerPage, setItemsPerPage] = useState<number | undefined>(undefined);
   useEffect(() => {
     if (referenceRecord?.page_size) {
@@ -72,30 +72,19 @@ const Index: React.FC = () => {
   const [editData, setEditData] = useState<any>(null);
   const [formData, setFormData] = useState<any>(null);
   const [isEdidForm, setIsEditForm] = useState<any>(false);
-const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  // const allColumns: Column[] = [ 
-  //   { key: "role_name", label: "Role Name", order: 2, isActive: true },
-  //   { key: "role_description", label: "Description", order: 3, isActive: true },
-  //   { key: "isActive", label: "Status", order: 3, isActive: true },
-  //   { key: "action", label: "Action", order: 4, isActive: true },
-  // ];
-
-
-
-  // const savedColumns = localStorage.getItem("selectedColumns");
-  // let userColumns: Column[] = savedColumns ? JSON.parse(savedColumns) : [];
-  // const mergedColumns = allColumns.map((defaultCol) => {
-  //   const userCol = userColumns.find((col: Column) => col.column_key === defaultCol.column_key);
-  //   return userCol ? { ...defaultCol, ...userCol } : defaultCol;
-  // });
+  // const [isEdidForm, setIsEditForm] = useState<any>(false);
+  // const [formData, setFormData] = useState<any>(null);
   useEffect(() => {
-      setFormData(formData);
-    }, [formData]); 
-  
-    useEffect(() => {
-      setIsEditForm(isEdidForm);
-    }, [isEdidForm]); 
+    setFormData(formData);
+  }, [formData]);
+
+ 
+
+  useEffect(() => {
+    setIsEditForm(isEdidForm);
+  }, [isEdidForm]);
 
   return (
     <>
@@ -157,7 +146,7 @@ const [selectedIds, setSelectedIds] = useState<string[]>([]);
         )}
 
         {/* Table */}
-        <TableComponent 
+        <TableComponent
           setOpenSliderForm={setOpenForm}
           setFormData={setEditData}
           isFetching={isFetching}
@@ -172,6 +161,8 @@ const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
         {/* Add/Edit Form */}
         <AddEditForm
+          isEdit={isEdidForm}
+          setIsEditForm={setIsEditForm}
           open={openForm}
           onClose={() => setOpenForm(false)}
           initialData={editData}

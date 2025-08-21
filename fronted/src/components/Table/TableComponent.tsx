@@ -7,6 +7,7 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { Dropdown, Spinner } from "react-bootstrap";
 import LoadingLoader from "../LoadingLoader";
 import IsActiveBadge from "../Form/IsActiveBadge";
+import IsDefaultBadge from "../Form/IsDefaultBadge";
 
 interface TableComponentProps<T extends Record<string, any> = any> {
   data: T[];
@@ -221,6 +222,9 @@ const TableComponent = <T extends Record<string, any>>({
 
                   if (col.column_key === "is_active") {
                     return <td key={col.id} className="p-2"><IsActiveBadge status={cellValue} /></td>;
+                  }
+                  if (col.column_key === "is_default") {
+                    return <td key={col.id} className="p-2"><IsDefaultBadge status={cellValue} /></td>;
                   }
 
                   if (col.column_key === "image_path") {

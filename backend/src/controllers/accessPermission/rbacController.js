@@ -60,13 +60,14 @@ exports.createRole = async (req, res) => {
             });
             return res.status(422).json({ errors: formattedErrors });
         }
-
+        
         const { role_name, role_description } = req.body;
+        const tag = role_name.trim().toLowerCase().replace(/\s+/g, "-");
         const existingRole = await Role.findOne({ where: { role_name } });
         if (existingRole) {
             return res.status(422).json({ errors: { role_name: `${role_name} is already taken.` } });
         }
-        const newRole = await Role.create({ role_name, role_description });
+        const newRole = await Role.create({ role_name, role_description,tag });
         res.status(200).json({
             message: `Role "${role_name}" has been successfully created.`,
             role: newRole

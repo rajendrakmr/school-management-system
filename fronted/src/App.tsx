@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const AuthRoute = lazy(() => import('@/layouts/AuthRoute'));
 const DefaultLayout = lazy(() => import('@/layouts/DefaultLayout')); 
-const AuthLogin = lazy(() => import('@/pages/Auth/AuthLogin'));
+const AuthLogin = lazy(() => import('@/pages/Auth/Login'));
 const App: React.FC = () => {
     const isAuthenticated = true;
 

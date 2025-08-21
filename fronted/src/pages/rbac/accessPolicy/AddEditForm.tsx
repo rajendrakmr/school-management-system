@@ -24,10 +24,10 @@ type FormErrors = {
 
 interface AddEditFormProps {
     open: boolean;
-    isEdit: boolean;
     onClose: () => void;
     initialData?: FormRecordItem;
     onSuccess: () => void;
+    isEdit: boolean;
     setIsEditForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
 interface UsersResponse {

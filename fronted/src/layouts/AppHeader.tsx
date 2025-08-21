@@ -10,9 +10,14 @@ import {
     faGlobe,
     faExpand,
     faCompress,
+    faUserCircle,
+    faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import "./Header.css";
 import BredCrumbs from "./BredCrumbs";
+import { useDispatch } from "react-redux";
+import { useAuthLogoutMutation } from "@/store/slice/auth";
+import { clearUserData } from "@/store/slice/userInfo";
 
 interface HeaderProps<T = any> {
     toggleSidebar?: () => void;
@@ -20,7 +25,23 @@ interface HeaderProps<T = any> {
     isToggle: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
+const AppHeader: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
+
+    const dispatch = useDispatch();
+    const [authLogout] = useAuthLogoutMutation();
+
+    const handleLogout = async () => {
+        try {
+            await authLogout().unwrap(); // call logout API
+        } catch (err) {
+            console.error("Logout failed", err);
+        } finally {
+            dispatch(clearUserData()); // clear Redux user/menu
+            localStorage.clear(); // clear persisted storage
+            sessionStorage.clear();
+            window.location.href = "/apps/login"; // redirect to login
+        }
+    };
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [language, setLanguage] = useState("en");
@@ -38,7 +59,6 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
     const handleNotificationClick = async () => {
         try {
             if (document.fullscreenElement) {
-                // If already in fullscreen, exit fullscreen
                 await document.exitFullscreen();
                 setIsFullscreen(false);
             } else {
@@ -83,24 +103,21 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
             <div className="d-flex align-items-center">
                 <button className="sidebar-toggle btn btn-light me-2" onClick={() => setIsToggle(!isToggle)}>
                     <FontAwesomeIcon icon={faBars} size="lg" />
-                </button>
-                {/* <div className="breadcrumbs d-flex align-items-center ms-1">
-                    <span className="breadcrumb-item">Dashboard | Scdhool Details</span>
-                </div> */}
-                <BredCrumbs /> 
+                </button> 
+                <BredCrumbs />
             </div>
 
             {/* Right Section: Notifications, Theme, Language, and Profile */}
             <div className="d-flex align-items-center">
-                <div className="notification-icon me-3"   style={{ cursor: "pointer" }}>
-                    <FontAwesomeIcon icon={faBell} size="lg" className="text-success" /> 
+                <div className="notification-icon me-3" style={{ cursor: "pointer" }}>
+                    <FontAwesomeIcon icon={faBell} size="lg" className="text-success" />
                 </div>
 
                 <div className="theme-toggle me-3" onClick={toggleTheme}>
-                    <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} size="lg" className="text-primary"  />
+                    <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} size="lg" className="text-primary" />
                 </div>
-                <div className="notification me-3" onClick={handleNotificationClick} style={{ cursor: "pointer" }}> 
-                <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} size="lg" className="text-primary"  />
+                <div className="notification me-3" onClick={handleNotificationClick} style={{ cursor: "pointer" }}>
+                    <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} size="lg" className="text-primary" />
                 </div>
 
                 <Dropdown align="end" className="me-3">
@@ -118,9 +135,16 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
                         <FontAwesomeIcon icon={faUser} size="lg" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item onClick={handleProfileClick}>Profile</Dropdown.Item>
-                        <Dropdown.Item onClick={() => console.log("Logout clicked")}>Logout</Dropdown.Item>
+                        <Dropdown.Item onClick={handleProfileClick}>
+                            <FontAwesomeIcon icon={faUserCircle} className="me-2 text-primary" />
+                            Profile
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={handleLogout}>
+                            <FontAwesomeIcon icon={faRightFromBracket} className="me-2 text-danger" />
+                            Logout
+                        </Dropdown.Item>
                     </Dropdown.Menu>
+
                 </Dropdown>
             </div>
 
@@ -142,4 +166,4 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
     );
 };
 
-export default Header;
+export default AppHeader;

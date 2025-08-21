@@ -8,7 +8,7 @@ import InputFormField from "@/components/Form/InputFormField";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
 import { useSaveRoleMutation } from "@/store/slice/role";
 
-interface SchoolFormData {
+interface FormRecordItem {
     mst_role_id?: number;
     role_name: string;
     role_description: string;
@@ -16,14 +16,16 @@ interface SchoolFormData {
 }
 
 type SchoolFormErrors = {
-    [K in keyof SchoolFormData]?: string;
+    [K in keyof FormRecordItem]?: string;
 };
 
 interface AddEditFormProps {
     open: boolean;
     onClose: () => void;
-    initialData?: SchoolFormData;
+    initialData?: FormRecordItem;
     onSuccess: () => void;
+    isEdit: boolean;
+    setIsEditForm?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface FieldConfig {
@@ -33,7 +35,7 @@ interface FieldConfig {
     maxLength?: number;
 }
 
-const fieldConfigs: Record<keyof SchoolFormData, FieldConfig> = {
+const fieldConfigs: Record<keyof FormRecordItem, FieldConfig> = {
     mst_role_id: { required: false, label: "ID" },
     role_name: { required: true, minLength: 3, maxLength: 50, label: "Role Name" },
     role_description: { required: false, label: "Description" },
@@ -44,7 +46,7 @@ const validationRules: ValidationRules = Object.keys(fieldConfigs).reduce(
     (rules, key) => {
         const config = fieldConfigs[key as keyof typeof fieldConfigs];
         if (config.required) {
-            rules[key as keyof SchoolFormData] = {
+            rules[key as keyof FormRecordItem] = {
                 required: true,
                 ...(config.minLength ? { minLength: config.minLength } : {}),
                 ...(config.maxLength ? { maxLength: config.maxLength } : {}),
@@ -55,14 +57,16 @@ const validationRules: ValidationRules = Object.keys(fieldConfigs).reduce(
     {} as ValidationRules
 );
 
-const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, onSuccess }) => {
-    const defaultForm: SchoolFormData = initialData || {
-        role_name: "",
+const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, onSuccess,isEdit,setIsEditForm }) => {
+    
+   const initialKey: FormRecordItem = {
+         role_name: "",
         role_description: "",
         isActive: "Y",
     };
 
-    const [formData, setFormData] = useState<SchoolFormData>(defaultForm);
+    const formBody: FormRecordItem = initialData || initialKey;
+    const [formData, setFormData] = useState<FormRecordItem>(formBody);
     const [errors, setErrors] = useState<SchoolFormErrors>({});
 
     const [saveRole, { isLoading: isLoading }] = useSaveRoleMutation();
@@ -80,7 +84,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, o
     };
 
     const resetForm = () => {
-        setFormData(defaultForm);
+        setFormData(formBody);
         setErrors({});
     };
     const timeoutRef = useRef<number | null>(null);
@@ -133,6 +137,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, o
             show={open}
             onClose={() => {
                 resetForm();
+                setIsEditForm(false)
                 onClose();
             }}
             title={formData.mst_role_id ? "Edit Role Details" : "Add Role Details"}
@@ -162,6 +167,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, o
                 col="col-md-6"
             />
 
+           {isEdit && 
             <InputSelectField
                 name="isActive"
                 label={fieldConfigs.isActive.label}
@@ -171,7 +177,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, o
                 isEdit={true}
                 error={errors.isActive}
                 required={fieldConfigs.isActive.required}
-            />
+            />}
         </SliderForm>
     );
 };

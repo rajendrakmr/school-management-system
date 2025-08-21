@@ -207,3 +207,14 @@ export const getBadgeProps = (status: string): BadgeProps => {
   }
 };
 
+export const getDefault = (status: string): BadgeProps => {
+  switch (status) {
+    case "Y":
+      return { text: "Yes", color: "bg-primary" };
+    case "N":
+      return { text: "No", color: "bg-danger" }; 
+    default:
+      return { text: "Unknown", color: "bg-secondary" };
+  }
+};
+

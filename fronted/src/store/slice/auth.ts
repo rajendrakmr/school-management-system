@@ -10,7 +10,15 @@ export const AuthType = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["AuthType"],  
         }),
+
+        // 👇 new logout endpoint
+        authLogout: builder.mutation<void, void>({
+            query: () => ({
+                url: "/auth/logout",
+                method: "POST",
+            }),
+        }),
     }),
 });
 
-export const { useAuthLoginMutation } = AuthType;
+export const { useAuthLoginMutation, useAuthLogoutMutation } = AuthType;

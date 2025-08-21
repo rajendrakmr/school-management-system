@@ -141,7 +141,7 @@ const Index: React.FC = () => {
         {/* Add/Edit Form */}
         <AddEditForm
           open={openForm}
-          onClose={() => setOpenForm(false)}
+          onClose={() => setOpenForm(false) }
           initialData={formData}
           isEdit={isEdidForm}
           onSuccess={refetch}

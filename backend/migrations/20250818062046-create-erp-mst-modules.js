@@ -12,9 +12,13 @@ module.exports = {
         type: Sequelize.STRING(50),
         allowNull: false,
         unique: true,
+      }, 
+      font_icon: {
+        type: Sequelize.STRING(50),
+        allowNull: true,
       },
-      description: {
-        type: Sequelize.STRING(250),
+      order_no: {
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       has_child: {

@@ -11,10 +11,7 @@ const Module = sequelize.define('Module', {
         type: DataTypes.STRING(50),
         allowNull: false
     },
-    description: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
+   
     has_child: {
         type: DataTypes.ENUM('Y', 'N'),
         defaultValue: 'Y'

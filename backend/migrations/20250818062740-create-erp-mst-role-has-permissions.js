@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -20,6 +20,31 @@ module.exports = {
           key: "mst_permission_id",
         },
         onDelete: "CASCADE",
+      },
+      can_view: {
+        type: Sequelize.ENUM('Y','N'),
+        defaultValue: 'N',
+        allowNull: false,
+      },
+      can_create: {
+        type: Sequelize.ENUM('Y','N'),
+        defaultValue: 'N',
+        allowNull: false,
+      },
+      can_update: {
+        type: Sequelize.ENUM('Y','N'),
+        defaultValue: 'N',
+        allowNull: false,
+      },
+      can_delete: {
+        type: Sequelize.ENUM('Y','N'),
+        defaultValue: 'N',
+        allowNull: false,
+      },
+      can_edit: {
+        type: Sequelize.ENUM('Y','N'),
+        defaultValue: 'N',
+        allowNull: false,
       },
       created_at: {
         type: Sequelize.DATE,

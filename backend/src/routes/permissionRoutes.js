@@ -4,10 +4,10 @@ const permissionController = require('../controllers/accessPermission/permission
 const moduleController = require('../controllers/moduleController');
 // Validation middleware
 const { validatePermission } = permissionController;
-
+router.get('/lists', moduleController.permissionLists);
 // Routes for permissions
-router.get('/nav', moduleController.getMenuNav); 
-router.get('/menu', moduleController.getAllPermissionsTree); 
+router.get('/nav', moduleController.getMenuNav);
+router.get('/menu', moduleController.getAllPermissionsTree);
 router.get('/', permissionController.getAllPermissions);          // Get all permissions
 router.post('/', validatePermission, permissionController.createPermission);  // Create new permission
 router.put('/:id', validatePermission, permissionController.updatePermission); // Update permission

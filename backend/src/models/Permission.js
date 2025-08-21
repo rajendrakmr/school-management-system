@@ -12,10 +12,10 @@ const Permission = sequelize.define('Permission', {
     type: DataTypes.STRING(50),
     allowNull: false, 
   },
-  permission_description: {
-    type: DataTypes.STRING(255),
-    allowNull: true
-  },
+  // permission_description: {
+  //   type: DataTypes.STRING(255),
+  //   allowNull: true
+  // },
   path_url: {
     type: DataTypes.STRING(30),
     allowNull: true, 

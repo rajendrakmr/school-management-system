@@ -1,20 +1,22 @@
 import RowFormInputField from "@/components/Form/RowFormInputField";
-import { useAuthLoginMutation } from "@/store/slice/AuthType";
+import { useAuthLoginMutation } from "@/store/slice/auth";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUserData } from "@/store/slice/userInfo";
 
 const AuthLogin: React.FC = () => {
     const navigate = useNavigate();
     const [authLogin, { isLoading: isSubmitting }] = useAuthLoginMutation();
-    const [formData, setFormData] = useState({ password: "password123", email: "root@gmail.com" });
+    const [formData, setFormData] = useState({ password: "password123", email: "admin@admin.com" });
     const [errors, setErrors] = useState<{ password?: string; email?: string; apiError?: string }>({});
 
     const validationRules: ValidationRules = {
         password: { required: true, minLength: 2, maxLength: 20 },
     };
-
+    const dispatch = useDispatch()
     const timeoutRef = useRef<number | null>(null);
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,7 +30,12 @@ const AuthLogin: React.FC = () => {
 
         try {
             const response = await authLogin({ email: formData.email, password: formData.password }).unwrap();
-            if (response?.token) {
+
+            if (response?.user) {
+                dispatch(setUserData({
+                    user: response.user,
+                    menu: response.menu,
+                }));
                 toast.success("Login successful!", { position: "top-left", autoClose: 3000 });
                 timeoutRef.current = window.setTimeout(() => {
                     navigate("/");

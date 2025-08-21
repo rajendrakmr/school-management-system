@@ -1,0 +1,29 @@
+.toggle-switch {
+  width: 50px;
+  height: 25px;
+  background: linear-gradient(145deg, #e0e0e0, #ffffff);
+  border-radius: 25px;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1),
+              2px 2px 5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.switch-handle {
+  width: 23px;
+  height: 23px;
+  background: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  transition: all 0.3s;
+}
+
+.switch-handle.checked {
+  left: 26px;
+  background: #4ade80; /* green when ON */
+  box-shadow: 0 2px 8px rgba(0,128,0,0.4);
+}

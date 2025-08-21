@@ -104,7 +104,7 @@ thead > tr >th{
   height: 100vh;
   width: 280px;
   overflow-y: auto;
-  background-color: #f7f7f7;
+  background-color: #a8a9ab;
   padding-right: calc(var(--bs-gutter-x)* 0);
   padding-left: calc(var(--bs-gutter-x)* 0);
 }
@@ -132,7 +132,7 @@ thead > tr >th{
   /* padding: 15px 0; */
   text-align: center;
   z-index: 1000;
-  background-color: #00359e;
+  background-color: #a8a9ab;
   display: flex;
   justify-content: center;
   /* Center the logo horizontally */
@@ -188,7 +188,7 @@ thead > tr >th{
   width: calc(100% - 280px);
   flex-grow: 1;
   transition: all .3s linear;
-  background-color: #f1efeb;
+  background-color: #fff;
 }
 
 .rkToogleContent {
@@ -441,7 +441,7 @@ thead > tr >th{
 .rk_sidebar {
   scrollbar-width: thin;
   /* Make scrollbar thinner in Firefox */
-  scrollbar-color: #888 #40409a;
+  scrollbar-color: #888 #a8a9ab;
   /* Handle and track colors */
 }
 
@@ -465,9 +465,9 @@ thead > tr >th{
 
 .parent-route {
   font-size: 14px;
-  border: none !important;
+  /* border: none !important; */
   border-top: 1px solid rgb(87, 87, 87);
-  background-color: #efefef !important;
+  background-color: #ffffff6e !important;
 
   color: #ffffff !important;
 }
@@ -589,13 +589,14 @@ thead > tr >th{
 }
 
 .childActive {
-  background-color: #00359e !important;
+  background-color: #ffffff6e !important;
   color: #ffffff;
+  color: black;
 }
 
 .isParentActive {
-  background-color: #00359e !important;
-  color: #ffffff;
+  background-color: #3d25f2 !important;
+  color: #4635c5;
 }
 
 .child-route:hover .c-cl-w {
@@ -755,7 +756,7 @@ thead > tr >th{
 .active-blinking-dot {
   width: 10px;
   height: 10px;
-  background-color: #36ff58;
+  background-color: #3d25f2;
   border-radius: 50%;
   /* margin-right: 8px; */
   animation: blink-animation 1s infinite;
@@ -777,9 +778,16 @@ thead > tr >th{
 }
 
 .activeColor {
-  color: #ffffff !important;
+  color: #e8feff !important;
 }
-
+.childActiveColor{
+  color: #080925;
+  font-weight: bold;
+}
+.accordion {
+  --bs-accordion-border-radius: 0px !important; /* or your value */
+  --bs-accordion-inner-border-radius: 0px !important;
+}
 body.dark-mode {
   background-color: #2b2b2b;
   color: #ffffff;
