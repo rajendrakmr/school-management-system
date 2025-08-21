@@ -63,7 +63,9 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, o
         role_name: "",
         role_description: "",
         is_active: "Y",
-    }; 
+    };
+
+    console.log('initialDatainitialDatainitialData',initialData)
     const formBody: FormRecordItem = initialData || initialKey;
     const [formData, setFormData] = useState<FormRecordItem>(formBody);
     const [errors, setErrors] = useState<SchoolFormErrors>({});
@@ -142,8 +144,8 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, o
             }}
             title={formData.mst_role_id ? "Edit Role Details" : "Add Role Details"}
             errors={errors}
-            onChange={handleChange}
             onSubmit={handleFormSubmit}
+            onChange={handleChange}
             isSubmitting={isLoading}
         >
             <InputFormField

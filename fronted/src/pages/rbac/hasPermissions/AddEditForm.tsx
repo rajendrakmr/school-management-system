@@ -84,9 +84,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
     });
 
     const [saveRoleHasPermission, { isLoading }] = useSaveRoleHasPermissionMutation();
-
-    // ------------------- Effects -------------------
-    // Set form data on initialData change
+ 
     useEffect(() => {
         if (initialData) setFormData(initialData);
     }, [initialData]);

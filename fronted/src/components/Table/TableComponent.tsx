@@ -16,9 +16,9 @@ interface TableComponentProps<T extends Record<string, any> = any> {
   setIsEditForm: React.Dispatch<React.SetStateAction<boolean>>;
   setFormData: React.Dispatch<React.SetStateAction<T>>;
   setOpenSliderForm: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedItems: React.Dispatch<React.SetStateAction<T[]>>;
-  setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
-  selectedIds: string[];
+  setSelectedItems?: React.Dispatch<React.SetStateAction<T[]>>;
+  setSelectedIds?: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedIds?: string[];
   rowIdKey?: string;
 }
 
@@ -36,7 +36,7 @@ const TableComponent = <T extends Record<string, any>>({
 }: TableComponentProps<T>) => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const selectAllRef = useRef<HTMLInputElement>(null);
-
+  console.log('isFetchingisFetchingisFetchingisFetchingisFetching',data)
   /** ✅ Only active columns */
   const activeColumns = allColumns
     .filter((col) => col.is_active)
@@ -168,9 +168,7 @@ const TableComponent = <T extends Record<string, any>>({
                   />
                 </td>
                 {activeColumns.map((col) => {
-                  const cellValue = item[col.column_key];
-
-                  // If the value is an array, render as badges
+                  const cellValue = item[col.column_key]; 
                   if (Array.isArray(cellValue)) {
                     return (
                       <td key={col.id} className="p-2">

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const settingController = require('../controllers/settingController');
-const verifyToken = require('../middlewares/authMiddleware');
+const settingController = require('../controllers/settingController'); 
 
-router.get('/',verifyToken, settingController.getColumn); 
-router.post('/',verifyToken, settingController.updateColumn); 
-// router.put('/:type', settingController.updateColumn); 
-router.delete('/:id',verifyToken, settingController.deleteColumn); 
+router.get('/', settingController.gets); 
+router.get('/list', settingController.lists); 
+router.post('/update', settingController.saveUpdateRecord);
+router.post('/', settingController.update);    
+// router.delete('/:id', settingController.delete); 
 module.exports = router;

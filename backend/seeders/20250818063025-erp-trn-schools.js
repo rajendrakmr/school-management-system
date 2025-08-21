@@ -8,7 +8,7 @@ module.exports = {
 
     try {
       // 1️⃣ Insert school
-      const [school] = await queryInterface.bulkInsert(
+      await queryInterface.bulkInsert(
         'erp_trn_schools',
         [
           {
@@ -18,7 +18,7 @@ module.exports = {
             state: 'Maharashtra',
             established_year: 1995,
             type: 'Public',
-            image_path: null,
+            image_path: "/logos/logo.png",
             is_active: 'Y',
             created_by: 1,
             updated_by: 1,
@@ -26,12 +26,18 @@ module.exports = {
             updated_at: new Date()
           }
         ],
-        { returning: true, transaction: t }
+        { transaction: t }
+      );
+
+      // Get school row back
+      const [school] = await queryInterface.sequelize.query(
+        `SELECT * FROM erp_trn_schools WHERE school_code = 'SPS001' LIMIT 1`,
+        { type: Sequelize.QueryTypes.SELECT, transaction: t }
       );
 
       // 2️⃣ Create user for the school
       const passwordHash = await bcrypt.hash('password123', 10);
-      const [user] = await queryInterface.bulkInsert(
+      await queryInterface.bulkInsert(
         'erp_trn_users',
         [
           {
@@ -45,12 +51,18 @@ module.exports = {
             updated_at: new Date()
           }
         ],
-        { returning: true, transaction: t }
+        { transaction: t }
       );
 
-      // 3️⃣ Assign role (assuming School Admin role exists with id=4, change as per your roles table)
+      // Get user row back
+      const [user] = await queryInterface.sequelize.query(
+        `SELECT * FROM erp_trn_users WHERE email = 'sps@gmail.com' LIMIT 1`,
+        { type: Sequelize.QueryTypes.SELECT, transaction: t }
+      );
+
+      // 3️⃣ Assign role (assuming School Admin role exists with id=4)
       await queryInterface.bulkInsert(
-        'erp_mst_user_has_roles',
+        'erp_trn_user_has_roles',
         [
           {
             trn_user_id: user.trn_user_id,
@@ -69,8 +81,8 @@ module.exports = {
     }
   },
 
-  async down(queryInterface, Sequelize) { 
-    await queryInterface.bulkDelete('erp_mst_user_has_roles', { trn_user_id: 1 }, {});
+  async down(queryInterface, Sequelize) {
+    await queryInterface.bulkDelete('erp_trn_user_has_roles', {}, {});
     await queryInterface.bulkDelete('erp_trn_users', { email: 'sps@gmail.com' }, {});
     await queryInterface.bulkDelete('erp_trn_schools', { school_code: 'SPS001' }, {});
   }

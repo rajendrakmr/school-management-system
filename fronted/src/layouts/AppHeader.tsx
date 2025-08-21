@@ -96,7 +96,25 @@ const AppHeader: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
         localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     }, [isDarkMode]);
 
-
+  const [currentTime, setCurrentTime] = useState<string>(""); 
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date();
+            const formatted = now.toLocaleString("en-IN", {
+                weekday: "long", // Monday
+                year: "numeric",
+                month: "long", // January
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            });
+            setCurrentTime(formatted);
+        }; 
+        updateTime(); // first run
+        const interval = setInterval(updateTime, 1000); 
+        return () => clearInterval(interval);
+    }, []);
     return (
         <div className={`header-container d-flex justify-content-between align-items-center p-3 sticky-header ${isToggle ? "headerToggleContainer" : ""}`}>
             {/* Left Section: Sidebar Toggle + Breadcrumbs */}
@@ -109,6 +127,9 @@ const AppHeader: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
 
             {/* Right Section: Notifications, Theme, Language, and Profile */}
             <div className="d-flex align-items-center">
+                <div className="text-dark me-3" style={{ cursor: "pointer" }}>
+                    <strong>{currentTime}</strong>
+                </div>
                 <div className="notification-icon me-3" style={{ cursor: "pointer" }}>
                     <FontAwesomeIcon icon={faBell} size="lg" className="text-success" />
                 </div>

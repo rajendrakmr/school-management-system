@@ -1,13 +1,68 @@
 const { Op } = require('sequelize');
 const TableColumn = require('../models/TableColumn');
 
-exports.getColumn = async (req, res) => {
+
+// exports.gets = async (req, res) => {
+//   try {
+//     // fetch data
+//     res.json({ success: true, data: [] });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+// const { Op } = require("sequelize");
+// const TableColumn = require("../models/TableColumn");
+exports.lists = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+        let columns = await TableColumn.findAll({
+            where: {
+                column_key: { [Op.ne]: "page_size" },
+                is_default: 1,
+            },
+            order: [["column_order", "ASC"]],
+            attributes: ["id", "key_type", "column_key", "column_label", "column_order", "is_active"],
+        });
+        const grouped = {};
+        columns.forEach((col) => {
+            if (!grouped[col.key_type]) {
+                grouped[col.key_type] = [];
+            }
+            grouped[col.key_type].push(col);
+        });
+
+        // unique pages
+        const pages = Object.keys(grouped);
+        const total = pages.length;
+        const totalPages = Math.ceil(total / limit);
+
+        // paginate by group
+        const pagedPages = pages.slice(offset, offset + limit);
+
+        const groupedColumns = pagedPages.map((page) => ({
+            page,
+            columns: grouped[page],
+        }));
+
+        res.json({
+            page,
+            limit,
+            total,
+            totalPages,
+            items: groupedColumns,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.gets = async (req, res) => {
     try {
         const type = req.query.type;
         const user_id = req.query.user_id ? parseInt(req.query.user_id) : null;
-        console.log(' req.query', req.query);
-
-        // Pehle user-specific columns fetch karo
         let columns = [];
         if (user_id) {
             columns = await TableColumn.findAll({
@@ -20,8 +75,6 @@ exports.getColumn = async (req, res) => {
                 attributes: ['id', 'column_key', 'column_label', 'column_order', 'is_active'],
             });
         }
-
-        // Agar user-specific columns nahi mile, to default fetch karo
         if (!columns || columns.length === 0) {
             columns = await TableColumn.findAll({
                 where: {
@@ -34,7 +87,6 @@ exports.getColumn = async (req, res) => {
             });
         }
 
-        // is_active ko boolean me convert karo
         columns = columns.map(col => ({
             ...col.toJSON(),
             is_active: col.is_active === 'Y' || col.is_active === true
@@ -69,8 +121,81 @@ exports.getColumn = async (req, res) => {
 
 
 
+// PUT: update multiple columns
+exports.saveUpdateRecord = async (req, res) => {
+    try {
+        const selectedColumns = req.body;
+
+        if (!selectedColumns || !Array.isArray(selectedColumns)) {
+            return res.status(400).json({ error: "selectedColumns array is required." });
+        } 
+        for (const col of selectedColumns) {
+            const { column_key, column_label,key_type, column_order, is_active, page_size } = col;
+            const pageSize = page_size?page_size:10;
+            let column = await TableColumn.findOne({ where: { key_type, column_key, is_default: 1 } });
+            if (!column) {
+                column = await TableColumn.create({
+                    key_type,
+                    column_key,
+                    column_label,
+                    column_order,
+                    user_id: null,
+                    is_default: 1,
+                    page_size:pageSize,
+                    is_active
+                });
+            } else {
+                await TableColumn.update(
+                    {
+                        key_type,
+                        column_label,
+                        column_order,
+                        user_id: null,
+                        is_default: 1,
+                        page_size:pageSize,
+                        is_active
+                    },
+                    {
+                        where: {
+                            is_default: 1,
+                            key_type,
+                            column_key,
+                        }
+                    }
+                );
+
+                await TableColumn.update(
+                    {
+                        key_type,
+                        column_label,
+                        column_order,
+                        user_id: null,
+                        is_default: 1,
+                        page_size:pageSize,
+                        is_active
+                    },
+                    {
+                        where: {
+                            is_default: 0,
+                            key_type,
+                            column_key,
+                        }
+                    }
+                ); 
+            } 
+        } 
+        res.json({ message: "Columns updated successfully." });
+    } catch (err) { 
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+
+
+
 // POST: create new column
-exports.createColumn = async (req, res) => {
+exports.create = async (req, res) => {
     try {
         const { key_type, column_key, column_label, column_order, is_active } = req.body;
         const newColumn = await TableColumn.create({
@@ -87,7 +212,7 @@ exports.createColumn = async (req, res) => {
     }
 };
 // PUT: update multiple columns
-exports.updateColumn = async (req, res) => {
+exports.update = async (req, res) => {
     try {
         const { selectedColumns, user_id, type = "roles", page_size } = req.body; // key_type optional, default 'roles'
 
@@ -154,16 +279,16 @@ exports.updateColumn = async (req, res) => {
 
 
 
-// DELETE: remove column
-exports.deleteColumn = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const column = await TableColumn.findByPk(id);
-        if (!column) return res.status(404).json({ error: 'Column not found' });
+// // DELETE: remove column
+// exports.delete = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const column = await TableColumn.findByPk(id);
+//         if (!column) return res.status(404).json({ error: 'Column not found' });
 
-        await column.destroy();
-        res.json({ message: 'Column deleted' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
+//         await column.destroy();
+//         res.json({ message: 'Column deleted' });
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// };

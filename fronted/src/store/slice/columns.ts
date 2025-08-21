@@ -13,10 +13,28 @@ export const columnApi = apiSlice.injectEndpoints({
             providesTags: ["Column"],
         }),
 
+        getColumnList: builder.query<any, { page?: number; limit?: number,filter?:string }>({
+            query: ({ page = 1, limit = 10,filter }) => {
+                let url = `/columns/list?page=${page}&limit=${limit}`;
+                return url;
+            },
+            providesTags: ["Column"],
+        }),
+
+
         // Save or update a role (if mst_role_id exists, update; else create)
         updateColumn: builder.mutation<any, any>({
             query: (formData) => ({
                 url: '/columns',
+                method: "POST",
+                body: formData,
+            }),
+            invalidatesTags: ["Column"],
+        }),
+
+        saveColumn: builder.mutation<any, any>({
+            query: (formData) => ({
+                url: '/columns/update',
                 method: "POST",
                 body: formData,
             }),
@@ -35,7 +53,9 @@ export const columnApi = apiSlice.injectEndpoints({
 });
 
 export const {
-    useGetColumnsQuery,      // Columns ke liye
+    useGetColumnsQuery,
+    useGetColumnListQuery,       // Columns ke liye
     useUpdateColumnMutation,     // Role create/update ke liye
-    useDeleteRoleMutation,   // Role delete ke liye
+    useDeleteRoleMutation, 
+    useSaveColumnMutation   
 } = columnApi;

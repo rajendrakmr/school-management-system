@@ -1,4 +1,5 @@
 'use strict';
+const { Op } = require("sequelize");
 
 const menuJson = [
   {
@@ -49,6 +50,24 @@ const menuJson = [
     ]
   }
 ];
+
+/**
+ * Utility function to get permissions
+ */
+function getAllPermissions(menuNames) {
+  let menusToCheck;
+  if (menuNames.includes("*")) {
+    menusToCheck = menuJson; // all menus
+  } else {
+    menusToCheck = menuJson.filter(m => menuNames.includes(m.name));
+  }
+
+  return menusToCheck.flatMap(menu =>
+    menu.has_child === "Y"
+      ? menu.children.map(c => c.name)
+      : [menu.name]
+  );
+}
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -119,9 +138,8 @@ module.exports = {
 
     // Example role assignments:
     const rolePermissions = [
-      { mst_role_id: 1, permissionNames: permissions.map(p => p.permission_name) }, // Super Admin: all permissions
-      // { mst_role_id: 2, permissionNames: ['Dashboard', 'Roles', 'Role Permissions'] }, // Admin: limited
-      // { mst_role_id: 3, permissionNames: ['Permissions', 'Access Policies'] }, // Developer: editing access
+      { mst_role_id: 1, permissionNames: getAllPermissions(["*"]) }, // Super Admin: all permissions
+      { mst_role_id: 4, permissionNames: getAllPermissions(["Academics"]) }, // Admin: limited
     ];
 
     const timestampedRolePermissions = [];
@@ -130,7 +148,6 @@ module.exports = {
         if (permMap[name]) {
           timestampedRolePermissions.push({
             mst_role_id: rp.mst_role_id,
-            mst_permission_id: permMap[name],
             mst_permission_id: permMap[name],
             can_view: "Y",
             can_edit: "Y",
@@ -162,10 +179,14 @@ module.exports = {
       }
     });
 
-    await queryInterface.bulkDelete('erp_mst_permissions', { permission_name: permissionNames }, {});
+    await queryInterface.bulkDelete('erp_mst_permissions', {
+      permission_name: { [Op.in]: permissionNames }
+    }, {});
 
     // Step 3: Delete modules
     const moduleNames = menuJson.map(menu => menu.name);
-    await queryInterface.bulkDelete('erp_mst_modules', { module_name: moduleNames }, {});
+    await queryInterface.bulkDelete('erp_mst_modules', {
+      module_name: { [Op.in]: moduleNames }
+    }, {});
   }
 };

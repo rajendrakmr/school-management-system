@@ -10,31 +10,29 @@ import { Column } from "@/utils/helper";
 import AddEditForm from "./AddEditForm";
 import { useGetColumnsQuery } from "@/store/slice/columns";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
+import { RootState } from "@/store";
 
 const Index: React.FC = () => {
   const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(setBreadcrumbs(["Role Access Control"]));
   }, [dispatch]);
-  const { data: referenceRecord, isFetching: isRefFetching } = useGetColumnsQuery(
-    { type: "rolehas", user_id: 1 },
-    { refetchOnMountOrArgChange: true }
-  );
-
+  const usersInfo = useSelector((state: RootState) => state.user.user || {});
+  const { data: referenceRecord } = useGetColumnsQuery({ type: "rolehas", user_id: usersInfo?.trn_user_id }, { refetchOnMountOrArgChange: true });
   const allColumns: Column[] = referenceRecord?.columns || [];
+
   const [itemsPerPage, setItemsPerPage] = useState<number | undefined>(undefined);
+
   useEffect(() => {
     if (referenceRecord?.page_size) {
       setItemsPerPage(referenceRecord.page_size);
     }
-  }, [referenceRecord]);
+  }, [referenceRecord]); 
 
-  // roles API call tabhi trigger ho jab itemsPerPage set ho
   const { data: dataRecords, isFetching, refetch } = useGetHasPermissionsQuery(
     itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken,
     { refetchOnMountOrArgChange: true }
@@ -122,7 +120,7 @@ const Index: React.FC = () => {
           </AdvancedFilter>
         )}
 
-        {/* Table */}
+       {/* Data table listing */}
         <TableComponent
           setOpenSliderForm={setOpenForm}
           setFormData={setFormData}

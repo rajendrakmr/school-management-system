@@ -565,7 +565,7 @@ thead > tr >th{
 }
 
 .child-route:hover {
-  background-color: #00359e;
+  background-color: #674ecf;
   cursor: pointer;
   color: #ffffff !important;
 }
@@ -595,7 +595,7 @@ thead > tr >th{
 }
 
 .isParentActive {
-  background-color: #3d25f2 !important;
+  background-color: #674ecf !important;
   color: #4635c5;
 }
 
@@ -807,3 +807,7 @@ body.dark-mode {
   color: #ffffff;
   /* Dark mode text color */
 }
+
+
+
+ 

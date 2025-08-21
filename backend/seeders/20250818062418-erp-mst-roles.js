@@ -6,8 +6,8 @@ module.exports = {
       { role_name: "Root User", tag: "root-user", role_description: "Full system access" },
       { role_name: "Admin", tag: "admin", role_description: "Administrator role with full access" },
       { role_name: "Developer", tag: "developer", role_description: "Administrator role with full access" },
-      { role_name: "Viewer", tag: "viewer", role_description: "Read-only access" },
       { role_name: "School Admin", tag: "school-admin", role_description: "Manages school-specific settings and users" },
+      { role_name: "Viewer", tag: "viewer", role_description: "Read-only access" },
     ];
 
     // Check for existing roles to avoid duplicates

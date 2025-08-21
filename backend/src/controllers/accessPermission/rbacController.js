@@ -67,12 +67,11 @@ exports.createRole = async (req, res) => {
         if (existingRole) {
             return res.status(422).json({ errors: { role_name: `${role_name} is already taken.` } });
         }
-        const newRole = await Role.create({ role_name, role_description,tag });
+        const newRole = await Role.create({ role_name, role_description,tag,is_default:"N" });
         res.status(200).json({
             message: `Role "${role_name}" has been successfully created.`,
             role: newRole
-        });
-        // res.status(200).json({ message: 'Role created', role: newRole });
+        }); 
 
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -90,7 +89,7 @@ exports.updateRole = async (req, res) => {
             return res.status(422).json({ errors: formattedErrors });
         }
 
-        const { role_name, role_description, isActive } = req.body;
+        const { role_name, role_description, is_active } = req.body;
         const { id } = req.params;
 
         const role = await Role.findByPk(id);
@@ -101,7 +100,7 @@ exports.updateRole = async (req, res) => {
             const existingRole = await Role.findOne({
                 where: {
                     role_name,
-                    mst_role_id: { [Op.ne]: id }  // Use imported Op
+                    mst_role_id: { [Op.ne]: id }  
                 }
             });
             if (existingRole) {
@@ -109,9 +108,9 @@ exports.updateRole = async (req, res) => {
             }
         }
 
-        role.role_name = role_name || role.role_name;
-        role.role_description = role_description || role.role_description;
-        role.isActive = isActive || role.isActive;
+        role.role_name = role_name 
+        role.role_description = role_description
+        role.isActive = is_active 
 
         await role.save();
 
