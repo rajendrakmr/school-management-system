@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUserData } from "@/store/slice/userInfo";
-
+import Logo from "../../../public/logo2.png";
 const AuthLogin: React.FC = () => {
     const navigate = useNavigate();
     const [authLogin, { isLoading: isSubmitting }] = useAuthLoginMutation();
@@ -71,7 +71,7 @@ const AuthLogin: React.FC = () => {
     return (
         <div className="row min-h-screen flex flex-col md:flex-row bg-[#d7eaeb]">
             {/* Demo login panel */}
-            <div className="col-md-5 p-4 mt-4  md:w-1/3 w-full bg-gradient-to-b from-teal-500 to-teal-700 flex flex-col items-center justify-center p-8">
+            {/* <div className="col-md-5 p-4 mt-4  md:w-1/3 w-full bg-gradient-to-b from-teal-500 to-teal-700 flex flex-col items-center justify-center p-8">
                 <img src="/logo2.png" alt="Logo" className="w-24 h-24 mb-6" />
                 <h2 className="text-white text-2xl font-bold mb-6 text-center">Demo Logins</h2>
                 <div className="flex flex-col gap-3 w-full">
@@ -85,12 +85,20 @@ const AuthLogin: React.FC = () => {
                         <i className="fas fa-wrench mr-2" /> Employee
                     </a>
                 </div>
-            </div>
+            </div> */}
 
             {/* Login form */}
             <div className="col-md-6 shadow-lg p-5 mt-5 md:w-2/3 w-full flex justify-center items-center p-8">
                 <div className="bg-white rounded-3xl shadow-xl p-10 w-full max-w-md">
-                    <h4 className="text-3xl font-bold">Welcome to ERP SaaS School Management System</h4>
+
+                    <h4 className="text-3xl font-bold text-center mb-2">
+                     <img src={Logo} alt="Logo" className="w-24 h-24 mb-6" />  Smart School Management
+                        
+                    </h4>
+                    
+                    <p className="text-gray-600 text-center mb-6">
+                       Powered by ERP SaaS
+                    </p>
                     <form onSubmit={handleFormSubmit} className="space-y-4">
                         <RowFormInputField
                             label="Email"
@@ -117,15 +125,6 @@ const AuthLogin: React.FC = () => {
                             {isSubmitting ? "Logging in..." : "Login"}
                         </button>
                     </form>
-                    {/* <p className="text-center text-gray-500 text-sm mt-4">
-                        Not yet registered?{" "}
-                        <a
-                            href="/register"
-                            className="text-teal-600 font-semibold hover:underline"
-                        >
-                            Register Now
-                        </a>
-                    </p> */}
                 </div>
             </div>
         </div>

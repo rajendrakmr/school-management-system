@@ -57,7 +57,7 @@ const validationRules: ValidationRules = fieldConfigs.reduce((rules, field) => {
     }
     return rules;
 }, {} as ValidationRules);
-const AddEditForm: React.FC<any> = ({ setFormData,open, onClose, onSuccess, initialData }) => {
+const AddEditForm: React.FC<any> = ({ setFormData, open, onClose, onSuccess, initialData }) => {
     const [formValues, setFormValues] = useState<FormRow[]>([]);
     const [errors, setErrors] = useState<FormErrors>({});
 
@@ -101,27 +101,22 @@ const AddEditForm: React.FC<any> = ({ setFormData,open, onClose, onSuccess, init
         // { key: "page_size", label: "Page Size" },         
         { key: "is_active", label: "Visible" },
     ];
-    const resetForm = () => {
-        // setFormData(formValues);
-        setErrors({});
-    };
+
     const timeoutRef = useRef<number | null>(null);
     const [saveColumn, { isLoading: isLoading }] = useSaveColumnMutation();
 
     const handleFormSubmit = async () => {
         try {
-            console.log('formValuesformValues',formValues);
+
             const response = await saveColumn(formValues).unwrap();
-            toast.success(response.message || "Role details saved successfully!", { autoClose: 3000, position: "top-right" });
+            toast.success(response.message || "Data saved successfully!", { autoClose: 3000, position: "top-right" });
             onSuccess();
-            // resetForm();
             timeoutRef.current = window.setTimeout(() => {
                 onClose();
             }, 2000);
 
         } catch (err: any) {
-            console.log('errerrerrerrerrerrerrerrerrerr',err)
-            toast.error(err?.error || "Unable to create  details.", { autoClose: 3000, position: "top-right" }); 
+            toast.error(err?.error || "Unable to create  details.", { autoClose: 3000, position: "top-right" });
         }
     };
     useEffect(() => {
@@ -136,11 +131,9 @@ const AddEditForm: React.FC<any> = ({ setFormData,open, onClose, onSuccess, init
         <SliderForm
             show={open}
             onClose={onClose}
-            title="Add / Edit Columns"
-            // onSubmit={() => { }}
+            title="Add / Edit Columns" 
             onSubmit={handleFormSubmit}
-            isSubmitting={isLoading}
-        // isSubmitting={false}
+            isSubmitting={isLoading} 
         >
             <div className="table-responsive">
                 <table className="table table-bordered align-middle">
