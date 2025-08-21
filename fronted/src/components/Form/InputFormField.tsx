@@ -4,7 +4,7 @@ interface InputFormFieldProps {
   label: string;
   type?: string;
   name?: string;
-  inputValue: string;
+  inputValue: string | number;
   error?: string;
   placeholder?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;

@@ -36,8 +36,7 @@ const TableComponent = <T extends Record<string, any>>({
 }: TableComponentProps<T>) => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const selectAllRef = useRef<HTMLInputElement>(null);
-  console.log('isFetchingisFetchingisFetchingisFetchingisFetching',data)
-  /** ✅ Only active columns */
+   
   const activeColumns = allColumns
     .filter((col) => col.is_active)
     .sort((a, b) => a.column_order - b.column_order);
@@ -132,10 +131,7 @@ const TableComponent = <T extends Record<string, any>>({
                   onChange={handleSelectAll}
                   checked={data.length > 0 && selectedIds.length === data.length}
                   style={{ width: "18px", height: "18px" }}
-                />
-                {/* {selectedIds.length > 0 && <span className="badge bg-primary">
-                  {selectedIds.length}
-                </span>} */}
+                /> 
               </div>
             </th>
 
@@ -227,15 +223,11 @@ const TableComponent = <T extends Record<string, any>>({
 
                   if (col.column_key === "image_path") {
                     return <td key={col.id} className="p-2">{renderImage(cellValue)}</td>;
-                  }
-
-                  // Default: show value as-is
+                  } 
                   return <td key={col.id} className="p-2">{cellValue}</td>;
                 })}
               </tr>
-            ))
-
-
+            )) 
           )}
         </tbody>
       </table>

@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const Role = require('../../models/Role');
 const { body, validationResult } = require('express-validator');
- 
+
 exports.validateRole = [
     body('role_name')
         .notEmpty().withMessage('Role name is required')
@@ -19,7 +19,7 @@ exports.lists = async (req, res) => {
 
         const { rows } = await Role.findAndCountAll({
             attributes: [
-                ['mst_role_id', 'value'],       
+                ['mst_role_id', 'value'],
                 ['role_name', 'label'],
             ],
             order: [['mst_role_id', 'ASC']]
@@ -33,10 +33,23 @@ exports.lists = async (req, res) => {
 
 exports.getAllRoles = async (req, res) => {
     try {
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
-        const { count, rows } = await Role.findAndCountAll({ limit, offset, order: [['mst_role_id', 'ASC']] });
+        let where = {}; 
+        if (req.query.name) { 
+            where.role_name = { [Op.like]: `%${req.query.name}%` };
+        }
+        if (req.query.desc) { 
+            where.role_description = { [Op.like]: `%${req.query.desc}%` };
+        }
+        const { count, rows } = await Role.findAndCountAll({
+            limit,
+            offset,
+            where,
+            order: [['mst_role_id', 'ASC']]
+        });
         const totalPages = Math.ceil(count / limit);
         res.json({
             totalCount: count,
@@ -60,18 +73,18 @@ exports.createRole = async (req, res) => {
             });
             return res.status(422).json({ errors: formattedErrors });
         }
-        
+
         const { role_name, role_description } = req.body;
         const tag = role_name.trim().toLowerCase().replace(/\s+/g, "-");
         const existingRole = await Role.findOne({ where: { role_name } });
         if (existingRole) {
             return res.status(422).json({ errors: { role_name: `${role_name} is already taken.` } });
         }
-        const newRole = await Role.create({ role_name, role_description,tag,is_default:"N" });
+        const newRole = await Role.create({ role_name, role_description, tag, is_default: "N" });
         res.status(200).json({
             message: `Role "${role_name}" has been successfully created.`,
             role: newRole
-        }); 
+        });
 
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -100,7 +113,7 @@ exports.updateRole = async (req, res) => {
             const existingRole = await Role.findOne({
                 where: {
                     role_name,
-                    mst_role_id: { [Op.ne]: id }  
+                    mst_role_id: { [Op.ne]: id }
                 }
             });
             if (existingRole) {
@@ -108,9 +121,9 @@ exports.updateRole = async (req, res) => {
             }
         }
 
-        role.role_name = role_name 
+        role.role_name = role_name
         role.role_description = role_description
-        role.isActive = is_active 
+        role.isActive = is_active
 
         await role.save();
 

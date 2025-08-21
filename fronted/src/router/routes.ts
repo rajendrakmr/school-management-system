@@ -42,6 +42,12 @@ const routes: NavItem[] = [
   { name: 'Dashboard', url: '/subject', id: 'subjects', component: lazy(() => import('@/pages/academic/subjects/Index')), },
   { name: 'Dashboard', url: '/shift', id: 'shifts', component: lazy(() => import('@/pages/academic/shifts/Index')), },
   { name: 'Page Setting', url: '/columns', id: 'column', component: lazy(() => import('@/pages/settings/columns/Index')), },
+  { name: 'Packages', url: '/packages', id: 'packages', component: lazy(() => import('@/pages/settings/packages/Index')), },
+
+
+
+
+
 
   {
     component: lazy(() => import('@/pages/rbac/hasPermissions/Index')),

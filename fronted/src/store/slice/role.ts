@@ -2,16 +2,17 @@ import { apiSlice } from "@/store/apiSlice";
 
 export const roleApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getRoles: builder.query<any, { limit: number; page: number; filter?: string }>({
-            query: ({ limit, page, filter }) => {
-
-                const skip = (page - 1) * limit;
+        getRoles: builder.query<any, { limit: number; page: number; filter?: string; name?: string; desc?: string }>({
+            query: ({ limit, page, filter, name, desc }) => {
                 let url = `/roles?limit=${limit}&page=${page}`;
                 if (filter) url += `&search=${filter}`;
+                if (name) url += `&name=${name}`;
+                if (desc) url += `&desc=${desc}`;
                 return url;
             },
             providesTags: ["Role"],
         }),
+
         saveRole: builder.mutation<any, any>({
             query: (roleData) => {
                 if (roleData.mst_role_id) {

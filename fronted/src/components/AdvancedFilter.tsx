@@ -5,12 +5,16 @@ interface PreferencesProps {
     isOpen: boolean;
     onClose: () => void;
     children?: ReactNode;
+    onSearch?: () => void;
+    onSearching?: boolean
 }
 
 const AdvancedFilter: React.FC<PreferencesProps> = ({
     isOpen,
     onClose,
-    children
+    children,
+    onSearch,
+    onSearching
 }) => {
     ;
 
@@ -21,7 +25,7 @@ const AdvancedFilter: React.FC<PreferencesProps> = ({
     };
 
     return (
-        <> 
+        <>
             <motion.div
                 initial={{ x: 300 }}
                 animate={{ x: isOpen ? 0 : -300 }}
@@ -29,15 +33,29 @@ const AdvancedFilter: React.FC<PreferencesProps> = ({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className={`preferences-panel ${isOpen ? 'visible' : 'hidden'}`}
             >
-                <div className="preferences-content ">
-                    <h5>Advanced Filter</h5>
+                <div className="preferences-content shadow-lg p-2">
+                    <h6>Advanced Filter</h6>
                     <div className="advanced-search-container shadow-lg p-4" style={{
-                        border: "1px solid"
-                    }}> 
+                        border: "1px solid",
+                        borderRadius: "0px"
+                    }}>
                         {children}
                         <div className="preferences-buttons">
-                            <button className="cbtn-sm cbtn-c" onClick={onClose}>Cancel</button>
-                            <button className="cbtn-sm cbtn-s" onClick={handleSave}>Save</button>
+                            <button className="cbtn-sm cbtn-c" onClick={onClose}>Back</button>
+                            <button className="cbtn-sm cbtn-s" onClick={onSearch}>
+                                {onSearching ? (
+                                    <>
+                                        <span
+                                            className="spinner-border spinner-border-sm me-2"
+                                            role="status"
+                                            aria-hidden="true"
+                                        ></span>
+                                        Searching...
+                                    </>
+                                ) : (
+                                    "Search"
+                                )}
+                            </button>
                         </div>
                     </div>
 
