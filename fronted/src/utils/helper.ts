@@ -218,3 +218,15 @@ export const getDefault = (status: string): BadgeProps => {
   }
 };
 
+
+
+export const hasFilledField = (
+  obj: Record<string, any>, 
+  excludeKeys?: string[]
+): boolean => {
+  const excludes = excludeKeys ?? []; // default []
+  return Object.entries(obj).some(([key, val]) => {
+    if (excludes.includes(key)) return false;
+    return val !== null && val !== undefined && String(val).trim() !== "";
+  });
+};

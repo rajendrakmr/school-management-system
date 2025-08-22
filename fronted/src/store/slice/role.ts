@@ -4,6 +4,7 @@ export const roleApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getRoles: builder.query<any, { limit: number; page: number; filter?: string; name?: string; desc?: string }>({
             query: ({ limit, page, filter, name, desc }) => {
+                console.log(name,'name')
                 let url = `/roles?limit=${limit}&page=${page}`;
                 if (filter) url += `&search=${filter}`;
                 if (name) url += `&name=${name}`;

@@ -1,55 +1,51 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { skipToken } from "@reduxjs/toolkit/query";
 import Toolbar from "@/components/Toolbar";
 import TableComponent from "@/components/Table/TableComponent";
 import PageNumber from "@/components/PageNumber";
 import SettingsModal from "@/components/Table/SettingsModal";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import InputFormField from "@/components/InputFormField";
-import { useGetRolesQuery } from "@/store/slice/role";
-import { Column } from "@/utils/helper";
 import AddEditForm from "./AddEditForm";
+import { useGetRolesQuery } from "@/store/slice/role";
 import { useGetColumnsQuery } from "@/store/slice/columns";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { useDispatch, useSelector } from "react-redux";
 import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
 import { RootState } from "@/store";
+import { Column, hasFilledField } from "@/utils/helper";
+import { FilterKey, Operator } from "@/components/SearchWithOperators";
 
 const Index: React.FC = () => {
-  const [filter, setFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const usersInfo = useSelector((state: RootState) => state.user.user || {});
-  useEffect(() => {
-    dispatch(setBreadcrumbs(["Role Details"]));
-  }, [dispatch]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number | undefined>(undefined);
+
+  const [searchParams, setSearchParams] = useState({ limit: 10, page: 1 });
+  const [searchFilter, setSearchFilter] = useState<{ key?: string; operator?: string; value?: string }>({});
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
+  const [editData, setEditData] = useState<any>(null);
+  const [formData, setFormData] = useState<any>(null);
+  const [isEditForm, setIsEditForm] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+
+  // Columns from API
   const { data: referenceRecord } = useGetColumnsQuery(
     { type: "roles", user_id: usersInfo?.trn_user_id },
     { refetchOnMountOrArgChange: true }
   );
-
   const allColumns: Column[] = referenceRecord?.columns || [];
-  const [itemsPerPage, setItemsPerPage] = useState<number | undefined>(undefined);
+
   useEffect(() => {
-    if (referenceRecord?.page_size) {
-      setItemsPerPage(referenceRecord.page_size);
-    }
+    if (referenceRecord?.page_size) setItemsPerPage(referenceRecord.page_size);
   }, [referenceRecord]);
-  const [searchParams, setSearchParams] = useState({
-    limit: itemsPerPage,
-    page: currentPage,
-    name: "",
-    desc: "",
-    status: "Y",
-    filter: ""
-  });
 
-  const { data: dataRecords, isFetching, refetch } = useGetRolesQuery(
-    searchParams,
-    { refetchOnMountOrArgChange: true }
-  );
-
-  // const { data: dataRecords, isFetching, refetch } = useGetRolesQuery(itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken, { refetchOnMountOrArgChange: true }
-  // );
+  // Data fetch
+  const { data: dataRecords, isFetching, refetch } = useGetRolesQuery(searchParams, { refetchOnMountOrArgChange: true });
   const items = dataRecords?.items || [];
   const totalCount = dataRecords?.totalCount || 0;
   const safeItemsPerPage: number = itemsPerPage ?? 10;
@@ -58,35 +54,36 @@ const Index: React.FC = () => {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
+      setSearchParams(prev => ({ ...prev, page: newPage }));
     }
   };
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  const [openForm, setOpenForm] = useState(false);
-  const [editData, setEditData] = useState<any>(null);
-  const [formData, setFormData] = useState<any>(null);
-  const [isEdidForm, setIsEditForm] = useState<any>(false);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  useEffect(() => {
-    setFormData(formData);
-  }, [formData]);
-
-  useEffect(() => {
-    setIsEditForm(isEdidForm);
-  }, [isEdidForm]);
-
-
-  const filterFormData = () => {
-    setSearchParams(prev => ({
-      ...prev,
+  const handleSearch = (key: FilterKey, operator: Operator, value: string) => {
+  // Only trigger if all three are provided
+  console.log('Filter by form',key,operator,value)
+  if (key && operator && value) {
+    // setSearchFilter({ key: key.value, operator: operator.value, value });
+    setSearchParams({
+      limit: safeItemsPerPage,
       page: 1,
-      status: "Y"
-      // name: ''      
-    }));
-    refetch()
+      // key: key.value,
+      // operator: operator.value,
+      // value,
+    });
+    refetch();
+  }
+};
+
+  const onClear = () => {
+    setSearchFilter({});
+    setSearchParams({ limit: safeItemsPerPage, page: 1 });
+    refetch();
   };
+
+  useEffect(() => {
+    dispatch(setBreadcrumbs(["Role Details"]));
+  }, [dispatch]);
+
   return (
     <>
       <SettingsModal
@@ -101,50 +98,55 @@ const Index: React.FC = () => {
       <div className="shadow-lg p-2">
         {/* Toolbar */}
         <Toolbar
+          columns={allColumns}
           title="Roles"
           currentPage={currentPage}
           totalPages={totalPages}
           totalCount={totalCount}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
-          onSearch={(query) => setFilter(query)}
+          onSearch={handleSearch}
           onRefresh={refetch}
-          onAdd={() => {
-            setEditData(null);
-            setOpenForm(true);
-          }}
+          onAdd={() => { setEditData(null); setOpenForm(true); }}
           onPreference={() => setIsSettingsOpen(true)}
           advancedSearch={() => setIsPreferencesOpen(!isPreferencesOpen)}
         />
+
         {selectedIds.length > 0 && (
           <span className="small p-2">
             ✅ {selectedIds.length} selected from this page.
           </span>
         )}
 
-        {/* Advanced Filter */}
         {isPreferencesOpen && (
-          <AdvancedFilter onSearch={filterFormData} onSearching={isFetching} isOpen={isPreferencesOpen} onClose={() => setIsPreferencesOpen(false)}>
+          <AdvancedFilter
+            onClear={onClear}
+            hasFilled={hasFilledField(searchFilter)}
+            onSearch={() => refetch()}
+            onSearching={isFetching}
+            isOpen={isPreferencesOpen}
+            onClose={() => setIsPreferencesOpen(false)}
+          >
             <div className="row">
               <InputFormField
                 label="Role Name"
-                name="searchParams.name"
-                inputValue={searchParams.name}
-                error={""} 
-                onChange={(e) => setSearchParams((prev) => ({ ...prev, name: e.target.value })) }
+                name="name"
+                inputValue={searchFilter.key || ""}
+                error={""}
+                onChange={(e) => setSearchFilter(prev => ({ ...prev, key: e.target.value }))}
               />
               <InputFormField
                 label="Description"
                 name="desc"
-                inputValue={searchParams.desc}
-                error={""} 
-                onChange={(e) => setSearchParams((prev) => ({ ...prev, desc: e.target.value })) }
+                inputValue={searchFilter.value || ""}
+                error={""}
+                onChange={(e) => setSearchFilter(prev => ({ ...prev, value: e.target.value }))}
               />
             </div>
           </AdvancedFilter>
         )}
 
-        {/* Data table listing */}
+        {/* Data table */}
         <TableComponent
           setOpenSliderForm={setOpenForm}
           setFormData={setFormData}
@@ -163,11 +165,10 @@ const Index: React.FC = () => {
           open={openForm}
           onClose={() => setOpenForm(false)}
           initialData={formData}
-          isEdit={isEdidForm}
+          isEdit={isEditForm}
           onSuccess={refetch}
           setIsEditForm={setIsEditForm}
         />
-
 
         {/* Pagination */}
         {totalCount > safeItemsPerPage && (
@@ -175,7 +176,7 @@ const Index: React.FC = () => {
             currentPage={currentPage}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
-            handleFilter={() => { }}
+            handleFilter={() => {}}
             totalCount={totalCount}
           />
         )}

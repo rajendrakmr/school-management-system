@@ -33,6 +33,7 @@ exports.lists = async (req, res) => {
 
 exports.getAllRoles = async (req, res) => {
     try {
+        console.log(req.params)
 
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;

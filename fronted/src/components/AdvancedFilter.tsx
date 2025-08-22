@@ -6,7 +6,9 @@ interface PreferencesProps {
     onClose: () => void;
     children?: ReactNode;
     onSearch?: () => void;
-    onSearching?: boolean
+    onClear?: () => void;
+    onSearching?: boolean;
+    hasFilled?: boolean;
 }
 
 const AdvancedFilter: React.FC<PreferencesProps> = ({
@@ -14,15 +16,10 @@ const AdvancedFilter: React.FC<PreferencesProps> = ({
     onClose,
     children,
     onSearch,
-    onSearching
+    onSearching,
+    onClear,
+    hasFilled
 }) => {
-    ;
-
-    const handleSave = () => {
-        // setItemsPerPage(tempItemsPerPage);
-        // setSelectedColumns(tempSelectedColumns);
-        // onClose();
-    };
 
     return (
         <>
@@ -41,7 +38,23 @@ const AdvancedFilter: React.FC<PreferencesProps> = ({
                     }}>
                         {children}
                         <div className="preferences-buttons">
-                            <button className="cbtn-sm cbtn-c" onClick={onClose}>Back</button>
+                            {
+                                hasFilled && <button style={{backgroundColor:"#e54a4a"}} className="cbtn-sm cbtn-c" onClick={onClear}>
+                                    {onSearching ? (
+                                        <>
+                                            <span
+                                                className="spinner-border spinner-border-sm me-2"
+                                                aria-hidden="true"
+                                            ></span>
+                                            Searching...
+                                        </>
+                                    ) : (
+                                        "Clear"
+                                    )}
+                                </button>
+                            }
+                            {<button className="cbtn-sm cbtn-c" onClick={onClose}>Close</button>}
+                            
                             <button className="cbtn-sm cbtn-s" onClick={onSearch}>
                                 {onSearching ? (
                                     <>
