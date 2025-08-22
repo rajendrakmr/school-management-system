@@ -1,12 +1,19 @@
-// import { configureStore } from "@reduxjs/toolkit";
-import { apiSlice } from "./apiSlice";
-// import breadcrumbApi from "./slice/bredCrumbs";
-
+ 
+import { apiSlice } from "./apiSlice"; 
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./slice/userInfo";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // localStorage
+import userReducer from "./slice/userInfo"; 
+import storage from "redux-persist/lib/storage"; 
 import Breadcrumbs from "./slice/bredCrumbs";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 const persistConfig = {
   key: "root",
   storage,
@@ -22,24 +29,17 @@ export const store = configureStore({
      [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware(
+      {
+      serializableCheck: { 
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }
+    ).concat(apiSlice.middleware),
     // getDefaultMiddleware({ serializableCheck: false }),
 });
 
-export const persistor = persistStore(store);
-
-// Export types for TypeScript
+export const persistor = persistStore(store); 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-// export const store = configureStore({
-//     reducer: {
-//         breadcrumb: breadcrumbApi,
-//         [apiSlice.reducerPath]: apiSlice.reducer,
-//     },
-//     middleware: (getDefaultMiddleware) =>
-//         getDefaultMiddleware().concat(apiSlice.middleware),
-// });
-
-// export type RootState = ReturnType<typeof store.getState>;
-// export type AppDispatch = typeof store.dispatch;
+ 

@@ -6,6 +6,8 @@
 [![Database](https://img.shields.io/badge/Database-MySQL-orange)](https://www.mysql.com/)
 [![Deployed](https://img.shields.io/badge/Deployed-AWS%20EKS-yellowgreen)]()
 
+![school-management-software](assets/school-management-software.jpg) 
+
 This is a **School ERP SaaS Platform** built with **React + TypeScript + Vite**.  
 The system allows multi-school management, subscription-based SaaS packages, and complete ERP modules (Students, Teachers, Fees, Exams, Library, etc.).  
 

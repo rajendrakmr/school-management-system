@@ -1,7 +1,13 @@
 import { createApi, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryMeta } from "@reduxjs/toolkit/query";
 
-const baseUrl = "http://localhost:5000/api/v1";
+// const apiUrl = import.meta.env.REACT_APP_API_URL;
+// const apiUrl = import.meta.env["VITE_API_URL"];
+const apiUrl = process.env.REACT_APP_API_URL;
+
+
+console.log('apiUrlapiUrlapiUrlapiUrlapiUrlapiUrl',apiUrl)
+const baseUrl = apiUrl;
 
 const baseQuery = fetchBaseQuery({
     baseUrl: baseUrl,
