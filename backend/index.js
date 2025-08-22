@@ -23,18 +23,25 @@ sequelize.sync({ alter: true })
   .then(() => {
     console.log('DB Synced');
 
-    // Public routes
-    app.get('/health', (req, res) => res.status(200).send('OK'));
+    app.get('/health', (req, res) => res.status(200).send('OK')); // liveness
+    app.get('/ready', async (req, res) => { // readiness
+      try {
+        await sequelize.authenticate(); // check DB connection
+        res.status(200).send('READY');
+      } catch (err) { 
+        res.status(500).send('NOT READY');
+      }
+    });
     app.get('/api/v1', (req, res) => res.send('Welcome to ERP SaaS School Management backend service...'));
     app.use('/api/v1/auth', require('./src/routes/authRoutes')); // login, register, forgot password
-   app.use('/api/v1/users',verifyToken, require('./src/routes/userRoutes'));
+    app.use('/api/v1/users', verifyToken, require('./src/routes/userRoutes'));
     // Protected routes (all require JWT verification)
     app.use('/api/v1/', verifyToken, require('./src/routes/academicRoutes'));
     app.use('/api/v1/roles', verifyToken, require('./src/routes/rbacRoutes'));
     app.use('/api/v1/columns', verifyToken, require('./src/routes/columnRoutes'));
     app.use('/api/v1/schools', verifyToken, require('./src/routes/schoolRoutes'));
     app.use('/api/v1/permissions', verifyToken, require('./src/routes/permissionRoutes'));
-    app.use('/api/v1/modules', verifyToken, require('./src/routes/moduleRoutes'));  
+    app.use('/api/v1/modules', verifyToken, require('./src/routes/moduleRoutes'));
     app.post("/api/v1/auth/logout", verifyToken, (req, res) => {
       res.clearCookie("authToken", {
         httpOnly: true,

@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1 
+kind: Ingress
+metadata:
+  name: erp-ing 
+  namespace: erp-ns 
+  anotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: erp.hicloud.co.in
+    http:
+      paths:
+      - path: / 
+        pathType: Prefix
+        backend:
+          service:
+            name: erp-fronted-svc
+            port:
+              number: 80
+      - path: /api 
+        pathType: Prefix
+        backend:
+          service:
+            name: erp-backend-svc
+            port:
+              number: 5000
+

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fronted-app-svc
+  namespace: erp-ns
+spec:
+  selector:
+    app: erp-fronted-app
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP 
+    nodePort: 30080
