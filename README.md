@@ -94,8 +94,8 @@ The system allows multi-school management, subscription-based SaaS packages, and
     OpenJDK Runtime Environment (build 21.0.3+11-Debian-2)
     OpenJDK 64-Bit Server VM (build 21.0.3+11-Debian-2, mixed mode, sharing)
 ```
-> [!Note]
-> If java already configured then skip
+ 
+> Install Jenkins
 ```bash
     sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
     https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
