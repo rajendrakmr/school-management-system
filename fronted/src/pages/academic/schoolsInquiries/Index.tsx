@@ -12,6 +12,7 @@ import { useGetColumnsQuery } from "@/store/slice/columns";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useDispatch } from "react-redux";
 import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
+import { FilterKey, Operator } from "@/components/SearchWithOperators";
 
 const Index: React.FC = () => {
   const [filter, setFilter] = useState("");
@@ -89,7 +90,14 @@ const Index: React.FC = () => {
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
+ const handleSearch = (key: FilterKey, operator: Operator, value: string) => {
+    console.log('Filter by form', key, operator, value)
+    if (key && operator && value) {
+    }
+  };
 
+  const onClear = () => {
+  };
   console.log('formData', formData)
   return (
     <>
@@ -110,7 +118,7 @@ const Index: React.FC = () => {
           totalCount={totalCount}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
-          onSearch={(query) => setFilter(query)}
+          onSearch={handleSearch}
           onRefresh={refetch}
           onAdd={() => {
             setEditData(null);

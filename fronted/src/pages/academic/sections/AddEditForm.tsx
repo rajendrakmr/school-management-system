@@ -38,9 +38,7 @@ interface AddEditFormProps {
 const AddEditForm: React.FC<AddEditFormProps> = React.memo(
     ({ open, onClose, initialData, isEdit, onSuccess, pagetitle }) => {
         const usersInfo = useUserInfo();
-        const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
-        const { data: sessionOptions } = useGetSessionListQuery({ refetchOnMountOrArgChange: true });
-
+    
         // ------------------- Field Config -------------------
         const fieldConfigs: Record<keyof FormRecordItem, { label: string; required: boolean; minLength?: number; maxLength?: number }> = {
             trn_school_id: { required: !usersInfo?.trn_school_id, label: "Branch" },
@@ -142,6 +140,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
             };
         }, []);
 
+    const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
+        const { data: sessionOptions } = useGetSessionListQuery(formData?.trn_school_id,{ refetchOnMountOrArgChange: true });
 
 
         return (

@@ -2,8 +2,8 @@ import React, { useState, ReactNode } from "react";
 import { motion } from "framer-motion";
 import "./AdvancedFilter.css"
 interface PreferencesProps {
-    isOpen: boolean;
-    onClose: () => void;
+    isOpen?: boolean;
+    onClose?: () => void;
     children?: ReactNode;
     onSearch?: () => void;
     onClear?: () => void;

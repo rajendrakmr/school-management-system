@@ -14,6 +14,7 @@ import TableComponent from "@/components/Table/TableComponent";
 import { Column } from "@/utils/helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { FilterKey, Operator } from "@/components/SearchWithOperators";
 
 // export interface Column {
 //   column_key: string;
@@ -106,6 +107,15 @@ const Index: React.FC = () => {
     },
     [setFormData]
   );
+
+   const handleSearch = (key: FilterKey, operator: Operator, value: string) => {
+    console.log('Filter by form', key, operator, value)
+    if (key && operator && value) {
+    }
+  };
+
+  const onClear = () => {
+  };
   return (
     <> 
 
@@ -117,7 +127,7 @@ const Index: React.FC = () => {
           totalCount={totalCount}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
-          onSearch={setFilter}
+          onSearch={handleSearch}
           onRefresh={refetch}
           onAdd={() => {
             setEditData(null);
