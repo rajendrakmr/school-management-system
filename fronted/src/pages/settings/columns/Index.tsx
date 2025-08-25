@@ -98,7 +98,7 @@ const Index: React.FC = () => {
   const handleEdit = useCallback(async (item: ColumnConfig) => { 
       try { 
         setOpenForm(true)
-        setFormData(item?.columns); 
+        setFormData(item); 
         setIsEditForm(true);
       } catch (err) {
         console.error("Failed to load form data:", err);

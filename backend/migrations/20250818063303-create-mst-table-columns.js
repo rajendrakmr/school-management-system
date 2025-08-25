@@ -29,6 +29,10 @@ module.exports = {
         type: Sequelize.ENUM("Y", "N"),
         defaultValue: "Y",
       },
+      is_admin_only: {
+        type: Sequelize.ENUM("Y", "N"),
+        defaultValue: "N",
+      },
       page_size: {
         type: Sequelize.INTEGER,
         allowNull: false,

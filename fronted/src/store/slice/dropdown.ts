@@ -26,7 +26,7 @@ export const dropdown = apiSlice.injectEndpoints({
             },
             providesTags: ["Role"],
         }),
-        mediums: builder.query({
+        getMediumList: builder.query({
             query: () => {
                 let url = `/mediums/list`;
                 return url;
@@ -41,18 +41,52 @@ export const dropdown = apiSlice.injectEndpoints({
             },
             providesTags: ["Dropdown"],
         }),
+        getSectionList: builder.query({
+            query: (session_id?: string | number) => {
+                let url = `/sections/list`; 
+                if (session_id) url += `?session_id=${session_id}`;  
+                return url;
+            },
+            providesTags: ["Section"],
+        }),
+        getShiftList: builder.query({
+            query: (session_id?: string | number) => {
+                let url = `/shifts/list`;
+                if (session_id) url += `?session_id=${session_id}`; 
+                return url;
+            },
+            providesTags: ["ShiftTime"],
+        }),
+        getStreamList: builder.query({
+            query: () => {
+                let url = `/streams/list`;
+                return url;
+            },
+            providesTags: ["Stream"],
+        }),
+        getBracnhList: builder.query({
+            query: () => {
+                let url = `/schools/list`;
+                return url;
+            },
+            providesTags: ["School"],
+        }),
+        getDepartmentList: builder.query({
+            query: () => {
+                let url = `/departments/list`;
+                return url;
+            },
+            providesTags: ["Department"],
+        }),
+        getSessionList: builder.query({
+            query: () => {
+                let url = `/sessions/list`;
+                return url;
+            },
+            providesTags: ["Session"],
+        }),
 
-        //  getUsers: builder.query<
-        //     { users: { value: string; label: string }[]; total: number; page: number; totalPages: number },
-        //     { page: number; limit: number; search?: string }
-        // >({
-        //     query: ({ page, limit, search }) => {
-        //         let url = `/users/list?page=${page}&limit=${limit}`;
-        //         if (search) url += `&search=${search}`;
-        //         return url;
-        //     },
-        //     providesTags: ["Dropdown"],
-        // }),
+
 
 
     }),
@@ -62,6 +96,12 @@ export const {
     useGetModulesQuery,
     useGetPermissionsMenuQuery,
     useRolesQuery,
-    useMediumsQuery,
+    useGetStreamListQuery,
+    useGetSectionListQuery,
     useGetUsersQuery,
+    useGetMediumListQuery,
+    useGetShiftListQuery,
+    useGetBracnhListQuery,
+    useGetDepartmentListQuery,
+    useGetSessionListQuery,
 } = dropdown;

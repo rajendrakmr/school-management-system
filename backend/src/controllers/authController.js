@@ -202,6 +202,7 @@ userObj.logo = `${currentUrl}/uploads/logos/logo.png`;
 delete userObj.password_hash;
         res.json({ message: 'Logins successful', token, user:userObj, menu: nav });
     } catch (err) {
+        console.log('adfdf',err)
         res.status(500).json({ error: err.message });
     }
 };

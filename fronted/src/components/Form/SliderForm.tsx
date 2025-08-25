@@ -66,10 +66,12 @@ const SliderForm: React.FC<SettingsModalProps> = ({
               className="btn-sm btn btn-danger mx-2"
               onClick={onClose}
               data-bs-dismiss="modal"
+              style={{borderRadius:"0px"}}
             >
-              Close
+              Back
             </button>
             <button
+            style={{borderRadius:"0px"}}
               className="btn-sm btn btn-primary submit_button mx-2"
               onClick={onSubmit}
               disabled={isSubmitting}

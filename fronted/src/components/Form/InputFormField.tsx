@@ -36,10 +36,19 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(
     row1 = "col-sm-5 col-4",
     row2 = "col-sm-7 col-8",
   }) => {
+    console.log('error', error)
     const handleNumberInput = (e: ChangeEvent<HTMLInputElement>) => {
-      let value = e.target.value;
 
-      if (type === "number") {
+      let value = e.target.value;
+      if (type === "num") {
+        const numericValue = value.replace(/[^0-9.]/g, '');
+        if (value !== numericValue || (numericValue.match(/\./g) || []).length > 1) {
+          return;
+        }
+        e.target.value = numericValue;
+      }
+
+      else if (type === "number") {
         const numericValue = value.replace(/[^0-9.]/g, "");
         if (
           value !== numericValue ||
@@ -64,6 +73,7 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(
     };
 
     return (
+
       <div className={`${col} mt-3`}>
         <div className="form-group">
           {/* label always top */}
@@ -92,12 +102,7 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(
             placeholder={placeholder || `Enter ${label}`}
           />
 
-          {/* error msg */}
-          {error && (
-            <div className="invalid-feedback" style={{ fontSize: "12px" }}>
-              {error}
-            </div>
-          )}
+          {error&&<span className="text-danger">{error}</span>}
         </div>
       </div>
     );

@@ -40,15 +40,23 @@ const menuJson = [
     font_icon: "",
     order_no: 4,
     children: [
-      { name: 'Medium', path: '/medium' },
-      { name: 'Section', path: '/section' },
-      { name: 'Subject', path: '/subject' },
-      { name: 'Semester', path: '/semester' },
-      { name: 'Stream', path: '/stream' },
-      { name: 'Shift', path: '/shift' },
-      { name: 'Class', path: '/class' }
+      { name: 'Academic Session', path: '/sessions' },
+      { name: 'Medium', path: '/mediums' },
+      { name: 'Department', path: '/departments' },
+      { name: 'Subject', path: '/subjects' },
+      { name: 'Period', path: '/periods' },
+      { name: 'Grade', path: '/grades' },
+      { name: 'Shift', path: '/shifts' },
+      { name: 'Class', path: '/classes' },
+      { name: 'Section', path: '/sections' },
+      { name: 'Stream', path: '/streams' },
+      { name: 'Class Subject', path: '/class-subjects' },
+      { name: 'Exam', path: '/exams' },
+      { name: 'Exam Subject', path: '/exam-subjects' },
+      { name: 'Semester', path: '/semesters' }
     ]
   }
+
 ];
 
 /**

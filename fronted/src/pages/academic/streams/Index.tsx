@@ -4,14 +4,16 @@ import TableComponent from "@/components/Table/TableComponent";
 import PageNumber from "@/components/PageNumber";
 import SettingsModal from "@/components/Table/SettingsModal";
 import AdvancedFilter from "@/components/AdvancedFilter";
-import InputFormField from "@/components/InputFormField"; 
+import InputFormField from "@/components/InputFormField";
+import { useGetSchoolsQuery } from "@/store/slice/school";
 import { Column } from "@/utils/helper";
 import AddEditForm from "./AddEditForm";
 import { useGetColumnsQuery } from "@/store/slice/columns";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useDispatch } from "react-redux";
-import { setBreadcrumbs } from "@/store/slice/bredCrumbs"; 
-import { useGetSectionsQuery } from "@/store/slice/academics/sections";
+import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
+import { useGetStreamsQuery } from "@/store/slice/academics/streams";
+import { FilterKey, Operator } from "@/components/SearchWithOperators";
 
 const Index: React.FC = () => {
   const [filter, setFilter] = useState("");
@@ -19,10 +21,10 @@ const Index: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs(["Section"]));
+    dispatch(setBreadcrumbs(["Stream"]));
   }, [dispatch]);
   const { data: referenceRecord, isFetching: isRefFetching } = useGetColumnsQuery(
-    { type: "sections", user_id: 1 },
+    { type: "streams", user_id: 1 },
     { refetchOnMountOrArgChange: true }
   );
 
@@ -34,21 +36,18 @@ const Index: React.FC = () => {
     }
   }, [referenceRecord]);
 
- 
-  const { data: dataRecords, isFetching, refetch } = useGetSectionsQuery(
+  // roles API call tabhi trigger ho jab itemsPerPage set ho
+  const { data: dataRecords, isFetching, refetch } = useGetStreamsQuery(
     itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken,
     { refetchOnMountOrArgChange: true }
   );
 
 
- 
- 
-  const items = dataRecords?.items || [];
-  const totalCount = dataRecords?.totalCount || 0;  
-  const safeItemsPerPage: number = itemsPerPage ?? 10;
 
-  // totalPages calculate karte waqt
-  const totalPages = Math.ceil(totalCount / safeItemsPerPage);
+  const items = dataRecords?.items || [];
+  const totalCount = dataRecords?.totalCount || 0;
+  const safeItemsPerPage: number = itemsPerPage ?? 10;
+  const totalPages = dataRecords?.totalPages;
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -58,17 +57,27 @@ const Index: React.FC = () => {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  const [openForm, setOpenForm] = useState(false); 
+  const [openForm, setOpenForm] = useState(false);
+  const [editData, setEditData] = useState<any>(false);
   const [formData, setFormData] = useState<any>(null);
   useEffect(() => {
     setFormData(formData);
   }, [formData]);
-   
+
   const [isEdidForm, setIsEditForm] = useState<any>(false);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
- 
+  // 
+  const handleSearch = (key: FilterKey, operator: Operator, value: string) => {
+    // Only trigger if all three are provided
+    console.log('Filter by form', key, operator, value)
+    if (key && operator && value) {
+    }
+  };
+
+  const onClear = () => {
+  };
   return (
     <>
       <SettingsModal
@@ -77,19 +86,20 @@ const Index: React.FC = () => {
         itemsPerPage={safeItemsPerPage}
         setItemsPerPage={setItemsPerPage}
         allColumns={allColumns}
-        type="sections"
+        type="streams"
       />
 
-      <div className="shadow-lg p-2"> 
+      <div className="shadow-lg p-2">
         <Toolbar
+          columns={allColumns}
           currentPage={currentPage}
           totalPages={totalPages}
           totalCount={totalCount}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
-          onSearch={(query) => setFilter(query)}
+          onSearch={handleSearch}
           onRefresh={refetch}
-          onAdd={() => {  setOpenForm(true); }}
+          onAdd={() => { setIsEditForm(false); setOpenForm(true); }}
           onPreference={() => setIsSettingsOpen(true)}
           advancedSearch={() => setIsPreferencesOpen(!isPreferencesOpen)}
         />
@@ -102,22 +112,7 @@ const Index: React.FC = () => {
         {isPreferencesOpen && (
           <AdvancedFilter isOpen={isPreferencesOpen} onClose={() => setIsPreferencesOpen(false)}>
             <div className="row">
-              <InputFormField
-                label="Role Name"
-                name="role_name"
-                inputValue=""
-                error={""}
-                required
-                onChange={() => { }}
-              />
-              <InputFormField
-                label="Description"
-                name="role_description"
-                inputValue=""
-                error={""}
-                required
-                onChange={() => { }}
-              />
+              <h6>Coming soon</h6>
             </div>
           </AdvancedFilter>
         )}
@@ -133,12 +128,13 @@ const Index: React.FC = () => {
           selectedIds={selectedIds}
           setSelectedIds={setSelectedIds}
           setSelectedItems={setSelectedItems}
-          rowIdKey="mst_medium_id"
+          rowIdKey="mst_stream_id"
         />
 
         {/* Add/Edit Form */}
         <AddEditForm
-         open={openForm}
+          pagetitle="Stream"
+          open={openForm}
           onClose={() => setOpenForm(false)}
           initialData={formData}
           isEdit={isEdidForm}

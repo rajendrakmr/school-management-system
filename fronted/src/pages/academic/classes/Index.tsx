@@ -1,74 +1,85 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import Toolbar from "@/components/Toolbar";
 import TableComponent from "@/components/Table/TableComponent";
 import PageNumber from "@/components/PageNumber";
 import SettingsModal from "@/components/Table/SettingsModal";
 import AdvancedFilter from "@/components/AdvancedFilter";
-import InputFormField from "@/components/InputFormField"; 
+import InputFormField from "@/components/InputFormField";
 import { Column } from "@/utils/helper";
 import AddEditForm from "./AddEditForm";
 import { useGetColumnsQuery } from "@/store/slice/columns";
+import { useGetSubjectsQuery } from "@/store/slice/academics/subjects";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useDispatch } from "react-redux";
-import { setBreadcrumbs } from "@/store/slice/bredCrumbs"; 
-import { useGetSectionsQuery } from "@/store/slice/academics/sections";
+import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
+import { FilterKey, Operator } from "@/components/SearchWithOperators";
+import { useGetClassessQuery } from "@/store/slice/academics/classes";
 
 const Index: React.FC = () => {
+  const dispatch = useDispatch();
+  const title = "Class";
   const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(setBreadcrumbs(["Section"]));
-  }, [dispatch]);
-  const { data: referenceRecord, isFetching: isRefFetching } = useGetColumnsQuery(
-    { type: "sections", user_id: 1 },
-    { refetchOnMountOrArgChange: true }
-  );
-
-  const allColumns: Column[] = referenceRecord?.columns || [];
   const [itemsPerPage, setItemsPerPage] = useState<number | undefined>(undefined);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
+  const [isEditForm, setIsEditForm] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+
+  // Set breadcrumbs once
   useEffect(() => {
-    if (referenceRecord?.page_size) {
-      setItemsPerPage(referenceRecord.page_size);
-    }
+    dispatch(setBreadcrumbs([title]));
+  }, [dispatch]);
+
+  // Get column reference
+  const { data: referenceRecord } = useGetColumnsQuery( { type: "classes"},{ refetchOnMountOrArgChange: true } );
+
+  // Memoize columns
+  const allColumns: Column[] = useMemo(() => referenceRecord?.columns || [], [referenceRecord]);
+
+  // Set items per page from referenceRecord
+  useEffect(() => {
+    if (referenceRecord?.page_size) setItemsPerPage(referenceRecord.page_size);
   }, [referenceRecord]);
 
- 
-  const { data: dataRecords, isFetching, refetch } = useGetSectionsQuery(
+  // Fetch subjects
+  const { data: dataRecords, isFetching, refetch } = useGetClassessQuery(
     itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken,
     { refetchOnMountOrArgChange: true }
   );
 
-
- 
- 
-  const items = dataRecords?.items || [];
-  const totalCount = dataRecords?.totalCount || 0;  
-  const safeItemsPerPage: number = itemsPerPage ?? 10;
-
-  // totalPages calculate karte waqt
+  const items = useMemo(() => dataRecords?.items || [], [dataRecords]);
+  const totalCount = dataRecords?.totalCount || 0;
+  const safeItemsPerPage = itemsPerPage ?? 10;
   const totalPages = Math.ceil(totalCount / safeItemsPerPage);
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+  // ---------------- Handlers ----------------
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      if (newPage >= 1 && newPage <= totalPages) setCurrentPage(newPage);
+    },
+    [totalPages]
+  );
+
+
+  const togglePreferences = useCallback(() => setIsPreferencesOpen((prev) => !prev), []);
+  const openSettings = useCallback(() => setIsSettingsOpen(true), []);
+  const openAddForm = useCallback(() => {
+    setFormData(null);
+    setIsEditForm(false);
+    setOpenForm(true);
+  }, []);
+  // 
+  const handleSearch = useCallback((key: FilterKey, operator: Operator, value: string) => {
+    // Only trigger if all three are provided
+    console.log('Filter by form', key, operator, value)
+    if (key && operator && value) {
+      
     }
-  };
-
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  const [openForm, setOpenForm] = useState(false); 
-  const [formData, setFormData] = useState<any>(null);
-  useEffect(() => {
-    setFormData(formData);
-  }, [formData]);
-   
-  const [isEdidForm, setIsEditForm] = useState<any>(false);
-
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
- 
+  }, []);
   return (
     <>
       <SettingsModal
@@ -77,22 +88,24 @@ const Index: React.FC = () => {
         itemsPerPage={safeItemsPerPage}
         setItemsPerPage={setItemsPerPage}
         allColumns={allColumns}
-        type="sections"
+        type="classes"
       />
 
-      <div className="shadow-lg p-2"> 
+      <div className="shadow-lg p-1">
         <Toolbar
+          columns={allColumns} 
           currentPage={currentPage}
           totalPages={totalPages}
           totalCount={totalCount}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
-          onSearch={(query) => setFilter(query)}
+          onSearch={handleSearch}
           onRefresh={refetch}
-          onAdd={() => {  setOpenForm(true); }}
+          onAdd={() => { setIsEditForm(false); setOpenForm(true); }}
           onPreference={() => setIsSettingsOpen(true)}
           advancedSearch={() => setIsPreferencesOpen(!isPreferencesOpen)}
         />
+
         {selectedIds.length > 0 && (
           <span className="small p-2">
             ✅ {selectedIds.length} selected from this page.
@@ -138,14 +151,14 @@ const Index: React.FC = () => {
 
         {/* Add/Edit Form */}
         <AddEditForm
-         open={openForm}
+          pagetitle={title}
+          open={openForm}
           onClose={() => setOpenForm(false)}
           initialData={formData}
-          isEdit={isEdidForm}
+          isEdit={isEditForm}
           onSuccess={refetch}
           setIsEditForm={setIsEditForm}
         />
-
 
         {/* Pagination */}
         {totalCount > safeItemsPerPage && (

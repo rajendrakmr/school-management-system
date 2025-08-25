@@ -76,16 +76,14 @@ const InputColSelectField: React.FC<SelectFormInputProps> = ({
                 onKeyDown={onKeyDown}
                 menuPortalTarget={document.body}
                 styles={{
-                    ...(name === "selectedLoginId"
-                        ? rowSelectdOption
-                        : customSelectOption1),
+                    ...customSelectOption1,
                     menu: (base) => ({
                         ...base,
                         maxHeight: height,
                         overflowY: "auto",
                     }),
                 }}
-                placeholder={isLoading ? "Loading..." : "Select option"}
+                placeholder={isLoading ? "Loading..." : "Select "}
             />
 
         </>

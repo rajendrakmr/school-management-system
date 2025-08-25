@@ -5,7 +5,7 @@ interface InputFormFieldProps {
     label: string;
     type?: string;
     name?: string;
-    inputValue: string;
+    inputValue: string | number;
     error?: string;
     placeholder?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -50,6 +50,13 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(({
             const alphanumericValue = value.replace(/[^a-zA-Z0-9-]/g, '');
             e.target.value = alphanumericValue.toUpperCase().trim();
         }
+        else if (type === "num") {
+            const numericValue = value.replace(/[^0-9.]/g, '');
+            if (value !== numericValue || (numericValue.match(/\./g) || []).length > 1) {
+                return;
+            }
+            e.target.value = numericValue;
+        }
 
         if (onChange) {
             onChange(e);
@@ -86,7 +93,7 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(({
                         backgroundColor: isDefault ? '#e9ecef' : '#eff3a800',
                     } : {}}
                 />
-               {error && <span className="text-danger" style={{ fontSize: "11px", marginTop: "0" }}>{error}</span>}
+                {error && <span className="text-danger" style={{ fontSize: "11px", marginTop: "0" }}>{error}</span>}
             </div>
         </div>
     );

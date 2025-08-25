@@ -9,7 +9,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    EnvironmentPlugin(["REACT_APP_API_URL", "REACT_APP_NAME"]),
+    EnvironmentPlugin(["BACKEND_PATH_API_URL","REACT_APP_API_URL", "REACT_APP_NAME"]),
   ],
   resolve: {
     alias: {

@@ -31,6 +31,11 @@ const TableColumn = sequelize.define(
       allowNull: false,
       defaultValue: 'Y',
     },
+    is_admin_only: {
+      type: DataTypes.ENUM('Y', 'N'),
+      allowNull: false,
+      defaultValue: 'N',
+    },
      is_default: {
       type: DataTypes.INTEGER,
       allowNull: false,

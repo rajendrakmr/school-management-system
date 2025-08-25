@@ -7,7 +7,7 @@ import InputSelectField from "@/components/Form/InputSelectField";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
 import { useSaveSubjectMutation } from "@/store/slice/academics/subjects";
 import InputRadioField from "@/components/Form/InputRadioField";
-import { useMediumsQuery } from "@/store/slice/dropdown";
+import { useGetMediumListQuery } from "@/store/slice/dropdown";
 import InputFileField from "@/components/Form/InputFileField";
 import ToggleSwitch from "@/components/pageSettings/ToggleSwitch";
 
@@ -105,7 +105,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
 
     const timeoutRef = useRef<number | null>(null);
     const [saveSubject, { isLoading }] = useSaveSubjectMutation();
-    const { data: mediumsOptions } = useMediumsQuery({ refetchOnMountOrArgChange: true });
+    const { data: mediumsOptions } = useGetMediumListQuery({ refetchOnMountOrArgChange: true });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));

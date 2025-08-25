@@ -28,6 +28,7 @@ const upload = multer({ storage, fileFilter });
 
 // Routes
 router.get('/', schoolController.gets);
+router.get('/list', schoolController.lists);
 
 // Use `upload.single('logo')` for POST & PUT
 router.post('/', upload.single('logo'), schoolController.validate, schoolController.create);

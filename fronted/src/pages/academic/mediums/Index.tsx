@@ -13,6 +13,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useDispatch } from "react-redux";
 import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
 import { useGetMediumsQuery } from "@/store/slice/academics/mediums";
+import { FilterKey, Operator } from "@/components/SearchWithOperators";
 
 const Index: React.FC = () => {
   const [filter, setFilter] = useState("");
@@ -64,7 +65,7 @@ const Index: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [openForm, setOpenForm] = useState(false);
-  const [editData, setEditData] = useState<any>(null);
+  const [editData, setEditData] = useState<any>(false);
   const [formData, setFormData] = useState<any>(null);
   useEffect(() => {
     setFormData(formData);
@@ -76,6 +77,31 @@ const Index: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
 
   console.log('formData', formData)
+
+
+
+  // 
+  const handleSearch = (key: FilterKey, operator: Operator, value: string) => {
+    // Only trigger if all three are provided
+    console.log('Filter by form',key,operator,value)
+    if (key && operator && value) {
+      // setSearchFilter({ key: key.value, operator: operator.value, value });
+      // setSearchParams({
+      //   limit: safeItemsPerPage,
+      //   page: 1,
+      //   // key: key.value,
+      //   // operator: operator.value,
+      //   // value,
+      // });
+      // refetch();
+    }
+  };
+  
+    const onClear = () => {
+      // setSearchFilter({});
+      // setSearchParams({ limit: safeItemsPerPage, page: 1 });
+      // refetch();
+    };
   return (
     <>
       <SettingsModal
@@ -89,17 +115,16 @@ const Index: React.FC = () => {
 
       <div className="shadow-lg p-2"> 
         <Toolbar
+          columns={allColumns}
+          title="Roles"
           currentPage={currentPage}
           totalPages={totalPages}
           totalCount={totalCount}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
-          onSearch={(query) => setFilter(query)}
+          onSearch={handleSearch}
           onRefresh={refetch}
-          onAdd={() => {
-            setEditData(null);
-            setOpenForm(true);
-          }}
+          onAdd={() => { setIsEditForm(false); setOpenForm(true); }}
           onPreference={() => setIsSettingsOpen(true)}
           advancedSearch={() => setIsPreferencesOpen(!isPreferencesOpen)}
         />
@@ -112,7 +137,8 @@ const Index: React.FC = () => {
         {isPreferencesOpen && (
           <AdvancedFilter isOpen={isPreferencesOpen} onClose={() => setIsPreferencesOpen(false)}>
             <div className="row">
-              <InputFormField
+              <h6>Coming soon</h6>
+              {/* <InputFormField
                 label="Role Name"
                 name="role_name"
                 inputValue=""
@@ -127,7 +153,7 @@ const Index: React.FC = () => {
                 error={""}
                 required
                 onChange={() => { }}
-              />
+              /> */}
             </div>
           </AdvancedFilter>
         )}

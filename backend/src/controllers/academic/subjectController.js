@@ -1,29 +1,32 @@
-const { Op } = require('sequelize');
-const Medium = require('../../models/Medium');
+const sequelize = require('../../config/db')
+const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
-const Subject = require('../../models/Subject');
+const SubjectModel = require('../../models/academic/SubjectModel');
+const School = require('../../models/School');
 const User = require('../../models/User');
-const path = require('path');
-const fs = require('fs');
-// Validation rules for Subject creation/updation
+const DepartmentModel = require('../../models/academic/DepartmentModel');
+const MediumModel = require('../../models/academic/MediumModel');
+
+const reMessage = "Subject"
 exports.validate = [
     body('name')
-        .notEmpty().withMessage('Name is required')
-        .isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
-    body('mst_medium_id')
-        .notEmpty().withMessage('Medium is required'),
-    body('type')
-        .notEmpty().withMessage('Subject type is required "Practical" or "Theory"')
-        .isIn(['practical', 'theory']).withMessage('Type must be "Practical" or "Theory"'),
+        .notEmpty().withMessage('Medium name is required')
+        .isLength({ min: 3 }).withMessage('Medium name must be at least 3 characters long')
+        .isLength({ max: 50 }).withMessage('Medium name must not exceed 50 characters'),
+
+    body('code')
+        .notEmpty().withMessage('Subject Code is is required')
+        .isLength({ max: 10 }).withMessage('Subject Code must not exceed 10 characters'),
+    body('trn_school_id').notEmpty().withMessage('School/Branch is required'),
     body('is_active')
         .optional()
         .isIn(['Y', 'N']).withMessage('Status must be "Y" or "N"')
 ];
 
-// Get list of subjects (for dropdowns, etc.)
+
 exports.lists = async (req, res) => {
     try {
-        const rows = await Subject.findAll({
+        const rows = await SubjectModel.findAll({
             attributes: [
                 ['mst_subject_id', 'value'],
                 ['name', 'label']
@@ -35,11 +38,10 @@ exports.lists = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-Subject.belongsTo(Medium, { foreignKey: 'mst_medium_id' });
-Subject.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
-Subject.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-const { Sequelize } = require('sequelize');
 
+
+
+ 
 exports.gets = async (req, res) => {
     try {
         const { trn_school_id } = req;
@@ -47,31 +49,41 @@ exports.gets = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
 
-        const { count, rows } = await Subject.findAndCountAll({
-            where: { trn_school_id },
+        let whereClause = {};
+        if (trn_school_id) {
+            whereClause.trn_school_id = trn_school_id;
+        }
+
+        const { count, rows } = await SubjectModel.findAndCountAll({
+            where: whereClause,
             limit,
             offset,
             attributes: [
-                'mst_subject_id',
-                'trn_school_id',
-                'mst_medium_id',
+                'mst_subject_id', 
+                'mst_department_id',
                 'code',
+                'practical_marks',
+                'theory_marks',
+                'max_marks',
                 'name',
-                'image_path',
-                'type',
                 'is_active',
-                'created_by',
-                'updated_by',
-                [Sequelize.col('Medium.name'), 'medium_name'],
+                'trn_school_id', 
+                 [Sequelize.col('subject_type'), 'type'],
+                [Sequelize.col('department.name'), 'department'],
+                [Sequelize.col('branch.school_name'), 'branch'],
+                [Sequelize.col('branch.email'), 'branch_email'],
+                [Sequelize.col('branch.image_path'), 'branch_image'],
                 [Sequelize.col('CreatedBy.first_name'), 'created_by'],
                 [Sequelize.col('UpdatedBy.first_name'), 'updated_by']
             ],
             include: [
-                { model: Medium, attributes: [] },          // just used for join
+                // { model: MediumModel, as: 'medium', attributes: [] },
+                { model: DepartmentModel, as: 'department', attributes: [] },
                 { model: User, as: 'CreatedBy', attributes: [] },
-                { model: User, as: 'UpdatedBy', attributes: [] }
+                { model: User, as: 'UpdatedBy', attributes: [] },
+                { model: School, as: 'branch', attributes: [] }
             ],
-            order: [['mst_subject_id', 'ASC']],
+            order: [['mst_subject_id', 'DESC'], ["trn_school_id", 'ASC']],
             raw: true
         });
 
@@ -89,8 +101,73 @@ exports.gets = async (req, res) => {
 };
 
 
-// Create a new Subject
+
 exports.create = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const formattedErrors = {};
+            errors.array().forEach(err => {
+                formattedErrors[err.path] = err.msg;
+            });
+            await t.rollback();
+            return res.status(422).json({ errors: formattedErrors });
+        }
+
+        const {
+            name,
+            code,
+            max_marks = null,
+            practical_marks = null,
+            theory_marks = null,
+            type,
+            trn_school_id,
+            is_active = "Y",
+            mst_department_id,
+        } = req.body;
+
+        const { created_by, tenant } = req
+        const existing = await SubjectModel.findOne({ where: { name, trn_school_id }, transaction: t });
+
+        if (existing) {
+            await t.rollback();
+            let me = !tenant ? "for this tenant" : "";
+
+            return res.status(422).json({
+                errors: {
+                    name: `${reMessage} name "${name}" already exists ${me}`
+                }
+            });
+        }
+        const response = await SubjectModel.create({
+            max_marks,
+            practical_marks,
+            theory_marks,
+            name,
+            code,
+            trn_school_id,
+            mst_department_id,
+            subject_type:type,
+            is_active,
+            created_by
+        }, { transaction: t });
+
+
+        await t.commit();
+
+        res.status(200).json({ message: `${reMessage} "${response.name}" has been successfully created.` });
+
+    } catch (err) {
+        await t.rollback();
+        const errorMessage = err?.parent?.sqlMessage || err?.message || 'Unknown error';
+        res.status(500).json({ error: errorMessage });
+    }
+};
+
+exports.update = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -98,90 +175,97 @@ exports.create = async (req, res) => {
             errors.array().forEach(err => {
                 formattedErrors[err.path] = err.msg;
             });
+            await t.rollback();
             return res.status(422).json({ errors: formattedErrors });
         }
 
-        const { trn_school_id, created_by } = req;
-        if (req.file) {
-            const uploadsDir = path.join(__dirname, '../../../uploads/academics');
-            if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-            const filename = uniqueSuffix + path.extname(req.file.originalname);
-            const filepath = path.join(uploadsDir, filename);
-            fs.writeFileSync(filepath, req.file.buffer);
-            req.body.image_path = `/academics/${filename}`;
+        const { id } = req.params;
+        const {
+            type,
+            name,
+            code,
+            max_marks = null,
+            practical_marks = null,
+            theory_marks = null,
+            trn_school_id,
+            is_active = "Y",
+            mst_department_id
+        } = req.body;
+
+        const { updated_by, tenant } = req;
+
+
+        const response = await SubjectModel.findByPk(id, { transaction: t });
+        if (!response) {
+            await t.rollback();
+            return res.status(404).json({ message: "Data not found" });
         }
-        const { name, is_active = 'Y', mst_medium_id, type, image_path, code } = req.body;
 
-        // Check if the subject already exists
-        const existing = await Subject.findOne({ where: { name, trn_school_id, mst_medium_id } });
-        if (existing) {
-            return res.status(422).json({ errors: { name: `${name} already taken.` } });
-        }
-
-        await Subject.create({ name, trn_school_id, mst_medium_id, type, is_active, code, image_path, created_by });
-
-        res.status(200).json({
-            message: `Subject "${name}" has been successfully created.`
+        const existing = await SubjectModel.findOne({
+            where: { name, trn_school_id, mst_subject_id: { [Op.ne]: id } },
+            transaction: t
         });
-    } catch (err) {
-        console.log('errerr', err)
-        res.status(500).json({ error: err.message });
-    }
-};
 
-// Update an existing Subject
-exports.update = async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
+        if (existing) {
+            await t.rollback();
+            let me = !tenant ? "for this tenant" : "";
             return res.status(422).json({
-                errors: errors.array().reduce((acc, err) => ({ ...acc, [err.path]: err.msg }), {})
+                errors: {
+                    name: `${reMessage} name "${name}" already exists ${me}`
+                }
             });
         }
 
-        const { name, is_active, mst_medium_id, type } = req.body;
-        const { trn_school_id, updated_by } = req;
-        const { id } = req.params;
 
-        const subject = await Subject.findByPk(id);
-        if (!subject) return res.status(404).json({ error: 'Subject not found' });
-
-        const duplicate = await Subject.findOne({
-            where: {
+        await response.update(
+            {
+                subject_type:type,
+                max_marks,
+                practical_marks,
+                theory_marks,
                 name,
+                code,
                 trn_school_id,
-                mst_medium_id,
-                mst_subject_id: { [Op.ne]: id }
-            }
+                mst_department_id,
+                is_active,
+                updated_by
+            },
+            { transaction: t }
+        );
+
+        await t.commit();
+
+        res.status(200).json({
+            message: `${reMessage} "${session.name}" has been successfully updated.`,
         });
-        if (duplicate) return res.status(422).json({ errors: { name: `${name} already taken.` } });
 
-        // Only save image if it exists AND validations pass
-        if (req.file) {
-            const uploadsDir = path.join(__dirname, '../../../uploads/academics');
-            if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-            const filename = uniqueSuffix + path.extname(req.file.originalname);
-            const filepath = path.join(uploadsDir, filename);
-
-            // Write the buffer to disk
-            fs.writeFileSync(filepath, req.file.buffer);
-            subject.image_path = `/academics/${filename}`;
-        }
-
-        // Update other fields
-        subject.name = name;
-        subject.type = type;
-        subject.is_active = is_active;
-        subject.updated_by = updated_by;
-
-        await subject.save();
-
-        res.status(200).json({ message: `Subject "${subject.name}" has been successfully updated.` });
     } catch (err) {
-        console.log(err)
-        res.status(500).json({ error: err.message });
+        await t.rollback();
+        const errorMessage = err?.parent?.sqlMessage || err?.message || "Unknown error";
+        res.status(500).json({ error: errorMessage });
+    }
+};
+
+
+exports.delete = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const { id } = req.params;
+        const response = await SubjectModel.findByPk(id, { transaction: t });
+        if (!response) {
+            await t.rollback();
+            return res.status(404).json({ error: `Data with id ${id} not found.` });
+        }
+        await response.destroy({ transaction: t });
+        await t.commit();
+
+        return res.status(200).json({
+            message: `${reMessage} "${session.name}" has been successfully deleted.`
+        });
+
+    } catch (err) {
+        await t.rollback();
+        const errorMessage = err?.parent?.sqlMessage || err?.message || 'Unknown error';
+        return res.status(500).json({ error: errorMessage });
     }
 };

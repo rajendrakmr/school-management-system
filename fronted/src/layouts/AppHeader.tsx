@@ -36,10 +36,10 @@ const AppHeader: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
         } catch (err) {
             console.error("Logout failed", err);
         } finally {
-            dispatch(clearUserData()); // clear Redux user/menu
-            localStorage.clear(); // clear persisted storage
+            dispatch(clearUserData()); 
+            localStorage.clear(); 
             sessionStorage.clear();
-            window.location.href = "/apps/login"; // redirect to login
+            window.location.href = "/apps/login"; 
         }
     };
     const [showProfileModal, setShowProfileModal] = useState(false);

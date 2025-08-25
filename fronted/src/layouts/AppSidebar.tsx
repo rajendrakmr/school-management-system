@@ -209,9 +209,9 @@ const AppSidebar: React.FC<SidebarProps> = ({ isToggle }) => {
                               className={`child-route ${currentPath === childItem.path ? 'child-active childActive' : ''}`}
                             >
                               <Link to={childItem.path} className="c-route-link">
-                                {currentPath === childItem.path && (
+                                {/* {currentPath === childItem.path && (
                                   <span className="active-blinking-dot"></span>
-                                )}
+                                )} */}
                                 <span className={`c-cl-w ${currentPath === childItem.path ? 'childActiveColor' : ''}`}>{childItem.name}</span>
                               </Link>
                             </li>

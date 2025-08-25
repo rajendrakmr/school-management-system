@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const School = require('../models/School');
 const _ = require('lodash');
@@ -15,6 +15,21 @@ exports.validate = [
 ];
 
 // Get all schools with pagination
+
+exports.lists = async (req, res) => {
+    try {
+        const schools = await School.findAll({
+            attributes: [
+                ['trn_school_id', 'value'],
+                [Sequelize.literal("CONCAT(school_name, '(', school_code, ')')"), 'label']
+            ],
+            order: [['trn_school_id', 'ASC']]
+        });
+        res.json(schools);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 exports.gets = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;

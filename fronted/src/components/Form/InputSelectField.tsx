@@ -70,7 +70,7 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
         </label>
 
         <Select
-          className={`w-100 ${error ? "is-invalid" : ""}`}
+          classNamePrefix="react-select" // optional, for easier CSS targeting
           id={name}
           name={name}
           options={options}
@@ -88,15 +88,24 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
           onKeyDown={onKeyDown}
           menuPortalTarget={document.body}
           styles={{
-            ...(name === "selectedLoginId"
-              ? rowSelectdOption
-              : customSelectOption1),
+            ...(customSelectOption1 as any),
+            control: (base, state) => ({
+              ...base,
+              borderWidth: '1px',            // thin border
+              borderColor: error ? 'red' : state.isFocused ? '#2684FF' : '#CED4DA',
+              boxShadow: error ? 'none' : state.isFocused ? '0 0 0 1px #2684FF' : 'none',
+              "&:hover": {
+                borderColor: error ? 'red' : state.isFocused ? '#2684FF' : '#CED4DA',
+              },
+              borderRadius:"0px"
+            }),
             menu: (base) => ({
               ...base,
               maxHeight: height,
-              overflowY: "auto",
+              overflowY: 'auto',
             }),
           }}
+
           placeholder={isLoading ? "Loading..." : "Select option"}
         />
 
@@ -106,9 +115,9 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
 
         {/* error msg */}
         {error && (
-          <div className="invalid-feedback" style={{ fontSize: "12px" }}>
+          <span className="text-danger" style={{ fontSize: "12px" }}>
             {error}
-          </div>
+          </span>
         )}
       </div>
     </div>

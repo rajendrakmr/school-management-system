@@ -31,7 +31,7 @@ const InputRadioFieldComponent: React.FC<InputRadioFieldProps> = ({
     const colors = ["#9B5DE5", "#4D96FF", "#FF6B6B", "#FFD93D", "#6BCB77"]; // different colors
 
     return (
-        <div className={`${col} mt-2`}>
+        <div className={`${col} mt-4`}>
             <label className="form-label fw-semibold mb-2" style={{ fontSize: "14px" }}>
                 {label} {required && <span className="text-danger">*</span>}
             </label>
@@ -68,7 +68,7 @@ const InputRadioFieldComponent: React.FC<InputRadioFieldProps> = ({
                                     width: "18px",
                                     height: "18px",
                                     borderRadius: "50%",
-                                    border: `2px solid ${color}`,
+                                    border: `2px solid ${error ? "red" : color}`, // 🔹 red border on error
                                     display: "inline-block",
                                     position: "relative",
                                     transition: "all 0.2s",
@@ -80,7 +80,7 @@ const InputRadioFieldComponent: React.FC<InputRadioFieldProps> = ({
                                             width: "10px",
                                             height: "10px",
                                             borderRadius: "50%",
-                                            backgroundColor: color,
+                                            backgroundColor: error ? "red" : color, // 🔹 red fill if checked + error
                                             position: "absolute",
                                             top: "50%",
                                             left: "50%",
@@ -89,6 +89,7 @@ const InputRadioFieldComponent: React.FC<InputRadioFieldProps> = ({
                                     ></span>
                                 )}
                             </span>
+
                             {opt.label}
                         </label>
                     );

@@ -1,17 +1,30 @@
-const { Op } = require('sequelize');
-const Medium = require('../../models/Medium');
+const sequelize = require('../../config/db')
+const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
+const MediumModel = require('../../models/academic/MediumModel');
+const School = require('../../models/School');
+const User = require('../../models/User');
 
-// Validation rules for Medium creation
-exports.validateCreate = [
-    body('name').notEmpty().withMessage('Name is required').isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
-    body('is_active').optional().isIn(['Y', 'N']).withMessage('Status must be "Y" or "N"')
+
+exports.validate = [
+    body('name')
+        .notEmpty().withMessage('Medium name is required')
+        .isLength({ min: 3 }).withMessage('Medium name must be at least 3 characters long')
+        .isLength({ max: 50 }).withMessage('Medium name must not exceed 50 characters'),
+
+    body('code')
+        .isLength({ max: 10 }).withMessage('Code must not exceed 10 characters'),
+    body('trn_school_id')
+        .notEmpty().withMessage('School/Branch is required'),
+    body('is_active')
+        .optional()
+        .isIn(['Y', 'N']).withMessage('Status must be "Y" or "N"')
 ];
 
-// Get all Medium options (id and name)
+
 exports.lists = async (req, res) => {
     try {
-        const rows = await Medium.findAll({
+        const rows = await MediumModel.findAll({
             attributes: [
                 ['mst_medium_id', 'value'],
                 ['name', 'label']
@@ -24,15 +37,46 @@ exports.lists = async (req, res) => {
     }
 };
 
-// Paginated list of Mediums
+
+
+// ✅ Paginated list with associations
 exports.gets = async (req, res) => {
     try {
-        const { trn_school_id } = req
+        const { trn_school_id } = req;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
 
-        const { count, rows } = await Medium.findAndCountAll({ where: { trn_school_id }, limit, offset, order: [['mst_medium_id', 'ASC']] });
+        let whereClause = {};
+        if (trn_school_id) {
+            whereClause.trn_school_id = trn_school_id;
+        }
+
+        const { count, rows } = await MediumModel.findAndCountAll({
+            where: whereClause,
+            limit,
+            offset,
+            attributes: [
+                'mst_medium_id',
+                'code',
+                'name',
+                'is_active',
+                'trn_school_id',
+                [Sequelize.col('branch.school_name'), 'branch'],
+                [Sequelize.col('branch.email'), 'branch_email'],
+                [Sequelize.col('branch.image_path'), 'branch_image'],
+                [Sequelize.col('CreatedBy.first_name'), 'created_by'],
+                [Sequelize.col('UpdatedBy.first_name'), 'updated_by']
+            ],
+            include: [
+                { model: User, as: 'CreatedBy', attributes: [] },
+                { model: User, as: 'UpdatedBy', attributes: [] },
+                { model: School, as: 'branch', attributes: [] }
+            ],
+            order: [['mst_medium_id', 'DESC'], ["trn_school_id", 'ASC']],
+            raw: true
+        });
+
         const totalPages = Math.ceil(count / limit);
 
         res.json({
@@ -46,8 +90,10 @@ exports.gets = async (req, res) => {
     }
 };
 
-// Create Medium
+
+
 exports.create = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -55,67 +101,140 @@ exports.create = async (req, res) => {
             errors.array().forEach(err => {
                 formattedErrors[err.path] = err.msg;
             });
+            await t.rollback(); 
             return res.status(422).json({ errors: formattedErrors });
         }
-        const { trn_school_id, created_by } = req
 
-        const { name, code, is_active = 'Y' } = req.body;
-        const existing = await Medium.findOne({ where: { name, trn_school_id } });
+        const {
+            name,
+            code, 
+            trn_school_id,
+            is_active = "Y"
+        } = req.body;
+
+        const { created_by, tenant } = req 
+        const existing = await MediumModel.findOne({ where: { name, trn_school_id }, transaction: t });
+
         if (existing) {
-            return res.status(422).json({ errors: { name: `${name} already taken.` } });
+            await t.rollback();
+            let me = !tenant ? "for this tenant" : "";
+
+            return res.status(422).json({
+                errors: {
+                    code: `Medium name "${name}" already exists ${me}`
+                }
+            });
         }
-        const name_code = name.slice(0, 3).toUpperCase();
-        const response = await Medium.create({ name, code: code ? code : name_code, trn_school_id, is_active, created_by });
-        res.status(200).json({
-            message: `Medium "${name}" has been successfully created.`,
-            item: response
-        });
+        const response = await MediumModel.create({
+            name,
+            code, 
+            trn_school_id,
+            is_active,
+            created_by
+        }, { transaction: t });
+
+
+        await t.commit();
+
+        res.status(200).json({ message: `Medium "${response.name}" has been successfully created.` });
+
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        await t.rollback();
+        const errorMessage = err?.parent?.sqlMessage || err?.message || 'Unknown error';
+        res.status(500).json({ error: errorMessage });
     }
 };
 
-
-// Update Medium
 exports.update = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({
-                errors: errors.array().reduce((acc, err) => ({ ...acc, [err.path]: err.msg }), {})
+            const formattedErrors = {};
+            errors.array().forEach(err => {
+                formattedErrors[err.path] = err.msg;
             });
+            await t.rollback();
+            return res.status(422).json({ errors: formattedErrors });
         }
 
-        const { trn_school_id, updated_by } = req
-        const { name, is_active } = req.body;
         const { id } = req.params;
+        const {
+            name,
+            code, 
+            trn_school_id,
+            is_active = "Y"
+        } = req.body;
 
-        const medium = await Medium.findByPk(id);
-        if (!medium) return res.status(404).json({ error: 'Medium not found' }); 
-        if (name && name !== medium.name) {
-            const existing = await Medium.findOne({
-                where: {
-                    name,
-                    trn_school_id: trn_school_id,
-                    mst_medium_id: { [Op.ne]: id }   
+        const { updated_by, tenant } = req;
+
+
+        const response = await MediumModel.findByPk(id, { transaction: t });
+        if (!response) {
+            await t.rollback();
+            return res.status(404).json({ message: "Data not found" });
+        }
+
+        const existing = await MediumModel.findOne({
+            where: { name, trn_school_id, mst_medium_id: { [Op.ne]: id } },
+            transaction: t
+        });
+
+        if (existing) {
+            await t.rollback();
+            let me = !tenant ? "for this tenant" : "";
+            return res.status(422).json({
+                errors: {
+                    code: `Medium name "${name}" already exists ${me}`
                 }
             });
-            if (existing) {
-                return res.status(422).json({ errors: { name: `${name} already exists for this school.` } });
-            }
         }
 
-        // Update fields
-        medium.name = name;
-        medium.is_active = is_active;
-        medium.updated_by = updated_by;
-        await medium.save();
+
+        await response.update(
+            {
+                name,
+                code, 
+                trn_school_id,
+                is_active,
+                updated_by
+            },
+            { transaction: t }
+        );
+
+        await t.commit();
 
         res.status(200).json({
-            message: `Medium "${medium.name}" has been successfully updated.`, 
+            message: `Medium "${name}" has been successfully updated.`, 
         });
+
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        await t.rollback();
+        const errorMessage = err?.parent?.sqlMessage || err?.message || "Unknown error";
+        res.status(500).json({ error: errorMessage });
     }
 };
 
+
+exports.delete = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const { id } = req.params;
+        const response = await MediumModel.findByPk(id, { transaction: t });
+        if (!response) {
+            await t.rollback();
+            return res.status(404).json({ error: `Data with id ${id} not found.` });
+        }
+        await response.destroy({ transaction: t });
+        await t.commit();
+
+        return res.status(200).json({
+            message: `Medium "${session.name}" has been successfully deleted.`
+        });
+
+    } catch (err) {
+        await t.rollback();
+        const errorMessage = err?.parent?.sqlMessage || err?.message || 'Unknown error';
+        return res.status(500).json({ error: errorMessage });
+    }
+};

@@ -4,6 +4,39 @@ const mediumController = require('../controllers/academic/mediumController');
 const sectionController = require('../controllers/academic/sectionController');
 const subjectController = require('../controllers/academic/subjectController');
 const semesterController = require('../controllers/academic/semesterController');
+const streamController = require('../controllers/academic/streamController');
+const shiftController = require('../controllers/academic/shiftController');
+const classController = require('../controllers/academic/classController');
+const sessionController = require('../controllers/academic/sessionController');
+const departmentController = require('../controllers/academic/departmentController');
+const periodController = require('../controllers/academic/periodController');
+const gradeController = require('../controllers/academic/gradeController');
+
+
+
+// periods
+router.get('/grades', gradeController.gets);
+router.post('/grades',gradeController.validate,gradeController.create );
+router.get('/grades/list', gradeController.lists); 
+router.put('/grades/:id', gradeController.validate, gradeController.update );  
+
+// periods
+router.get('/periods', periodController.gets);
+router.post('/periods',periodController.validate,periodController.create );
+router.get('/periods/list', periodController.lists); 
+router.put('/periods/:id', periodController.validate, periodController.update );  
+
+// departments
+router.get('/departments', departmentController.gets);
+router.post('/departments',departmentController.validate,departmentController.create );
+router.get('/departments/list', departmentController.lists); 
+router.put('/departments/:id', departmentController.validate, departmentController.update );  
+
+//  session
+router.get('/sessions', sessionController.gets);
+router.post('/sessions',sessionController.validate,sessionController.create );
+router.get('/sessions/list', sessionController.lists); 
+router.put('/sessions/:id', sessionController.validate, sessionController.update );  
 
 
 
@@ -18,31 +51,30 @@ router.put('/semesters/:id', semesterController.validate, semesterController.upd
 
 router.get('/mediums/list', mediumController.lists); 
 router.get('/mediums', mediumController.gets);
-router.post('/mediums',mediumController.validateCreate,mediumController.create );
-router.put('/mediums/:id', mediumController.validateCreate, mediumController.update );  
+router.post('/mediums',mediumController.validate,mediumController.create );
+router.put('/mediums/:id', mediumController.validate, mediumController.update );  
 
-const path = require('path');
+
+// Stream
+router.get('/streams/list', streamController.lists); 
+router.get('/streams', streamController.gets);
+router.post('/streams',streamController.validate,streamController.create );
+router.put('/streams/:id', streamController.validate, streamController.update ); 
+
+
+// Shift time
+router.get('/shifts/list', shiftController.lists); 
+router.get('/shifts', shiftController.gets);
+router.post('/shifts',shiftController.validate,shiftController.create );
+router.put('/shifts/:id', shiftController.validate, shiftController.update ); 
+
+router.get('/classes/list', classController.lists); 
+router.get('/classes', classController.gets);
+router.post('/classes',classController.validate,classController.create );
+router.put('/classes/:id', classController.validate, classController.update );
 const multer = require('multer');
 
-// Set storage engine
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, 'uploads/academics'); // folder where logos will be stored
-//     },
-//     filename: function (req, file, cb) {
-//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-//         cb(null, uniqueSuffix + path.extname(file.originalname)); // file name only
-//     }
-// });
 
-// // File filter (optional, only allow images)
-// const fileFilter = (req, file, cb) => {
-//     if (file.mimetype.startsWith('image/')) {
-//         cb(null, true);
-//     } else {
-//         cb(new Error('Only image files are allowed!'), false);
-//     }
-// };
 const storage = multer.memoryStorage(); // store file in memory temporarily
 const fileFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) cb(null, true);
