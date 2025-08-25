@@ -20,7 +20,7 @@ services:
     backend:
         container_name: nodejs
         build:
-            context: ./
+            context: ./fronted
         environment:
             NODE_ENV: production
             PORT: 5000
@@ -44,7 +44,7 @@ services:
     fronted:
         container_name: reactjs 
         build:
-            context: ./
+            context: ./fronted
         ports:
             - 80:80
         networks:
@@ -63,7 +63,7 @@ services:
 volumes:
     mysql-data:
 networks:
-    school-erp:
+    erp-school:
 
     
 
