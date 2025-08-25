@@ -1,11 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User');
 const SessionModel = require('./SessionModel');
 const MediumModel = require('./MediumModel');
 const ShiftModel = require('./ShiftModel');
 const ClassSectionModel = require('./ClassSectionModel');
+const ClassSubjectModel = require('./ClassSubject');
 
 const ClassModel = sequelize.define(
     'ClassModel',
@@ -34,15 +35,14 @@ const ClassModel = sequelize.define(
         freezeTableName: true,
     }
 );
-// ClassModel.hasMany(ClassSectionModel, {
-//   foreignKey: 'mst_class_id',
-//   as: 'classSection'
-// });
+ClassModel.hasMany(ClassSubjectModel, {
+  foreignKey: 'mst_class_id', 
+});
 
 ClassModel.belongsTo(MediumModel, { as: 'medium', foreignKey: 'mst_medium_id' });
 ClassModel.belongsTo(ShiftModel, { as: 'shift', foreignKey: 'mst_shift_id' });
 ClassModel.belongsTo(SessionModel, { as: 'session', foreignKey: 'mst_session_id' });
 ClassModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 ClassModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-ClassModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+ClassModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 module.exports = ClassModel;

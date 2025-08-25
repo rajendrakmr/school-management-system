@@ -1,39 +1,52 @@
 const express = require('express');
 const router = express.Router();
 const schoolController = require('../controllers/schoolController');
-const path = require('path');
+const path = require('path'); 
 const multer = require('multer');
 
-// Set storage engine
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/logos'); // folder where logos will be stored
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname)); // file name only
-    }
-});
+// Use memory storage for now
+const storage = multer.memoryStorage();
 
-// File filter (optional, only allow images)
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only image files are allowed!'), false);
-    }
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
 };
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 } // 2 MB max
+});
 
 // Routes
 router.get('/', schoolController.gets);
 router.get('/list', schoolController.lists);
 
-// Use `upload.single('logo')` for POST & PUT
-router.post('/', upload.single('logo'), schoolController.validate, schoolController.create);
-router.put('/:id', upload.single('logo'), schoolController.validate, schoolController.update);
+router.post(
+  '/',
+  upload.single('logo'),
+  schoolController.validate,
+  schoolController.create
+);
 
+router.put(
+  '/:id',
+  upload.single('logo'),
+  schoolController.validate,
+  schoolController.update
+);
+
+// Multer error handler (for image filter / file size)
 router.delete('/:id', schoolController.deleteSchool);
+router.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError || err.message.includes("Only image files")) {
+    return res.status(400).json({ error: err.message });
+  }
+  next(err);
+});
+
 
 module.exports = router;

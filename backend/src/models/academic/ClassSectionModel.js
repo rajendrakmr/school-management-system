@@ -1,8 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db'); 
-const ClassModel = require('./ClassModel');
-const SectionModel = require('./SectionModel');
-
+ 
 const ClassSectionModel = sequelize.define(
     'ClassSectionModel',
     {

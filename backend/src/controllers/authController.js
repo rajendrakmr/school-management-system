@@ -4,8 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { body, validationResult } = require('express-validator');
-const sequelize = require('../config/db');
-const RoleHasPermission = require('../models/RoleHasPermission');
+const sequelize = require('../config/db'); 
 const { Permission, Module } = require('../models');
 const Role = require('../models/Role');
 
@@ -80,15 +79,7 @@ exports.signup = async (req, res) => {
         await t.rollback(); // rollback on error
         res.status(500).json({ error: err.message });
     }
-}
-
-// Login user
-// const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcrypt');
-// const { validationResult } = require('express-validator');
-// const User = require('../models/User');
-
-
+} 
 
 
 User.hasMany(UserHasRole, { foreignKey: 'trn_user_id' });
@@ -163,8 +154,9 @@ exports.login = async (req, res) => {
                 where: {
                     mst_permission_id: permissionID
                 },
-                required: true
-            }]
+                required: true,
+                order: [['permissions.mst_permission_id', 'ASC']],
+            }] 
         });
         const nav = modules.map(mod => {
             if (mod.has_child === 'Y' && mod.permissions.length > 0) {
@@ -192,7 +184,7 @@ exports.login = async (req, res) => {
             sameSite: "Strict",
             maxAge: 12 * 60 * 60 * 1000
         });
-        const currentUrl = `${req.protocol}://${req.get('host')}`; // e.g., http://localhost:5000
+        const currentUrl = `${req.protocol}://${req.get('host')}`;  
        const userObj = user.toJSON ? user.toJSON() : { ...user };
 
 // Add logo URL
@@ -201,8 +193,7 @@ userObj.logo = `${currentUrl}/uploads/logos/logo.png`;
 // Remove sensitive data
 delete userObj.password_hash;
         res.json({ message: 'Logins successful', token, user:userObj, menu: nav });
-    } catch (err) {
-        console.log('adfdf',err)
+    } catch (err) { 
         res.status(500).json({ error: err.message });
     }
 };

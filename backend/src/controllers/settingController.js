@@ -146,8 +146,8 @@ exports.saveUpdateRecord = async (req, res) => {
         }
 
         // 🔹 delete existing records for this page
-        await TableColumn.destroy({ where: { key_type: name } }); 
-        const defaultPageSize = size || 10; 
+        await TableColumn.destroy({ where: { key_type: name } });
+        const defaultPageSize = size || 10;
         const insertData = columns.map((col, index) => ({
             key_type: name,
             column_key: col.column_key,
@@ -159,7 +159,7 @@ exports.saveUpdateRecord = async (req, res) => {
             is_admin_only: col.is_admin_only || "Y",
             is_active: col.is_active || "Y"
         }));
- 
+
         insertData.push({
             key_type: name,
             column_key: "page_size",
@@ -207,82 +207,72 @@ exports.create = async (req, res) => {
 };
 // PUT: update multiple columns
 exports.update = async (req, res) => {
-    try {
-        const { selectedColumns, user_id, type = "roles", page_size } = req.body; // key_type optional, default 'roles'
+  try {
+    const { selectedColumns, type = "roles", page_size } = req.body;
+    const user_id = req.trn_user_id; // ✅ Fix user id extraction
 
-        if (!selectedColumns || !Array.isArray(selectedColumns)) {
-            return res.status(400).json({ error: "selectedColumns array is required." });
-        }
-
-        // Loop through each column
-        const updatedColumns = [];
-        for (const col of selectedColumns) {
-            const { column_key, column_label, column_order, is_active } = col;
-            const activeValue = is_active === true ? "Y" : is_active === false ? "N" : is_active || "Y";
-            const column = await TableColumn.findOne({ where: { key_type: type, column_key, user_id } });
-
-            if (!column) {
-                const newColumn = await TableColumn.create({
-                    key_type: type,
-                    column_key,
-                    column_label,
-                    column_order,
-                    user_id,
-                    is_default: 0,
-                    is_active: activeValue,
-                });
-                updatedColumns.push(newColumn);
-            } else {
-                // Update existing
-                column.column_label = column_label || column.column_label;
-                column.column_order = column_order || column.column_order;
-                column.is_active = activeValue;
-                column.is_default = 0;
-                await column.save();
-                updatedColumns.push(column);
-            }
-        }
-
-        // Update page_size column separately
-        if (page_size) {
-            const pageSizeColumn = await TableColumn.findOne({
-                where: { key_type: type, column_key: "page_size", user_id }
-            });
-            if (!pageSizeColumn) {
-                await TableColumn.create({
-                    key_type: type,
-                    column_key: "page_size",
-                    column_label: "Page Size",
-                    column_order: selectedColumns.length + 1,
-                    user_id,
-                    is_default: 0,
-                    is_active: "Y",
-                    page_size
-                });
-            } else {
-                pageSizeColumn.page_size = page_size;
-                await pageSizeColumn.save();
-            }
-        }
-
-        res.json({ message: "Columns updated successfully.", updatedColumns });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (!selectedColumns || !Array.isArray(selectedColumns)) {
+      return res.status(400).json({ error: "selectedColumns array is required." });
     }
+
+    const updatedColumns = [];
+
+    // Process all columns in parallel
+    await Promise.all(
+      selectedColumns.map(async (col, idx) => {
+        const { column_key, column_label, column_order, is_active } = col;
+        const activeValue = (is_active === true || is_active === "Y") ? "Y" : "N";
+
+        let column = await TableColumn.findOne({ where: { key_type: type, column_key, user_id } });
+
+        if (!column) {
+          column = await TableColumn.create({
+            key_type: type,
+            column_key,
+            column_label,
+            column_order: column_order ?? idx + 1,
+            user_id,
+            is_default: 0,
+            is_active: activeValue,
+          });
+        } else {
+          column.column_label = column_label ?? column.column_label;
+          column.column_order = column_order ?? column.column_order;
+          column.is_active = activeValue;
+          column.is_default = 0;
+          await column.save();
+        }
+        updatedColumns.push(column);
+      })
+    );
+
+    // Handle page_size column separately
+    if (page_size) {
+      let pageSizeColumn = await TableColumn.findOne({
+        where: { key_type: type, column_key: "page_size", user_id }
+      });
+
+      if (!pageSizeColumn) {
+        pageSizeColumn = await TableColumn.create({
+          key_type: type,
+          column_key: "page_size",
+          column_label: "Page Size",
+          column_order: selectedColumns.length + 1,
+          user_id,
+          is_default: 0,
+          is_active: "Y",
+          page_size
+        });
+      } else {
+        pageSizeColumn.page_size = page_size;
+        await pageSizeColumn.save();
+      }
+      updatedColumns.push(pageSizeColumn); // ✅ Include it in response
+    }
+
+    res.json({ message: "Columns updated successfully.", updatedColumns });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 };
-
-
-
-// // DELETE: remove column
-// exports.delete = async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const column = await TableColumn.findByPk(id);
-//         if (!column) return res.status(404).json({ error: 'Column not found' });
-
-//         await column.destroy();
-//         res.json({ message: 'Column deleted' });
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };

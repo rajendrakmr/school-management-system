@@ -40,6 +40,7 @@ const routes: NavItem[] = [
     { name: 'Dashboard', url: '/sections', id: 'sections', component: lazy(() => import('@/pages/academic/sections/Index')), },
     { name: 'Dashboard', url: '/classes', id: 'classes', component: lazy(() => import('@/pages/academic/classes/Index')), },
     { name: 'Dashboard', url: '/streams', id: 'streams', component: lazy(() => import('@/pages/academic/streams/Index')), },
+      { name: 'Dashboard', url: '/class-subjects', id: 'class-subjects', component: lazy(() => import('@/pages/academic/class-subjects/Index')), },
     
   { name: 'Dashboard', url: '/role-permissions', id: 'permissions', component: lazy(() => import('@/pages/rbac/hasPermissions/Index')), },
   { name: 'Dashboard', url: '/permissions', id: 'permissions', component: lazy(() => import('@/pages/rbac/permissions/Index')), },

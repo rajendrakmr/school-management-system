@@ -2,7 +2,7 @@ const sequelize = require('../../config/db')
 const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const DepartmentModel = require('../../models/academic/DepartmentModel');
-const School = require('../../models/School');
+const SchoolModel = require('../../models/SchoolModel');
 const User = require('../../models/User');
 
 
@@ -25,7 +25,16 @@ exports.validate = [
 
 exports.lists = async (req, res) => {
     try {
+        let whereClause = { is_active: "Y" }
+        if (req.query.branch_id) {
+            whereClause.trn_school_id = req.query.branch_id;
+        }
+         
+        if (req.body.trn_school_id) {
+            whereClause.trn_school_id = req.body.trn_school_id;
+        }
         const rows = await DepartmentModel.findAll({
+            where:whereClause,
             attributes: [
                 ['mst_department_id', 'value'],
                 ['name', 'label']
@@ -72,7 +81,7 @@ exports.gets = async (req, res) => {
             include: [
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] }
+                { model: SchoolModel, as: 'branch', attributes: [] }
             ],
             order: [['mst_department_id', 'DESC'], ["trn_school_id", 'ASC']],
             raw: true
@@ -102,18 +111,18 @@ exports.create = async (req, res) => {
             errors.array().forEach(err => {
                 formattedErrors[err.path] = err.msg;
             });
-            await t.rollback(); 
+            await t.rollback();
             return res.status(422).json({ errors: formattedErrors });
         }
 
         const {
             name,
-            code, 
+            code,
             trn_school_id,
             is_active = "Y"
         } = req.body;
 
-        const { created_by, tenant } = req 
+        const { created_by, tenant } = req
         const existing = await DepartmentModel.findOne({ where: { name, trn_school_id }, transaction: t });
 
         if (existing) {
@@ -128,7 +137,7 @@ exports.create = async (req, res) => {
         }
         const response = await DepartmentModel.create({
             name,
-            code, 
+            code,
             trn_school_id,
             is_active,
             created_by
@@ -162,7 +171,7 @@ exports.update = async (req, res) => {
         const { id } = req.params;
         const {
             name,
-            code, 
+            code,
             trn_school_id,
             is_active = "Y"
         } = req.body;
@@ -195,7 +204,7 @@ exports.update = async (req, res) => {
         await response.update(
             {
                 name,
-                code, 
+                code,
                 trn_school_id,
                 is_active,
                 updated_by
@@ -206,7 +215,7 @@ exports.update = async (req, res) => {
         await t.commit();
 
         res.status(200).json({
-            message: `Department "${name}" has been successfully updated.`, 
+            message: `Department "${name}" has been successfully updated.`,
         });
 
     } catch (err) {

@@ -1,9 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User');
-const DepartmentModel = require('./DepartmentModel');
-const MediumModel = require('./MediumModel');
+const DepartmentModel = require('./DepartmentModel'); 
 
 const SubjectModel = sequelize.define(
     'SubjectModel',
@@ -15,8 +14,8 @@ const SubjectModel = sequelize.define(
         practical_marks: { type: DataTypes.INTEGER, allowNull: true, defaultValue: 0 },
         theory_marks: { type: DataTypes.INTEGER, allowNull: true, defaultValue: 0 }, 
         is_active: { type: DataTypes.ENUM('Y', 'N'), defaultValue: 'Y', },
-        mst_department_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: School, key: 'mst_department_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
-        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: School, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
+        mst_department_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: SchoolModel, key: 'mst_department_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
+        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: SchoolModel, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         updated_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, },
@@ -36,5 +35,5 @@ const SubjectModel = sequelize.define(
 SubjectModel.belongsTo(DepartmentModel, { as: 'department', foreignKey: 'mst_department_id' });
 SubjectModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 SubjectModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-SubjectModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+SubjectModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 module.exports = SubjectModel;

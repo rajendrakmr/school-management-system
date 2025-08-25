@@ -109,97 +109,92 @@ const InputDateField: React.FC<InputDateFieldProps> = memo(
         return (
 
             <div className={`${col} mt-3`}>
-                <div className="form-group">
-                    <div className={row2}>
-                        {/* Label above the input */}
-                        <label
-                            htmlFor={name}
-                            className="form-label fw-semibold"
-                            style={{ fontSize: "14px" }}
-                        >
-                            {label}
-                            {required && <span className="text-danger">*</span>}
-                        </label>
-                    </div>
+  <div className="form-group">
+    
+    {/* Label row */}
+    <label
+      htmlFor={name}
+      className="form-label fw-semibold d-block"
+      style={{ fontSize: "14px" }}
+    >
+      {label} {required && <span className="text-danger">*</span>}
+    </label>
 
-                    <div className={row2}>
-                        <DatePicker
-                            id={name}
-                            className={`form-control ${error ? "is-invalid" : ""}`}
-                            renderCustomHeader={({
-                                date,
-                                changeYear,
-                                changeMonth,
-                                decreaseMonth,
-                                increaseMonth,
-                            }) => (
-                                <div
-                                    style={{
-                                        margin: 10,
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <FontAwesomeIcon
-                                        onClick={decreaseMonth}
-                                        className="me-2 cursor-pointer"
-                                        icon={faChevronLeft}
-                                    />
-                                    <select
-                                        value={getYear(date)}
-                                        onChange={({ target: { value } }) => changeYear(Number(value))}
-                                        style={{ margin: "0 10px" }}
-                                    >
-                                        {years.map((year) => (
-                                            <option key={year} value={year}>
-                                                {year}
-                                            </option>
-                                        ))}
-                                    </select>
+    {/* Input should take full width */}
+    <DatePicker
+      id={name}
+      className={`form-control w-100 ${error ? "is-invalid" : ""}`}
+      renderCustomHeader={({
+        date,
+        changeYear,
+        changeMonth,
+        decreaseMonth,
+        increaseMonth,
+      }) => (
+        <div
+          style={{
+            margin: 10,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <FontAwesomeIcon
+            onClick={decreaseMonth}
+            className="me-2 cursor-pointer"
+            icon={faChevronLeft}
+          />
+          <select
+            value={getYear(date)}
+            onChange={({ target: { value } }) => changeYear(Number(value))}
+            style={{ margin: "0 10px" }}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
 
-                                    <select
-                                        value={months[getMonth(date)]}
-                                        onChange={({ target: { value } }) =>
-                                            changeMonth(months.indexOf(value))
-                                        }
-                                        style={{ margin: "0 10px" }}
-                                    >
-                                        {months.map((month, index) => (
-                                            <option key={index} value={month}>
-                                                {month}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <FontAwesomeIcon
-                                        onClick={increaseMonth}
-                                        className="ms-2 cursor-pointer"
-                                        icon={faChevronRight}
-                                    />
-                                </div>
-                            )}
-                            selected={startDate}
-                            onChange={handleDateChange}
-                            dateFormat="dd/MM/yyyy"
-                            placeholderText="DD/MM/YYYY"
-                            disabled={isDefault}
-                            minDate={minDate ? parseDateString(minDate) : undefined}
-                            maxDate={maxDate ? parseDateString(maxDate) : undefined}
-                            onBlur={onBlur}
-                        />
-                    </div>
-                    {error && (
-                        <span className="text-danger" style={{ fontSize: "11px", marginTop: "0" }}>
-                            {error}
-                        </span>
-                    )}
-                    {error && (
-                        <div className="invalid-feedback" style={{ fontSize: "12px" }}>
-                            {error}
-                        </div>
-                    )}
-                </div>
-            </div>
+          <select
+            value={months[getMonth(date)]}
+            onChange={({ target: { value } }) =>
+              changeMonth(months.indexOf(value))
+            }
+            style={{ margin: "0 10px" }}
+          >
+            {months.map((month, index) => (
+              <option key={index} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
+          <FontAwesomeIcon
+            onClick={increaseMonth}
+            className="ms-2 cursor-pointer"
+            icon={faChevronRight}
+          />
+        </div>
+      )}
+      selected={startDate}
+      onChange={handleDateChange}
+      dateFormat="dd/MM/yyyy"
+      placeholderText="DD/MM/YYYY"
+      disabled={isDefault}
+      minDate={minDate ? parseDateString(minDate) : undefined}
+      maxDate={maxDate ? parseDateString(maxDate) : undefined}
+      onBlur={onBlur}
+    />
+
+    {/* Error message */}
+    {error && (
+      <span className="text-danger" style={{ fontSize: "11px" }}>
+        {error}
+      </span>
+    )}
+  </div>
+</div>
+
 
 
         );

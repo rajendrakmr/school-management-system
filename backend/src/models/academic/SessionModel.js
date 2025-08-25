@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User');
 
 const formatDMY = (date) => {
@@ -50,7 +50,7 @@ const SessionModel = sequelize.define(
     trn_school_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      references: { model: School, key: 'trn_school_id' },
+      references: { model: SchoolModel, key: 'trn_school_id' },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     },
@@ -82,6 +82,6 @@ const SessionModel = sequelize.define(
 
 SessionModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 SessionModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-SessionModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+SessionModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 
 module.exports = SessionModel;

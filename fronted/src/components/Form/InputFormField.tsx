@@ -32,19 +32,20 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(
     required = false,
     max = 250,
     onKeyUp,
-    col = "col-md-3",
+    col = "col-md-4",
     row1 = "col-sm-5 col-4",
     row2 = "col-sm-7 col-8",
   }) => {
-    console.log('error', error)
+   
     const handleNumberInput = (e: ChangeEvent<HTMLInputElement>) => {
 
       let value = e.target.value;
       if (type === "num") {
-        const numericValue = value.replace(/[^0-9.]/g, '');
-        if (value !== numericValue || (numericValue.match(/\./g) || []).length > 1) {
-          return;
-        }
+        let numericValue = value.replace(/[^0-9.]/g, ''); 
+        const parts = numericValue.split('.');
+        if (parts.length > 2) {
+          numericValue = parts[0] + '.' + parts[1];
+        } 
         e.target.value = numericValue;
       }
 
@@ -102,7 +103,7 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(
             placeholder={placeholder || `Enter ${label}`}
           />
 
-          {error&&<span className="text-danger">{error}</span>}
+          {error && <span className="text-danger">{error}</span>}
         </div>
       </div>
     );

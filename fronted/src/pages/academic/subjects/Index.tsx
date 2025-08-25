@@ -28,8 +28,9 @@ const Index: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
 
   // Set breadcrumbs once
+  const pagetitle = "Subject"
   useEffect(() => {
-    dispatch(setBreadcrumbs(["Subjects"]));
+    dispatch(setBreadcrumbs([pagetitle]));
   }, [dispatch]);
 
   // Get column reference
@@ -161,6 +162,7 @@ const Index: React.FC = () => {
 
         {/* Add/Edit Form */}
         <AddEditForm
+          pagetitle={pagetitle}
           open={openForm}
           onClose={() => setOpenForm(false)}
           initialData={formData}

@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const School = require('./School');
+const SchoolModel = require('./SchoolModel');
 
 const User = sequelize.define('erp_trn_users', {
   trn_user_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -8,7 +8,7 @@ const User = sequelize.define('erp_trn_users', {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: School,
+            model: SchoolModel,
             key: 'trn_school_id'
         }, 
         onDelete: 'CASCADE'
@@ -34,7 +34,8 @@ const User = sequelize.define('erp_trn_users', {
 
  // add this
 
-User.belongsTo(School, { foreignKey: 'trn_user_id', as: 'school' });
-
+User.belongsTo(SchoolModel, { foreignKey: 'trn_user_id', as: 'school' });
+SchoolModel.hasMany(User, { foreignKey: 'trn_school_id', as: 'users' });
+// User.belongsTo(SchoolModel, { foreignKey: 'trn_user_id', as: 'school' });
 
 module.exports = User;

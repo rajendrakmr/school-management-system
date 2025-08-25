@@ -10,7 +10,7 @@ export const streamApi = apiSlice.injectEndpoints({
             },
             providesTags: ["Stream"],
         }),
-        saveFormData: builder.mutation<any, any>({
+        saveStream: builder.mutation<any, any>({
             query: (reqData) => { 
                 if (reqData.mst_stream_id) {
                     // Update
@@ -30,7 +30,7 @@ export const streamApi = apiSlice.injectEndpoints({
             },
             invalidatesTags: ["Stream"],
         }), 
-        deleteFormData: builder.mutation<any, number>({
+        deleteStream: builder.mutation<any, number>({
             query: (id) => ({
                 url: `/streams/${id}`,
                 method: "DELETE",
@@ -42,6 +42,6 @@ export const streamApi = apiSlice.injectEndpoints({
 
 export const {
     useGetStreamsQuery, 
-    useDeleteFormDataMutation,
-    useSaveFormDataMutation
+    useDeleteStreamMutation,
+    useSaveStreamMutation
 } = streamApi;

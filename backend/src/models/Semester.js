@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const School = require('./School'); 
+const SchoolModel = require('./SchoolModel'); 
 const User = require('./User');
 
 const Semester = sequelize.define('Semester', {
@@ -13,7 +13,7 @@ const Semester = sequelize.define('Semester', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: School,
+      model: SchoolModel,
       key: 'trn_school_id'
     },
     onUpdate: 'CASCADE',

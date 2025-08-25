@@ -79,7 +79,7 @@ const Index: React.FC = () => {
         itemsPerPage={safeItemsPerPage}
         setItemsPerPage={setItemsPerPage}
         allColumns={allColumns}
-        type="streams"
+        type="sessions"
       />
 
       <div className="shadow-lg p-2">

@@ -2,7 +2,7 @@ const sequelize = require('../../config/db')
 const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const SessionModel = require('../../models/academic/SessionModel');
-const School = require('../../models/School');
+const SchoolModel = require('../../models/SchoolModel');
 const User = require('../../models/User');
 
 const parseDMY = (value) => {
@@ -55,9 +55,18 @@ exports.validate = [
     .isIn(['Y', 'N']).withMessage('Status must be "Y" or "N"')
 ];
 // ✅ Dropdown list (id + label)
+
 exports.lists = async (req, res) => {
     try {
-        const rows = await SessionModel.findAll({
+        let whereClause = { is_active: "Y" }
+        if (req.query.branch_id) {
+            whereClause.trn_school_id = req.query.branch_id;
+        }
+        if (req.body.trn_school_id) {
+            whereClause.trn_school_id = req.body.trn_school_id;
+        }
+        const rows = await SessionModel.findAll({ 
+            where:whereClause,
             attributes: [
                 ['mst_session_id', 'value'],
                 ['name', 'label']
@@ -106,7 +115,7 @@ exports.gets = async (req, res) => {
             include: [
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] }
+                { model: SchoolModel, as: 'branch', attributes: [] }
             ],
             order: [['mst_session_id', 'DESC'], ["trn_school_id", 'ASC']],
             raw: true

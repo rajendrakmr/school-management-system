@@ -25,7 +25,7 @@ const InputRadioFieldComponent: React.FC<InputRadioFieldProps> = ({
     onChange,
     error,
     required = false,
-    col = "col-md-3",
+    col = "col-md-6",
     isDefault = false,
 }) => {
     const colors = ["#9B5DE5", "#4D96FF", "#FF6B6B", "#FFD93D", "#6BCB77"]; // different colors

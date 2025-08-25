@@ -10,19 +10,24 @@ export const SubjectApi = apiSlice.injectEndpoints({
             },
             providesTags: ["Subject"],
         }),
-        saveSubject: builder.mutation<any, FormData & { id?: string }>({
-            query: (formData) => {
-                const isUpdate = !!formData.get('mst_subject_id'); // or formData.get("id")
-                return {
-                    url: isUpdate ? `/subjects/${formData.get('mst_subject_id')}` : "/subjects",
-                    method: isUpdate ? "PUT" : "POST",
-                    body: formData, // send FormData directly
-                    // Don't set Content-Type, browser sets it automatically for multipart/form-data
-                };
+         saveSubject: builder.mutation<any, any>({
+            query: (reqData) => { 
+                if (reqData.mst_subject_id) { 
+                    return {
+                        url: `/subjects/${reqData.mst_subject_id}`,
+                        method: "PUT",
+                        body: reqData,
+                    };
+                } else { 
+                    return {
+                        url: "/subjects",
+                        method: "POST",
+                        body: reqData,
+                    };
+                }
             },
             invalidatesTags: ["Subject"],
-        })
-        ,
+        }),  
         deleteSubject: builder.mutation<any, number>({
             query: (reqId) => ({
                 url: `/subjects/${reqId}`,

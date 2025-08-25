@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User');
 const SessionModel = require('./SessionModel'); 
 const ClassModel = require('./ClassModel');
@@ -40,5 +40,5 @@ StreamModel.belongsTo(ClassModel, { as: 'class', foreignKey: 'mst_class_id' });
 StreamModel.belongsTo(SessionModel, { as: 'session', foreignKey: 'mst_session_id' });
 StreamModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 StreamModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-StreamModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+StreamModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 module.exports = StreamModel;

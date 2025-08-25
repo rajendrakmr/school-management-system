@@ -4,7 +4,7 @@ const sequelize = require('../../config/db')
 const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const GradeModel = require('../../models/academic/GradeModel');
-const School = require('../../models/School');
+const SchoolModel = require('../../models/SchoolModel');
 const User = require('../../models/User');
 const reMessage = "Grade"
 exports.validate = [
@@ -86,7 +86,7 @@ exports.gets = async (req, res) => {
             include: [
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] }
+                { model: SchoolModel, as: 'branch', attributes: [] }
             ],
             order: [['mst_grade_id', 'DESC'], ["trn_school_id", 'ASC']],
             raw: true

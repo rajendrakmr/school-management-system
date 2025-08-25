@@ -12,6 +12,8 @@ module.exports = {
         'erp_trn_schools',
         [
           {
+            email: 'sps@gmail.com',
+            principal_name: 'Sps John',
             school_name: 'Sunrise Public School',
             school_code: 'SPS001',
             city: 'Mumbai',
@@ -42,7 +44,7 @@ module.exports = {
         [
           {
             trn_school_id: school.trn_school_id,
-            first_name: 'School',
+            first_name: 'Sps John',
             last_name: 'Admin',
             email: 'sps@gmail.com',
             password_hash: passwordHash,

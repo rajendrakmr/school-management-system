@@ -9,6 +9,14 @@ module.exports = {
         primaryKey: true,
         allowNull: false
       },
+      email: {
+        type: Sequelize.STRING(100),
+        allowNull: true
+      },
+      principal_name: {
+        type: Sequelize.STRING(100),
+        allowNull: true
+      },
       school_name: {
         type: Sequelize.STRING(255),
         allowNull: false

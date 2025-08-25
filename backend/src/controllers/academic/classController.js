@@ -2,7 +2,7 @@ const sequelize = require('../../config/db')
 const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const ClassModel = require('../../models/academic/ClassModel');
-const School = require('../../models/School');
+const SchoolModel = require('../../models/SchoolModel');
 const User = require('../../models/User');
 const SessionModel = require('../../models/academic/SessionModel');
 const MediumModel = require('../../models/academic/MediumModel');
@@ -46,8 +46,15 @@ exports.validate = [
 
 exports.lists = async (req, res) => {
     try {
+        let whereClause = { is_active: "Y" }
+        if (req.query.session_id) {
+            whereClause.mst_session_id = req.query.session_id;
+        }
+        if (req.body.trn_school_id) {
+            whereClause.trn_school_id = req.body.trn_school_id;
+        }
         const rows = await ClassModel.findAll({
-            where: { is_active: "y" },
+            where: whereClause,
             attributes: [
                 ['mst_class_id', 'value'],
                 ['name', 'label']
@@ -143,15 +150,15 @@ exports.gets = async (req, res) => {
             attributes: [
                 'mst_class_id',
                 'mst_medium_id',
-                'mst_shift_id', 
+                'mst_shift_id',
                 'mst_session_id',
                 'name',
                 'code',
                 'is_active',
                 'trn_school_id',
-                 [Sequelize.col('session.name'), 'session'],
+                [Sequelize.col('session.name'), 'session'],
                 [Sequelize.col('shift.name'), 'shift'],
-                [Sequelize.col('medium.name'), 'medium'], 
+                [Sequelize.col('medium.name'), 'medium'],
                 [Sequelize.col('branch.school_name'), 'branch'],
                 [Sequelize.col('branch.email'), 'branch_email'],
                 [Sequelize.col('branch.image_path'), 'branch_image'],
@@ -164,10 +171,10 @@ exports.gets = async (req, res) => {
             include: [
                 { model: MediumModel, as: 'medium', attributes: [] },
                 { model: SessionModel, as: 'session', attributes: [] },
-                { model: ShiftModel, as: 'shift', attributes: [] }, 
+                { model: ShiftModel, as: 'shift', attributes: [] },
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] },
+                { model: SchoolModel, as: 'branch', attributes: [] },
                 {
                     model: ClassSectionModel,
                     as: 'ClassSectionModels',

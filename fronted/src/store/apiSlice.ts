@@ -33,7 +33,7 @@ export const apiSlice = createApi({
     reducerPath: "api",
     baseQuery: baseQueryWithReauth,
     tagTypes: [
-        "Users","Session","Period","Grade","Department", "Stream","Departments", "LeaveType", "Permission",
+        "Users","Session",,"ClassSubject","Period","Grade","Department", "Stream","Departments", "LeaveType", "Permission",
         "AuthType", "Role", "Column", "Breadcrumb","ShiftTime",
         "School", "Policy","Dropdown", "Medium","Section","Subject","Semester","Class"
     ],

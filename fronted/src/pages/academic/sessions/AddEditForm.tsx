@@ -13,8 +13,9 @@ import InputDateField from "@/components/Form/InputDateField";
 
 interface FormRecordItem {
     trn_school_id?: string;
-    mst_shif_id: string;
+    mst_shift_id: string;
     name: string;
+     code: string;
     start_date: string;
     end_date: string;
     is_active: string;
@@ -44,8 +45,9 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
         // ------------------- Field Config -------------------
         const fieldConfigs: Record<keyof FormRecordItem, { label: string; required: boolean; minLength?: number; maxLength?: number }> = {
             trn_school_id: { required: !usersInfo?.trn_school_id, label: "Branch" },
-            mst_shif_id: { required: false, label: "ID" },
+            mst_shift_id: { required: false, label: "ID" },
             name: { required: true, minLength: 2, maxLength: 50, label: "Name" },
+              code: { required: true, minLength: 2, maxLength: 10, label: "Code" },
             start_date: { required: true, label: "Start Time" },
             end_date: { required: true, label: "End Time" },
             is_active: { required: false, label: "Status" },
@@ -65,9 +67,10 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
         }, {} as ValidationRules);
         const defaultForm: FormRecordItem = useMemo(
             () => ({
-                mst_shif_id: "",
+                mst_shift_id: "",
                 trn_school_id: "",
                 name: "",
+                code:"",
                 start_date: "",
                 end_date: "",
                 is_active: "Y",
@@ -162,7 +165,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                 onChange={handleChange}
                 isSubmitting={isLoading}
             >
-                {
+               <div className="row">
+                 {
                     !usersInfo?.trn_school_id &&
                     <InputSelectField
                         name="trn_school_id"
@@ -177,6 +181,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     />
 
                 }
+                  <div className="col-md-12"></div>
+
                 <InputFormField
                     label={fieldConfigs.name.label}
                     name="name"
@@ -185,6 +191,17 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     required={fieldConfigs.name.required}
                     onChange={handleChange}
                 />
+              
+                <InputFormField
+                    label={fieldConfigs.code.label}
+                    name="code"
+                    inputValue={formData.code}
+                    error={errors.code}
+                    required={fieldConfigs.code.required}
+                    onChange={handleChange}
+                />
+                  <div className="col-md-12"></div>
+
 
                 <InputDateField
                     label={fieldConfigs.start_date.label}
@@ -193,7 +210,7 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     error={errors.start_date?.toString()}
                     required={fieldConfigs.start_date.required}
                     onChange={handleChange}
-                    col="col-md-6"
+                   
                 />
                 <InputDateField
                     label={fieldConfigs.end_date.label}
@@ -203,7 +220,7 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     error={errors.end_date}
                     required={fieldConfigs.end_date.required}
                     onChange={handleChange}
-                    col="col-md-6"
+                   
                 />
 
                 {isEdit && <InputSelectField
@@ -216,6 +233,7 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     error={errors.is_active}
                     required={fieldConfigs.is_active.required}
                 />}
+               </div>
             </SliderForm>
         );
     }

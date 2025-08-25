@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User');
 
 const PeriodModel = sequelize.define(
@@ -11,7 +11,7 @@ const PeriodModel = sequelize.define(
         start_time: { type: DataTypes.TIME, allowNull: true },
         end_time: { type: DataTypes.TIME, allowNull: true }, 
         is_active: { type: DataTypes.ENUM('Y', 'N'), defaultValue: 'Y', },
-        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: School, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
+        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: SchoolModel, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         updated_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, },
@@ -29,5 +29,5 @@ const PeriodModel = sequelize.define(
 
 PeriodModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 PeriodModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-PeriodModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+PeriodModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 module.exports = PeriodModel;

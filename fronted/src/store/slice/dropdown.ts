@@ -43,8 +43,8 @@ export const dropdown = apiSlice.injectEndpoints({
         }),
         getSectionList: builder.query({
             query: (session_id?: string | number) => {
-                let url = `/sections/list`; 
-                if (session_id) url += `?session_id=${session_id}`;  
+                let url = `/sections/list`;
+                if (session_id) url += `?session_id=${session_id}`;
                 return url;
             },
             providesTags: ["Section"],
@@ -52,7 +52,7 @@ export const dropdown = apiSlice.injectEndpoints({
         getShiftList: builder.query({
             query: (session_id?: string | number) => {
                 let url = `/shifts/list`;
-                if (session_id) url += `?session_id=${session_id}`; 
+                if (session_id) url += `?session_id=${session_id}`;
                 return url;
             },
             providesTags: ["ShiftTime"],
@@ -72,18 +72,45 @@ export const dropdown = apiSlice.injectEndpoints({
             providesTags: ["School"],
         }),
         getDepartmentList: builder.query({
-            query: () => {
+            query: (branch_id?: string | number) => {
                 let url = `/departments/list`;
+                if (branch_id) url += `?branch_id=${branch_id}`;
                 return url;
             },
             providesTags: ["Department"],
         }),
         getSessionList: builder.query({
-            query: () => {
-                let url = `/sessions/list`;
+            query: (branch_id?: string | number) => {
+                let url = `/sessions/list?`;
+                if (branch_id) url += `&branch_id=${branch_id}`; 
+                return url;
+            }, 
+            providesTags: ["Session"],
+        }),
+
+        getClassList: builder.query({
+            query: (session_id?: string | number) => {
+                let url = `/classes/list`;
+                if (session_id) url += `?session_id=${session_id}`;
                 return url;
             },
-            providesTags: ["Session"],
+            providesTags: ["Class"],
+        }),
+        // getClassList: builder.query({
+        //     query: () => {
+        //         let url = `/sessions/list`;
+        //         return url;
+        //     },
+        //     providesTags: ["Session"],
+        // }),
+        
+        getSubjectList: builder.query({ 
+             query: (branch_id?: string | number) => {
+                let url = `/subjects/list`;
+                if (branch_id) url += `?branch_id=${branch_id}`;
+                return url;
+            },
+            providesTags: ["Subject"],
         }),
 
 
@@ -104,4 +131,6 @@ export const {
     useGetBracnhListQuery,
     useGetDepartmentListQuery,
     useGetSessionListQuery,
+    useGetClassListQuery,
+    useGetSubjectListQuery
 } = dropdown;

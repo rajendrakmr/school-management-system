@@ -33,7 +33,7 @@ export const validationRequest = (
         const value = formData[field];
         const rules = validationRules[field];
         const displayName = formatFieldName(field);
-        if (!Array.isArray(formData[field]) || formData[field].length === 0) {
+        if (Array.isArray(formData[field]) || formData[field]?.length === 0) {
             errors[field] = `${displayName} is required`;
         }
 

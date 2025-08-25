@@ -149,13 +149,12 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
     // ------------------- JSX -------------------
 
 
-    const { data: sessionOptions } = useGetSessionListQuery({ refetchOnMountOrArgChange: true });
+    const { data: sessionOptions } = useGetSessionListQuery(formData?.trn_school_id,{ refetchOnMountOrArgChange: true });
     const { data: sectionOptions } = useGetSectionListQuery(formData?.mst_session_id, { refetchOnMountOrArgChange: true });
     const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
-    const { data: mediumOptions } = useGetMediumListQuery({ refetchOnMountOrArgChange: true });
-    const { data: streamOptions } = useGetStreamListQuery({ refetchOnMountOrArgChange: true });
+    const { data: mediumOptions } = useGetMediumListQuery({ refetchOnMountOrArgChange: true }); 
     const { data: shiftOptions } = useGetShiftListQuery(formData?.mst_session_id, { refetchOnMountOrArgChange: true });
-    const [sectionList, setSectionList] = useState<{ value: string; label: string }[]>([]);
+     
     // ------------------- Handlers -------------------
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -163,13 +162,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
         setErrors(prev => ({ ...prev, [name]: "" }));
     }, []);
 
-    // useEffect(() => {
-    //     if (sectionOptions) {
-    //         setSectionList(sectionOptions);
-    //     }
-    // }, [sectionOptions]);
-    console.log('sectionOptionssectionOptionssectionOptions', sectionOptions)
-
+    
     return (
         <SliderForm
             show={open}

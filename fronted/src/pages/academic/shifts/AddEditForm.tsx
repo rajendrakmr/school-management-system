@@ -39,9 +39,6 @@ interface AddEditFormProps {
 const AddEditForm: React.FC<AddEditFormProps> = React.memo(
     ({ open, onClose, initialData, isEdit, onSuccess, pagetitle }) => {
         const usersInfo = useUserInfo();
-        const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
-        const { data: sessionOptions } = useGetSessionListQuery({ refetchOnMountOrArgChange: true });
-
         // ------------------- Field Config -------------------
         const fieldConfigs: Record<keyof FormRecordItem, { label: string; required: boolean; minLength?: number; maxLength?: number }> = {
             trn_school_id: { required: !usersInfo?.trn_school_id, label: "Branch" },
@@ -143,6 +140,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
         }, []);
 
 
+        const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
+        const { data: sessionOptions } = useGetSessionListQuery(formData?.trn_school_id, { refetchOnMountOrArgChange: true });
 
         return (
             <SliderForm
@@ -158,63 +157,63 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                 isSubmitting={isLoading}
             >
                 <div className="row">
-                {
-                    !usersInfo?.trn_school_id &&
+                    {
+                        !usersInfo?.trn_school_id &&
+                        <InputSelectField
+                            name="trn_school_id"
+                            label={fieldConfigs.trn_school_id.label}
+                            options={branchOptions}
+                            value={formData.trn_school_id}
+                            onChange={handleSelectChange}
+                            isEdit={!!usersInfo?.trn_school_id} // disable editing if user has school
+                            error={errors.trn_school_id}
+                            required={fieldConfigs.trn_school_id.required}
+                            col="col-md-4"
+                        />
+
+                    }
                     <InputSelectField
-                        name="trn_school_id"
-                        label={fieldConfigs.trn_school_id.label}
-                        options={branchOptions}
-                        value={formData.trn_school_id}
+                        name="mst_session_id"
+                        label={fieldConfigs.mst_session_id.label}
+                        options={sessionOptions}
+                        value={formData.mst_session_id}
                         onChange={handleSelectChange}
-                        isEdit={!!usersInfo?.trn_school_id} // disable editing if user has school
-                        error={errors.trn_school_id}
-                        required={fieldConfigs.trn_school_id.required}
+                        isEdit={!!usersInfo?.mst_session_id} // disable editing if user has session
+                        error={errors.mst_session_id}
+                        required={fieldConfigs.mst_session_id.required}
                         col="col-md-4"
                     />
+                    <div className="col-md-12"></div>
+                    <InputFormField
+                        label={fieldConfigs.name.label}
+                        name="name"
+                        inputValue={formData.name}
+                        error={errors.name}
+                        required={fieldConfigs.name.required}
+                        onChange={handleChange}
+                        col="col-md-6"
+                    />
+                    <div className="col-md-6"></div>
 
-                }
-                <InputSelectField
-                    name="mst_session_id"
-                    label={fieldConfigs.mst_session_id.label}
-                    options={sessionOptions}
-                    value={formData.mst_session_id}
-                    onChange={handleSelectChange}
-                    isEdit={!!usersInfo?.mst_session_id} // disable editing if user has session
-                    error={errors.mst_session_id}
-                    required={fieldConfigs.mst_session_id.required}
-                    col="col-md-4"
-                />
-               <div className="col-md-12"></div>
-                 <InputFormField
-                    label={fieldConfigs.name.label}
-                    name="name"
-                    inputValue={formData.name}
-                    error={errors.name}
-                    required={fieldConfigs.name.required}
-                    onChange={handleChange}
-                    col="col-md-6"
-                />
-                <div className="col-md-6"></div>
-
-                <InputTimeField
-                    label={fieldConfigs.start_time.label}
-                    name="start_time"
-                    inputValue={formData.start_time}
-                    error={errors.start_time}
-                    required={fieldConfigs.start_time.required}
-                    onChange={handleChange}
-                    col="col-md-3"
-                />
-                <InputTimeField
-                    label={fieldConfigs.end_time.label}
-                    name="end_time"
-                    inputValue={formData.end_time}
-                    error={errors.end_time}
-                    required={fieldConfigs.end_time.required}
-                    onChange={handleChange}
-                    col="col-md-3"
-                />
-               </div>
+                    <InputTimeField
+                        label={fieldConfigs.start_time.label}
+                        name="start_time"
+                        inputValue={formData.start_time}
+                        error={errors.start_time}
+                        required={fieldConfigs.start_time.required}
+                        onChange={handleChange}
+                        col="col-md-3"
+                    />
+                    <InputTimeField
+                        label={fieldConfigs.end_time.label}
+                        name="end_time"
+                        inputValue={formData.end_time}
+                        error={errors.end_time}
+                        required={fieldConfigs.end_time.required}
+                        onChange={handleChange}
+                        col="col-md-3"
+                    />
+                </div>
 
                 {isEdit && <InputSelectField
                     name="is_active"

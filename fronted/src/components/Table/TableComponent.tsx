@@ -161,6 +161,9 @@ const TableComponent = <T extends Record<string, any>>({
         );
       case "is_active":
         return <IsActiveBadge status={value} />;
+      case "is_optional":
+         return <IsDefaultBadge status={value} />;
+        
       case "is_default":
         return <IsDefaultBadge status={value} />;
       case "image_path":

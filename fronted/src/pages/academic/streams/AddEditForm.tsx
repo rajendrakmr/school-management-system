@@ -5,14 +5,16 @@ import SliderForm from "@/components/Form/SliderForm";
 import InputFormField from "@/components/Form/InputFormField";
 import InputSelectField from "@/components/Form/InputSelectField";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
-import { useSaveFormDataMutation } from "@/store/slice/academics/streams";
+import { useSaveStreamMutation } from "@/store/slice/academics/streams";
 import { isActiveOptions } from "@/utils/helper";
 import { useUserInfo } from "@/hooks/useUserInfo";
-import { useGetBracnhListQuery } from "@/store/slice/dropdown";
+import { useGetBracnhListQuery, useGetClassListQuery, useGetSessionListQuery } from "@/store/slice/dropdown";
 
 interface FormRecordItem {
     trn_school_id?: string;
     mst_stream_id: string;
+     mst_class_id: string;
+      mst_session_id: string;
     name: string;
     code: string;
     is_active: string;
@@ -45,6 +47,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
         const fieldConfigs: Record<keyof FormRecordItem, { label: string; required: boolean; minLength?: number; maxLength?: number }> = {
             trn_school_id: { required: !usersInfo?.trn_school_id, label: "Branch" },
             mst_stream_id: { required: false, label: "ID" },
+            mst_class_id: { required: true, label: "Class" },
+            mst_session_id: { required: true, label: "Session" },
             name: { required: true, minLength: 2, maxLength: 50, label: "Name" },
             code: { required: false, label: "Code" },
             is_active: { required: false, label: "Status" },
@@ -65,6 +69,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
         const defaultForm: FormRecordItem = useMemo(
             () => ({
                 mst_stream_id: "",
+                 mst_session_id: "",
+                  mst_class_id: "",
                 trn_school_id: "",
                 name: "",
                 code: "",
@@ -81,7 +87,7 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
 
         const [errors, setErrors] = useState<SchoolFormErrors>({});
         const timeoutRef = useRef<number | null>(null);
-        const [saveFormData, { isLoading }] = useSaveFormDataMutation();
+        const [saveStream, { isLoading }] = useSaveStreamMutation();
         useEffect(() => {
             setFormData(initialForm)
         }, [initialForm])
@@ -110,18 +116,20 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
             const { isValid, errors } = validationRequest(formData, validationRules);
             setErrors(errors);
 
+            console.log(formData,"formdATa")
             if (!isValid) {
                 toast.error("Please fill in all mandatory fields.", { autoClose: 3000, position: "top-right" });
                 return;
             }
 
             try {
-                const response = await saveFormData(formData).unwrap();
+                const response = await saveStream(formData).unwrap();
                 toast.success(response.message || "Data saved successfully!", { autoClose: 3000, position: "top-right" });
                 onSuccess();
                 resetForm();
                 timeoutRef.current = window.setTimeout(onClose, 1000);
             } catch (err: any) {
+                console.log(err)
                 if (err?.data?.errors) {
                     setErrors(err.data.errors);
                     toast.error("Please fix the highlighted errors.", { autoClose: 3000, position: "top-right" });
@@ -139,7 +147,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
             };
         }, []);
 
-
+  const { data: sessionOptions } = useGetSessionListQuery(formData.trn_school_id, { refetchOnMountOrArgChange: true });
+  const { data: classOptions } = useGetClassListQuery(formData.mst_session_id, { refetchOnMountOrArgChange: true });
 
         return (
             <SliderForm
@@ -154,7 +163,8 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                 onChange={handleChange}
                 isSubmitting={isLoading}
             >
-                {
+               <div className="row">
+                 {
                     !usersInfo?.trn_school_id &&
                     <InputSelectField
                         name="trn_school_id"
@@ -169,6 +179,25 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     />
 
                 }
+                <InputSelectField
+                    name="mst_session_id"
+                    label={fieldConfigs.mst_session_id.label}
+                    options={sessionOptions}
+                    value={formData.mst_session_id}
+                    onChange={handleSelectChange}
+                    error={errors.mst_session_id}
+                    required
+                />
+
+                <InputSelectField
+                    name="mst_class_id"
+                    label={fieldConfigs.mst_class_id.label}
+                    options={classOptions}
+                    value={formData.mst_class_id}
+                    onChange={handleSelectChange}
+                    error={errors.mst_class_id}
+                    required
+                />
                 <InputFormField
                     label={fieldConfigs.name.label}
                     name="name"
@@ -184,8 +213,7 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     inputValue={formData.code}
                     error={errors.code}
                     required={fieldConfigs.code.required}
-                    onChange={handleChange}
-                    col="col-md-6"
+                    onChange={handleChange} 
                 />
 
                 {isEdit && <InputSelectField
@@ -198,6 +226,7 @@ const AddEditForm: React.FC<AddEditFormProps> = React.memo(
                     error={errors.is_active}
                     required={fieldConfigs.is_active.required}
                 />}
+               </div>
             </SliderForm>
         );
     }

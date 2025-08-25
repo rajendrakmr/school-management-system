@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User');
 const SessionModel = require('./SessionModel');
 
@@ -13,7 +13,7 @@ const ShiftModel = sequelize.define(
         end_time: { type: DataTypes.TIME, allowNull: true }, 
         is_active: { type: DataTypes.ENUM('Y', 'N'), defaultValue: 'Y', },
         mst_session_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: SessionModel, key: 'mst_session_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
-        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: School, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
+        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: SchoolModel, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         updated_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, },
@@ -31,5 +31,5 @@ const ShiftModel = sequelize.define(
 ShiftModel.belongsTo(SessionModel, { as: 'session', foreignKey: 'mst_session_id' });
 ShiftModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 ShiftModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-ShiftModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+ShiftModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 module.exports = ShiftModel;

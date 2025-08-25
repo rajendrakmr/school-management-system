@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const Semester = require('../../models/Semester');
-const School = require('../../models/School');
+const SchoolModel = require('../../models/SchoolModel');
 const User = require('../../models/User');
 const { Sequelize } = require('sequelize');
 // Validation rules for Medium creation
@@ -33,7 +33,7 @@ exports.lists = async (req, res) => {
 };
 
 // Paginated list of Mediums
-Semester.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+Semester.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 Semester.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 Semester.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
 exports.gets = async (req, res) => {
@@ -68,7 +68,7 @@ exports.gets = async (req, res) => {
             include: [         // just used for join
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] }
+                { model: SchoolModel, as: 'branch', attributes: [] }
             ],
             order: [['mst_semester_id', 'DESC'],['trn_school_id', 'ASC']],
             raw: true

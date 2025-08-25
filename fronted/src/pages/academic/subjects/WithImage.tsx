@@ -27,7 +27,6 @@ type FormErrors = Partial<Record<keyof FormRecordItem, string>>;
 
 interface AddEditFormProps {
     open: boolean;
-    pagetitle?: string;
     isEdit: boolean;
     onClose: () => void;
     initialData?: FormRecordItem;
@@ -42,19 +41,20 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
     initialData,
     isEdit,
     onSuccess,
-    pagetitle
 }) => {
 
     const usersInfo = useUserInfo();
-   
+    const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
+    const { data: departmentOptions } = useGetDepartmentListQuery({ refetchOnMountOrArgChange: true });
+
 
     // ------------------- Field Config -------------------
     const fieldConfigs: Record<keyof FormRecordItem, { label: string; required: boolean; minLength?: number; maxLength?: number }> = {
         trn_school_id: { required: !usersInfo?.trn_school_id, label: "Branch" },
         mst_department_id: { required: true, label: "Department" },
         mst_subject_id: { required: false, label: "ID" },
-        name: { required: true, minLength: 3, maxLength: 50, label: "Subject Name" },
-        type: { required: true, label: "Subject Type" },
+        name: { required: true, minLength: 2, maxLength: 50, label: "Subject Name" },
+        type: { required: true, label: "Type" },
         code: { required: false, label: "Subject Code" },
         image: { required: false, label: "Image" },
         image_path: { required: false, label: "Image" },
@@ -143,15 +143,15 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
         }
 
         try {
-            // const formPayload = new FormData();
-            // Object.entries(formData).forEach(([key, value]) => {
-            //     if (value !== undefined && value !== null) {
-            //         if (key === "image" && value instanceof File) formPayload.append("image", value);
-            //         else formPayload.append(key, String(value));
-            //     }
-            // });
+            const formPayload = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    if (key === "image" && value instanceof File) formPayload.append("image", value);
+                    else formPayload.append(key, String(value));
+                }
+            });
 
-            const response = await saveSubject(formData).unwrap();
+            const response = await saveSubject(formPayload).unwrap();
             toast.success(response.message || "Data saved successfully!");
             onSuccess();
             resetForm();
@@ -173,14 +173,12 @@ const AddEditForm: React.FC<AddEditFormProps> = ({
         if (formData.image_path) return `${PATH}/uploads${formData.image_path}`;
         return "";
     }, [preview, formData.image_path]);
- const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
-    const { data: departmentOptions } = useGetDepartmentListQuery(formData?.trn_school_id,{ refetchOnMountOrArgChange: true });
 
     return (
         <SliderForm
             show={open}
             onClose={() => { resetForm(); onClose(); }}
-            title={isEdit ? `Edit ${pagetitle}` :  `Add ${pagetitle}`}
+            title={isEdit ? "Edit Subject" : "Add Subject"}
             errors={errors}
             onSubmit={handleFormSubmit}
             onChange={handleChange}

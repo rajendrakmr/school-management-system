@@ -1,19 +1,21 @@
 const sequelize = require('../../config/db')
 const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
-const SubjectModel = require('../../models/academic/SubjectModel');
-const School = require('../../models/School');
+// const SubjectModel = require('../../models/academic/SubjectModel');
+// const SchoolModel = require('../models/SchoolModel');
 const User = require('../../models/User');
 const DepartmentModel = require('../../models/academic/DepartmentModel');
-const MediumModel = require('../../models/academic/MediumModel');
-
+const SubjectModel = require('../../models/academic/SubjectModel');
+const SchoolModel = require('../../models/SchoolModel');
+ 
 const reMessage = "Subject"
 exports.validate = [
     body('name')
-        .notEmpty().withMessage('Medium name is required')
-        .isLength({ min: 3 }).withMessage('Medium name must be at least 3 characters long')
-        .isLength({ max: 50 }).withMessage('Medium name must not exceed 50 characters'),
-
+        .notEmpty().withMessage('Subject name is required')
+        .isLength({ min: 3 }).withMessage('Subject name must be at least 3 characters long')
+        .isLength({ max: 50 }).withMessage('Subject name must not exceed 50 characters'),
+  body('mst_department_id')
+        .notEmpty().withMessage('Department is required'),
     body('code')
         .notEmpty().withMessage('Subject Code is is required')
         .isLength({ max: 10 }).withMessage('Subject Code must not exceed 10 characters'),
@@ -26,7 +28,15 @@ exports.validate = [
 
 exports.lists = async (req, res) => {
     try {
+         let whereClause = { is_active: "Y" }
+        if (req.query.branch_id) {
+            whereClause.trn_school_id = req.query.branch_id;
+        }
+        if (req.body.trn_school_id) {
+            whereClause.trn_school_id = req.body.trn_school_id;
+        }
         const rows = await SubjectModel.findAll({
+            where:whereClause,
             attributes: [
                 ['mst_subject_id', 'value'],
                 ['name', 'label']
@@ -81,7 +91,7 @@ exports.gets = async (req, res) => {
                 { model: DepartmentModel, as: 'department', attributes: [] },
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] }
+                { model: SchoolModel, as: 'branch', attributes: [] }
             ],
             order: [['mst_subject_id', 'DESC'], ["trn_school_id", 'ASC']],
             raw: true
@@ -129,7 +139,7 @@ exports.create = async (req, res) => {
         } = req.body;
 
         const { created_by, tenant } = req
-        const existing = await SubjectModel.findOne({ where: { name, trn_school_id }, transaction: t });
+        const existing = await SubjectModel.findOne({ where: { mst_department_id,name, trn_school_id }, transaction: t });
 
         if (existing) {
             await t.rollback();
@@ -167,6 +177,7 @@ exports.create = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
+ 
     const t = await sequelize.transaction();
     try {
         const errors = validationResult(req);
@@ -202,7 +213,7 @@ exports.update = async (req, res) => {
         }
 
         const existing = await SubjectModel.findOne({
-            where: { name, trn_school_id, mst_subject_id: { [Op.ne]: id } },
+            where: { name,mst_department_id, trn_school_id, mst_subject_id: { [Op.ne]: id } },
             transaction: t
         });
 
@@ -236,7 +247,7 @@ exports.update = async (req, res) => {
         await t.commit();
 
         res.status(200).json({
-            message: `${reMessage} "${session.name}" has been successfully updated.`,
+            message: `${reMessage} "${name}" has been successfully updated.`,
         });
 
     } catch (err) {

@@ -1,12 +1,13 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db'); // adjust path to your db config
-const User = require('./User'); // make sure School model exists
+const User = require('./User'); // make sure SchoolModel model exists
 
-const School = sequelize.define('School', {
+const SchoolModel = sequelize.define('SchoolModel', {
     trn_school_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     school_name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false },
-    school_code: { type: DataTypes.STRING, allowNull: false },  
+    principal_name: { type: DataTypes.STRING, allowNull: true },
+    school_code: { type: DataTypes.STRING, allowNull: false },
     city: { type: DataTypes.STRING, allowNull: true },
     state: { type: DataTypes.STRING, allowNull: true },
     established_year: { type: DataTypes.INTEGER, allowNull: true },
@@ -17,6 +18,6 @@ const School = sequelize.define('School', {
     tableName: 'erp_trn_schools',
     timestamps: false
 });
+// SchoolModel.hasMany(User, { foreignKey: 'trn_school_id', as: 'users' });
 
- 
-module.exports = School;
+module.exports = SchoolModel;

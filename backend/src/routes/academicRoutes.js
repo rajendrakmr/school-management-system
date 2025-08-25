@@ -11,6 +11,15 @@ const sessionController = require('../controllers/academic/sessionController');
 const departmentController = require('../controllers/academic/departmentController');
 const periodController = require('../controllers/academic/periodController');
 const gradeController = require('../controllers/academic/gradeController');
+const classSubjectController = require('../controllers/academic/classSubjectController');
+
+
+
+// periods
+router.get('/class-subjects', classSubjectController.gets);
+router.post('/class-subjects',classSubjectController.validate,classSubjectController.create );
+router.get('/class-subjects/list', classSubjectController.lists); 
+router.put('/class-subjects/:id', classSubjectController.validate, classSubjectController.update );  
 
 
 
@@ -87,8 +96,13 @@ const upload = multer({ storage, fileFilter });
 
 router.get('/subjects/list', subjectController.lists); 
 router.get('/subjects', subjectController.gets);
-router.post('/subjects',upload.single('image'),subjectController.validate,subjectController.create );
-router.put('/subjects/:id',upload.single('image'), subjectController.validate, subjectController.update );  
+router.post('/subjects',subjectController.validate,subjectController.create );
+router.put('/subjects/:id', subjectController.validate, subjectController.update );  
+
+// router.get('/subjects/list', subjectController.lists); 
+// router.get('/subjects', subjectController.gets);
+// router.post('/subjects',upload.single('image'),subjectController.validate,subjectController.create );
+// router.put('/subjects/:id',upload.single('image'), subjectController.validate, subjectController.update );  
 
 router.get('/sections/list', sectionController.lists); 
 router.get('/sections', sectionController.gets);

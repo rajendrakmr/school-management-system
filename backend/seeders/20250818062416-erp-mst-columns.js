@@ -7,7 +7,7 @@ module.exports = {
       { key_type: "sessions", column_key: "name", column_label: "Name" },
       { key_type: "sessions", column_key: "start_date", column_label: "From" },
       { key_type: "sessions", column_key: "end_date", column_label: "To" },
-      { key_type: "sessions", column_key: "code", column_label: "Code", is_admin_only: "Y" },
+      { key_type: "sessions", column_key: "code", column_label: "Code"},
       { key_type: "sessions", column_key: "is_active", column_label: "Status" },
       { key_type: "sessions", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "sessions", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -18,7 +18,7 @@ module.exports = {
 
       { key_type: "mediums", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "mediums", column_key: "name", column_label: "Name" },
-      { key_type: "mediums", column_key: "code", column_label: "Code", is_admin_only: "Y" },
+      { key_type: "mediums", column_key: "code", column_label: "Code"},
       { key_type: "mediums", column_key: "is_active", column_label: "Status" },
       { key_type: "mediums", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "mediums", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -31,7 +31,7 @@ module.exports = {
 
       { key_type: "departments", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "departments", column_key: "name", column_label: "Name" },
-      { key_type: "departments", column_key: "code", column_label: "Code", is_admin_only: "Y" },
+      { key_type: "departments", column_key: "code", column_label: "Code"},
       { key_type: "departments", column_key: "is_active", column_label: "Status" },
       { key_type: "departments", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "departments", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -47,7 +47,7 @@ module.exports = {
       { key_type: "subjects", column_key: "practical_marks", column_label: "Practical Marks", is_active: "N", is_admin_only: "Y" },
       { key_type: "subjects", column_key: "department", column_label: "Department" },
       { key_type: "subjects", column_key: "name", column_label: "Name" },
-      { key_type: "subjects", column_key: "code", column_label: "Code", is_admin_only: "Y" },
+      { key_type: "subjects", column_key: "code", column_label: "Code"},
       { key_type: "subjects", column_key: "is_active", column_label: "Status" },
       { key_type: "subjects", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "subjects", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -58,8 +58,8 @@ module.exports = {
 
       { key_type: "periods", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "periods", column_key: "name", column_label: "Name" },
-      { key_type: "periods", column_key: "start_date", column_label: "Start Date" },
-      { key_type: "periods", column_key: "end_date", column_label: "End Date" },
+      { key_type: "periods", column_key: "start_time", column_label: "Start Time" },
+      { key_type: "periods", column_key: "end_time", column_label: "End Time" },
       { key_type: "periods", column_key: "is_active", column_label: "Status" },
       { key_type: "periods", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },  //comom
       { key_type: "periods", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },  //comom
@@ -95,7 +95,7 @@ module.exports = {
       { key_type: "grades", column_key: "page_size", column_label: "Page Size", is_admin_only: "Y" },  //comom
 
       { key_type: "shifts", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
-      { key_type: "shifts", column_key: "sesssion", column_label: "Session" },
+      { key_type: "shifts", column_key: "session", column_label: "Session" },
       { key_type: "shifts", column_key: "name", column_label: "Name" },
       { key_type: "shifts", column_key: "start_time", column_label: "Start Time" },
       { key_type: "shifts", column_key: "end_time", column_label: "End Time" },
@@ -109,7 +109,7 @@ module.exports = {
 
 
       { key_type: "classes", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
-      { key_type: "classes", column_key: "sesssion", column_label: "Session" },
+      { key_type: "classes", column_key: "session", column_label: "Session" },
       { key_type: "classes", column_key: "medium", column_label: "Medium" },
       { key_type: "classes", column_key: "shift", column_label: "Shift Time" },
       { key_type: "classes", column_key: "name", column_label: "Name" },
@@ -123,7 +123,7 @@ module.exports = {
       { key_type: "classes", column_key: "page_size", column_label: "Page Size", is_admin_only: "Y" },  //comom
 
       { key_type: "sections", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
-      { key_type: "sections", column_key: "sesssion", column_label: "Session" },
+      { key_type: "sections", column_key: "session", column_label: "Session" },
       { key_type: "sections", column_key: "class", column_label: "Class" },
       { key_type: "sections", column_key: "name", column_label: "Name" },
       { key_type: "sections", column_key: "code", column_label: "Code" },
@@ -138,7 +138,7 @@ module.exports = {
 
 
       { key_type: "streams", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
-      { key_type: "streams", column_key: "sesssion", column_label: "Session" },
+      { key_type: "streams", column_key: "session", column_label: "Session" },
       { key_type: "streams", column_key: "class", column_label: "Class" },
       { key_type: "streams", column_key: "name", column_label: "Name" },
       { key_type: "streams", column_key: "code", column_label: "Code" },
@@ -152,7 +152,7 @@ module.exports = {
 
 
       { key_type: "class-subjects", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
-      { key_type: "class-subjects", column_key: "sesssion", column_label: "Session" },
+      { key_type: "class-subjects", column_key: "session", column_label: "Session" },
       { key_type: "class-subjects", column_key: "class", column_label: "Class" },
       { key_type: "class-subjects", column_key: "subject", column_label: "Subject" },
       { key_type: "class-subjects", column_key: "stream", column_label: "Class" },
@@ -173,7 +173,7 @@ module.exports = {
 
 
       { key_type: "exams", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
-      { key_type: "exams", column_key: "sesssion", column_label: "Session" },
+      { key_type: "exams", column_key: "session", column_label: "Session" },
       { key_type: "exams", column_key: "name", column_label: "Name" },
       { key_type: "exams", column_key: "code", column_label: "Code" },
       { key_type: "exams", column_key: "exam_type", column_label: "Exam Type" },
@@ -306,7 +306,8 @@ module.exports = {
       { key_type: "permissions", column_key: "action", column_label: "Action" },
       { key_type: "permissions", column_key: "page_size", column_label: "Page Size" },
 
-      { key_type: "schools", column_key: "image_path", column_label: "Logo" },
+      { key_type: "schools", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
+      { key_type: "schools", column_key: "image_path", column_label: "Logo", is_active: "N", },
       { key_type: "schools", column_key: "school_name", column_label: "School Name" },
       { key_type: "schools", column_key: "school_code", column_label: "School Code" },
       { key_type: "schools", column_key: "principal_name", column_label: "Principal Name", is_active: "N" },
@@ -350,7 +351,7 @@ module.exports = {
       ...col,
       column_order: index + 1,
       is_active: col?.is_active ? col.is_active : "Y",
-      is_admin_only: col?.is_admin_only ? col.is_admin_only : "Y",
+      is_admin_only: col?.is_admin_only ? col.is_admin_only : "N",
       is_default: 1,
       page_size: 10,
       user_id: null,

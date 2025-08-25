@@ -2,13 +2,10 @@ const sequelize = require('../../config/db')
 const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const SectionModel = require('../../models/academic/SectionModel');
-const School = require('../../models/School');
+const SchoolModel = require('../../models/SchoolModel');
 const User = require('../../models/User');
 const SessionModel = require('../../models/academic/SessionModel');
-const MediumModel = require('../../models/academic/MediumModel');
-const ShiftModel = require('../../models/academic/ShiftModel');
-const ClassModel = require('../../models/academic/ClassModel');
-
+ 
 const reMessage = "Section"
 exports.validate = [
     body('mst_session_id').notEmpty().withMessage('Session is required'),
@@ -35,6 +32,10 @@ exports.lists = async (req, res) => {
         let whereClause = { is_active: "Y" }
         if (req.query.session_id) {
             whereClause.mst_session_id = req.query.session_id;
+        }
+       
+        if (req.body.trn_school_id) {
+            whereClause.trn_school_id = req.body.trn_school_id;
         }
 
         const rows = await SectionModel.findAll({
@@ -89,7 +90,7 @@ exports.gets = async (req, res) => {
                 { model: SessionModel, as: 'session', attributes: [] },
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] }
+                { model: SchoolModel, as: 'branch', attributes: [] }
             ],
             order: [['mst_section_id', 'DESC'], ["trn_school_id", 'ASC']],
             raw: true

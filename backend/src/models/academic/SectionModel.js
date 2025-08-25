@@ -1,11 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User');
 const SessionModel = require('./SessionModel');
-const ClassModel = require('./ClassModel');
-const ClassSectionModel = require('./ClassSectionModel');
-
+ 
 const SectionModel = sequelize.define(
     'SectionModel',
     {
@@ -38,5 +36,5 @@ const SectionModel = sequelize.define(
 SectionModel.belongsTo(SessionModel, { as: 'session', foreignKey: 'mst_session_id' });
 SectionModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 SectionModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-SectionModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+SectionModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 module.exports = SectionModel;

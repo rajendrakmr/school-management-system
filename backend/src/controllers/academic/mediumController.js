@@ -2,7 +2,7 @@ const sequelize = require('../../config/db')
 const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const MediumModel = require('../../models/academic/MediumModel');
-const School = require('../../models/School');
+const SchoolModel = require('../../models/SchoolModel');
 const User = require('../../models/User');
 
 
@@ -71,7 +71,7 @@ exports.gets = async (req, res) => {
             include: [
                 { model: User, as: 'CreatedBy', attributes: [] },
                 { model: User, as: 'UpdatedBy', attributes: [] },
-                { model: School, as: 'branch', attributes: [] }
+                { model: SchoolModel, as: 'branch', attributes: [] }
             ],
             order: [['mst_medium_id', 'DESC'], ["trn_school_id", 'ASC']],
             raw: true

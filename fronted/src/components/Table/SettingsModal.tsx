@@ -5,6 +5,7 @@ import { Column } from "@/utils/helper";
 import ColumnDefault from "./ColumnDefault";
 import PageSizeSelector from "./PageSizeSelector";
 import { useUpdateColumnMutation } from "@/store/slice/columns";
+import { toast } from "react-toastify";
 interface SettingsModalProps {
     isOpen?: boolean;
     type?: string;
@@ -40,10 +41,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
     const handleSave = async () => {
         try {
-            if (setItemsPerPage) setItemsPerPage(tempItemsPerPage);
-
-            localStorage.setItem("selectedColumns", JSON.stringify(selectedColumns));
-
+            if (setItemsPerPage) setItemsPerPage(tempItemsPerPage); 
+            localStorage.setItem("selectedColumns", JSON.stringify(selectedColumns)); 
             const payload = {
                 selectedColumns,
                 page_size: tempItemsPerPage,
@@ -51,10 +50,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 type:type
             };
             await updateColumn(payload).unwrap();
+            toast.success("Successfully changed.", { autoClose: 3000, position: "top-right" });
             onClose?.();
-        } catch (error) {
-            console.error("Error saving columns:", error);
-            alert("Failed to save columns. Please try again.");
+        } catch (err) {
+            if (err?.data?.errors) { 
+                toast.error("Something went wrong.", { autoClose: 3000, position: "top-right" });
+            } else {
+                toast.error(err?.data?.error || "Unable to save details.", { autoClose: 3000, position: "top-right" });
+            }
+            // console.error("Error saving columns:", error);
+            // alert("Failed to save columns. Please try again.");
         }
     };
 

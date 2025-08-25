@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const School = require('../School');
+const SchoolModel = require('../SchoolModel');
 const User = require('../User'); 
 
 const MediumModel = sequelize.define(
@@ -11,7 +11,7 @@ const MediumModel = sequelize.define(
         code: { type: DataTypes.STRING(10), allowNull: true, },
          
         is_active: { type: DataTypes.ENUM('Y', 'N'), defaultValue: 'Y', },
-        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: School, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
+        trn_school_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: SchoolModel, key: 'trn_school_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         updated_by: { type: DataTypes.INTEGER, allowNull: true, references: { model: User, key: 'trn_user_id', }, onUpdate: 'CASCADE', onDelete: 'CASCADE', },
         created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, },
@@ -29,5 +29,5 @@ const MediumModel = sequelize.define(
  
 MediumModel.belongsTo(User, { as: 'CreatedBy', foreignKey: 'created_by' });
 MediumModel.belongsTo(User, { as: 'UpdatedBy', foreignKey: 'updated_by' });
-MediumModel.belongsTo(School, { as: 'branch', foreignKey: 'trn_school_id' });
+MediumModel.belongsTo(SchoolModel, { as: 'branch', foreignKey: 'trn_school_id' });
 module.exports = MediumModel;

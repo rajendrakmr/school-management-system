@@ -49,7 +49,7 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
   formData,
   onMenuScroll = () => console.log("Default"),
   onInputChange,
-  col = "col-md-3",
+  col = "col-md-4",
   isTrue = false,
   onKeyDown,
   height = "50vh",
@@ -112,8 +112,7 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
         {copySuccess && (
           <span className="text-success ms-2">{copySuccess}</span>
         )}
-
-        {/* error msg */}
+ 
         {error && (
           <span className="text-danger" style={{ fontSize: "12px" }}>
             {error}
