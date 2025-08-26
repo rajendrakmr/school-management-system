@@ -16,20 +16,19 @@ const verifyToken = async (req, res, next) => {
 
     if (!user) return res.status(401).json({ error: "User not found" });
 
-    // ✅ Check password version
+    // ✅ Check password hash fingerprint
     if (decoded.pwdVersion !== user.password_hash.slice(0, 10)) {
-      return res.status(401).json({ error: "Password changed. Please login again." });
+      return res.status(401).json({ error: "Password changed, token invalid" });
     }
 
     req.user = user;
     req.trn_user_id = user.trn_user_id;
-    req.trn_school_id = user.trn_school_id || null;
+    req.trn_school_id = user?.trn_school_id || null;
     req.email = user.email;
 
     next();
   } catch (err) {
-    console.error("JWT verification error:", err.message);
-    return res.status(401).json({ error: "Invalid or expired token" });
+    return res.status(401).json({ error: "Token is not valid" });
   }
 };
 

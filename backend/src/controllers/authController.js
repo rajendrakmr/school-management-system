@@ -2,15 +2,14 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const UserHasRole = require("../models/UserHasRole");
-const Role = require("../models/Role");
 require("dotenv").config();
 
-// Helper for JWT
+// ----------------- JWT Helper -----------------
 const generateTokens = (user) => {
   const payload = {
     trn_user_id: user.trn_user_id,
     trn_school_id: user?.trn_school_id || null,
-    pwdVersion: user.password_hash.slice(0, 10), // ✅ fingerprint
+    pwdVersion: user.password_hash.slice(0, 10), // ✅ fingerprint for password
   };
 
   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -33,7 +32,7 @@ exports.signup = async (req, res) => {
     if (existRes) {
       return res
         .status(422)
-        .json({ errors: { email: `${email} is already taken.` } });
+        .json({ errors: [{ field: "email", message: `${email} is already taken.` }] });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -65,16 +64,12 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res
-        .status(422)
-        .json({ errors: { email: "Email not registered" } });
+      return res.status(422).json({ errors: [{ field: "email", message: "Email not registered" }] });
     }
 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
-      return res
-        .status(422)
-        .json({ errors: { password: "Invalid password" } });
+      return res.status(422).json({ errors: [{ field: "password", message: "Invalid password" }] });
     }
 
     const { accessToken, refreshToken } = generateTokens(user);
@@ -94,7 +89,6 @@ exports.login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // Remove sensitive
     const userObj = user.toJSON();
     delete userObj.password_hash;
 
@@ -145,7 +139,7 @@ exports.changePassword = async (req, res) => {
 
     const match = await bcrypt.compare(oldPassword, user.password_hash);
     if (!match) {
-      return res.status(422).json({ errors: { oldPassword: "Old password incorrect" } });
+      return res.status(422).json({ errors: [{ field: "oldPassword", message: "Old password incorrect" }] });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

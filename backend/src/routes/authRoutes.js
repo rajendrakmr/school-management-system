@@ -1,17 +1,23 @@
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-const verifyToken = require('../middlewares/authMiddleware');
-const authController = require('../controllers/authController');
-// Public routes
-const { validateSignUp,validateLogin } = authController;
-router.post('/signup',validateSignUp, authController.signup);
-router.post('/login',validateLogin, authController.login);
  
-router.post("/refresh", authController.refresh);
+const express = require("express"); 
+const authController = require("../controllers/authController");
+// const verifyToken = require("../middleware/verifyToken");
 
-// Protected routes
-router.get('/', verifyToken, userController.getAllUsers);
-router.post('/assign-role', verifyToken, userController.assignRole);
+const userController = require('../controllers/userController');
+const router = express.Router();
+const {
+    validateSignUp,
+    validateLogin,
+    validateChangePassword,
+    handleValidation,
+} = require("../validators/authValidator");
+
+router.post("/signup", validateSignUp, handleValidation, authController.signup);
+router.post("/login", validateLogin, handleValidation, authController.login);
+router.post("/refresh", authController.refresh);
+// router.post("/change-password", verifyToken, validateChangePassword, handleValidation, authController.changePassword);
+router.post('/assign-role', userController.assignRole);
+
+module.exports = router;
 
 module.exports = router;
