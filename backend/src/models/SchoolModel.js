@@ -26,6 +26,5 @@ const SchoolModel = sequelize.define('SchoolModel', {
         updatedAt: 'updated_at',
         freezeTableName: true,
     })
-// SchoolModel.hasMany(User, { foreignKey: 'trn_school_id', as: 'users' });
-
+ 
 module.exports = SchoolModel;

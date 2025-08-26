@@ -34,8 +34,7 @@ const User = sequelize.define('erp_trn_users', {
 
  // add this
 
-User.belongsTo(SchoolModel, { foreignKey: 'trn_user_id', as: 'school' });
+User.belongsTo(SchoolModel, { foreignKey: 'trn_school_id', as: 'school' });
 SchoolModel.hasMany(User, { foreignKey: 'trn_school_id', as: 'users' });
-// User.belongsTo(SchoolModel, { foreignKey: 'trn_user_id', as: 'school' });
 
 module.exports = User;
