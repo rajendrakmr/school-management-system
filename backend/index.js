@@ -10,10 +10,11 @@ const PORT = process.env.PORT || 5000;
 
 // Middlewares
 app.use(cors({
-  origin: '*',
+  origin: 'http://54.74.96.148',  // must be explicit, not "*"
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
+  credentials: true               // allow cookies / auth headers
 }));
+
 app.use(cookieParser());
 app.use(express.json());
 app.use("/uploads/logos", express.static("uploads/logos"));
