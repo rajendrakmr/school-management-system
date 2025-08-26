@@ -13,11 +13,19 @@ const SchoolModel = sequelize.define('SchoolModel', {
     established_year: { type: DataTypes.INTEGER, allowNull: true },
     type: { type: DataTypes.STRING, allowNull: true },
     image_path: { type: DataTypes.STRING, allowNull: true },
-    is_active: { type: DataTypes.STRING, defaultValue: 'Y' },
-}, {
-    tableName: 'erp_trn_schools',
-    timestamps: false
-});
+    is_active: { type: DataTypes.ENUM('Y', 'N'), defaultValue: 'Y' },
+        created_by: { type: DataTypes.INTEGER, allowNull: true},
+        updated_by: { type: DataTypes.INTEGER, allowNull: true},
+        created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, },
+        updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, },
+    },
+    {
+        tableName: 'erp_trn_schools',
+        timestamps: true,
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
+        freezeTableName: true,
+    })
 // SchoolModel.hasMany(User, { foreignKey: 'trn_school_id', as: 'users' });
 
 module.exports = SchoolModel;
