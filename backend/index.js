@@ -8,12 +8,12 @@ const verifyToken = require('./src/middlewares/authMiddleware'); // JWT middlewa
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS Setup (must allow cookies)
+ 
 app.use(
   cors({
     origin: [
       "http://54.74.96.148", 
-      "http://localhost:3000" // dev frontend
+      "http://localhost:5173" // dev frontend
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // 👈 allow cookies

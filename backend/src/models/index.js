@@ -1,7 +1,7 @@
 const sequelize = require('../config/db');
 
 // Import all models without defining associations inside the model files
-const User = require('./User');
+const User = require('./UserModel');
 const SchoolModel = require('./SchoolModel');
 const SubjectModel = require('./academic/SubjectModel');
 const ClassModel = require('./academic/ClassModel');
@@ -9,8 +9,8 @@ const ClassSectionModel = require('./academic/ClassSectionModel');
 const SectionModel = require('./academic/SectionModel');
 const ClassSubjectModel = require('./academic/ClassSubject');
 const SessionModel = require('./academic/SessionModel');
-const Module = require('./Module');
-const Permission = require('./Permission');
+const Module = require('./ModuleModel');
+const Permission = require('./PermissionModel');
 
 // ----------------- Define Associations -----------------
 

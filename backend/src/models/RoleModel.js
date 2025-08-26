@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const Role = sequelize.define(
+const RoleModel = sequelize.define(
   'erp_mst_roles',
   {
     mst_role_id: {
@@ -31,9 +31,9 @@ const Role = sequelize.define(
   },
   {
     timestamps: false,
-    freezeTableName: true,  // prevent pluralizing
-    indexes: []              // explicitly empty to avoid auto-creating extra indexes
+    freezeTableName: true,   
+    indexes: []              
   }
 );
 
-module.exports = Role;
+module.exports = RoleModel;

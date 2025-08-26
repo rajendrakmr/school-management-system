@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const Role = require('../../models/Role');
+const Role = require('../../models/RoleModel');
 const { body, validationResult } = require('express-validator');
 
 exports.validateRole = [

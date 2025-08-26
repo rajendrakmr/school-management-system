@@ -3,7 +3,7 @@ const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const SessionModel = require('../../models/academic/SessionModel');
 const SchoolModel = require('../../models/SchoolModel');
-const User = require('../../models/User');
+const User = require('../../models/UserModel');
 
 const parseDMY = (value) => {
   if (!value) return false;

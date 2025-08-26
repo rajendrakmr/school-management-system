@@ -1,9 +1,9 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-class RoleHasPermission extends Model {}
+class RoleHasPermissionModel extends Model {}
 
-RoleHasPermission.init({
+RoleHasPermissionModel.init({
   mst_role_id: { type: DataTypes.INTEGER, primaryKey: true },
   mst_permission_id: { type: DataTypes.INTEGER, primaryKey: true },
   can_view: { type: DataTypes.ENUM('Y','N'), defaultValue: 'N' },
@@ -20,4 +20,4 @@ RoleHasPermission.init({
   id: false
 });
 
-module.exports = RoleHasPermission;
+module.exports = RoleHasPermissionModel;

@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const Permission = require('../../models/Permission');
+const Permission = require('../../models/PermissionModel');
 const { body, validationResult } = require('express-validator');
 
 // Validation rules for permission creation
@@ -19,7 +19,7 @@ exports.validatePermission = [
 ];
 
 // Get all permissions with pagination
-const Module = require('../../models/Module'); // Module model
+const Module = require('../../models/ModuleModel'); // Module model
 
 exports.getAllPermissions = async (req, res) => {
     try {

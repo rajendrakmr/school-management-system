@@ -5,7 +5,7 @@ const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const GradeModel = require('../../models/academic/GradeModel');
 const SchoolModel = require('../../models/SchoolModel');
-const User = require('../../models/User');
+const User = require('../../models/UserModel');
 const reMessage = "Grade"
 exports.validate = [
     body('name')

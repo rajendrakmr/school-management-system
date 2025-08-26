@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const Module = sequelize.define('Module', {
+const ModuleModel = sequelize.define('ModuleModel', {
     mst_module_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -25,4 +25,4 @@ const Module = sequelize.define('Module', {
     timestamps: false
 });
 
-module.exports = Module;
+module.exports = ModuleModel;

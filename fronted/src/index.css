@@ -811,5 +811,45 @@ body.dark-mode {
 
 
 
+/* input itself (overrides bootstrap/form-control) */
+.form-control.custome-border,
+.form-control.custome-border:focus {
+  border-radius: 0 !important;
+}
 
- 
+/* calendar popper (react-datepicker) when you give it a popperClassName */
+.datePickerPopper .react-datepicker {
+  border-radius: 0 !important;
+  overflow: hidden;
+}
+
+/* header elements & selects inside the calendar */
+.datePickerPopper .react-datepicker__header,
+.datePickerPopper .react-datepicker__header select,
+.datePickerPopper .react-datepicker__header button {
+  border-radius: 0 !important;
+}
+
+/* optional: hide triangle arrow that can look rounded */
+.datePickerPopper .react-datepicker__triangle {
+  display: none;
+}
+
+/* global CSS override for focused control (square corners on focus) */
+.react-select__control,
+.react-select__control:focus,
+.react-select__control--is-focused {
+  border-radius: 0 !important;
+  overflow: hidden;
+}
+
+/* keep the focus ring but still square */
+.react-select__control--is-focused {
+  box-shadow: 0 0 0 1px #2684FF !important;
+}
+
+/* if your outer wrapper has a class (custome-border) target that as well */
+.custome-border .react-select__control,
+.custome-border .react-select__control--is-focused {
+  border-radius: 0 !important;
+}

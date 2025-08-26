@@ -1,9 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const User = require('./User');
-const Role = require('./Role');
+const User = require('./UserModel');
+const Role = require('./RoleModel');
 
-const UserHasRole = sequelize.define('erp_trn_user_has_roles', {
+const UserHasRoleModel = sequelize.define('erp_trn_user_has_roles', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -22,4 +22,4 @@ const UserHasRole = sequelize.define('erp_trn_user_has_roles', {
   freezeTableName: true
 });
 
-module.exports = UserHasRole;
+module.exports = UserHasRoleModel;

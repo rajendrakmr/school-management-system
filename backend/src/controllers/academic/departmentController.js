@@ -3,7 +3,7 @@ const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const DepartmentModel = require('../../models/academic/DepartmentModel');
 const SchoolModel = require('../../models/SchoolModel');
-const User = require('../../models/User');
+const User = require('../../models/UserModel');
 
 
 exports.validate = [

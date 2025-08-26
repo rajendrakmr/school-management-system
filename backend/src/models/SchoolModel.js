@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); // adjust path to your db config
-const User = require('./User'); // make sure SchoolModel model exists
-
+const sequelize = require('../config/db');  
 const SchoolModel = sequelize.define('SchoolModel', {
     trn_school_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     school_name: { type: DataTypes.STRING, allowNull: false },

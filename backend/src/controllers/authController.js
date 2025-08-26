@@ -1,7 +1,10 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const UserHasRole = require("../models/UserHasRole");
+const User = require("../models/UserModel");
+const UserHasRole = require("../models/UserHasRoleModel");
+const PermissionModel = require("../models/PermissionModel");
+const ModuleModel = require("../models/ModuleModel");
+const { sequelize } = require("../models");
 require("dotenv").config();
 
 // ----------------- JWT Helper -----------------
@@ -57,42 +60,98 @@ exports.signup = async (req, res) => {
   }
 };
 
-// ---------------- LOGIN ----------------
+ 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-
+    const { email, password } = req.body; 
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(422).json({ errors: [{ field: "email", message: "Email not registered" }] });
-    }
-
+    } 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(422).json({ errors: [{ field: "password", message: "Invalid password" }] });
     }
 
-    const { accessToken, refreshToken } = generateTokens(user);
+    const trn_user_id = user.trn_user_id;
+    const query = `          
+      SELECT ur.mst_role_id,
+             JSON_ARRAYAGG(rp.mst_permission_id) as permissionID
+      FROM   erp_trn_user_has_roles ur 
+      JOIN erp_mst_role_has_permissions as rp
+           ON rp.mst_role_id = ur.mst_role_id 
+      WHERE ur.trn_user_id=:trn_user_id
+      GROUP BY ur.mst_role_id;
+    `;
 
-    // Store tokens in cookies
-  res.cookie("authToken", accessToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production", // dev में false, prod में true
-  sameSite: "None",  // 👈 cross-origin allow
-  maxAge: 15 * 60 * 1000,
-});
+    const menu = await sequelize.query(query, {
+      replacements: { trn_user_id },
+      type: sequelize.QueryTypes.SELECT,
+    });
 
-res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "None",  // 👈 यहाँ भी
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+    const permissionID = menu.length > 0 ? menu[0]?.permissionID : [];
 
-    const userObj = user.toJSON();
+    const modules = await ModuleModel.findAll({
+      attributes: ["module_name", "has_child"],
+      order: [["mst_module_id", "ASC"]],
+      include: [
+        {
+          model: PermissionModel,
+          as: "permissions",
+          attributes: ["permission_name", "path_url"],
+          where: { mst_permission_id: permissionID },
+          required: true,
+          order: [["permissions.mst_permission_id", "ASC"]],
+        },
+      ],
+    });
+
+    const nav = modules.map((mod) => {
+      if (mod.has_child === "Y" && mod.permissions.length > 0) {
+        return {
+          name: mod.module_name,
+          path: `/${mod.module_name.toLowerCase().replace(/\s+/g, "-")}`,
+          icon: null,
+          children: mod.permissions.map((p) => ({
+            name: p.permission_name,
+            path: p.path_url,
+          })),
+        };
+      } else {
+        return {
+          name: mod.module_name,
+          path: mod.permissions[0]?.path_url || "/",
+          icon: null,
+          isParent: true,
+        };
+      }
+    });
+
+    const currentUrl = `${req.protocol}://${req.get("host")}`;
+    const userObj = user.toJSON ? user.toJSON() : { ...user }; 
+    userObj.logo = `${currentUrl}/uploads/logos/logo.png`; 
     delete userObj.password_hash;
 
-    res.json({ message: "Login successful", user: userObj });
+    const { accessToken, refreshToken } = generateTokens(user); 
+    res.cookie("authToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      message: "Login successful",
+      user: userObj,
+      menu:nav,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -104,8 +163,7 @@ exports.refresh = async (req, res) => {
   if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
 
   try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET); 
     const user = await User.findOne({ where: { trn_user_id: decoded.trn_user_id } });
     if (!user) return res.status(401).json({ error: "User not found" });
 
@@ -118,7 +176,7 @@ exports.refresh = async (req, res) => {
 
     res.cookie("authToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "Strict",
       maxAge: 15 * 60 * 1000,
     });

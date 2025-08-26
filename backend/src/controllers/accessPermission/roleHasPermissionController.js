@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const Role = require('../../models/Role');
+const Role = require('../../models/RoleModel');
 const { body, validationResult } = require('express-validator');
 
 exports.validateRole = [
@@ -7,10 +7,10 @@ exports.validateRole = [
     body('mst_permission_id').notEmpty().withMessage('Permission must be required')
 ];
 const RoleHasPermission = require('../../models/RoleHasPermission');
-const Permission = require('../../models/Permission');
-const UserHasRole = require('../../models/UserHasRole');
+const Permission = require('../../models/PermissionModel');
+const UserHasRole = require('../../models/UserHasRoleModel');
 const sequelize = require('../../config/db');
-const User = require('../../models/User');
+const User = require('../../models/UserModel');
 Role.hasMany(RoleHasPermission, { foreignKey: 'mst_role_id' });
 RoleHasPermission.belongsTo(Role, { foreignKey: 'mst_role_id' });
 

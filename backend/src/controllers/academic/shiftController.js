@@ -3,7 +3,7 @@ const { Op, Sequelize } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const ShiftModel = require('../../models/academic/ShiftModel');
 const SchoolModel = require('../../models/SchoolModel');
-const User = require('../../models/User');
+const User = require('../../models/UserModel');
 const SessionModel = require('../../models/academic/SessionModel');
 
 const reMessage = "Shift"

@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const Semester = require('../../models/Semester');
 const SchoolModel = require('../../models/SchoolModel');
-const User = require('../../models/User');
+const User = require('../../models/UserModel');
 const { Sequelize } = require('sequelize');
 // Validation rules for Medium creation
 exports.validate = [
