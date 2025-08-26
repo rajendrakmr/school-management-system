@@ -135,14 +135,14 @@ exports.login = async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user); 
     res.cookie("authToken", accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "None",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
