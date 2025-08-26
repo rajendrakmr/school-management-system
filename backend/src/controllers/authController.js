@@ -75,19 +75,19 @@ exports.login = async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user);
 
     // Store tokens in cookies
-    res.cookie("authToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 15 * 60 * 1000, // 15 min
-    });
+  res.cookie("authToken", accessToken, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", // dev में false, prod में true
+  sameSite: "None",  // 👈 cross-origin allow
+  maxAge: 15 * 60 * 1000,
+});
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+res.cookie("refreshToken", refreshToken, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "None",  // 👈 यहाँ भी
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
     const userObj = user.toJSON();
     delete userObj.password_hash;
