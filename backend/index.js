@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: 'http://54.74.96.148',  // must be explicit, not "*"
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true               // allow cookies / auth headers
+  credentials: "include",               // allow cookies / auth headers
 }));
 
 app.use(cookieParser());
@@ -29,14 +29,14 @@ sequelize.sync({ alter: true })
       try {
         await sequelize.authenticate(); // check DB connection
         res.status(200).send('READY');
-      } catch (err) { 
+      } catch (err) {
         res.status(500).send('NOT READY');
       }
     });
     app.get('/api/v1', (req, res) => res.send('Welcome to ERP SaaS School Management backend service...'));
     app.use('/api/v1/auth', require('./src/routes/authRoutes')); // login, register, forgot password
     app.use('/api/v1/users', verifyToken, require('./src/routes/userRoutes'));
-   
+
     app.use('/api/v1/', verifyToken, require('./src/routes/academicRoutes'));
     app.use('/api/v1/roles', verifyToken, require('./src/routes/rbacRoutes'));
     app.use('/api/v1/columns', verifyToken, require('./src/routes/columnRoutes'));

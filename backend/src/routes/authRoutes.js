@@ -7,6 +7,8 @@ const authController = require('../controllers/authController');
 const { validateSignUp,validateLogin } = authController;
 router.post('/signup',validateSignUp, authController.signup);
 router.post('/login',validateLogin, authController.login);
+ 
+router.post("/refresh", authController.refresh);
 
 // Protected routes
 router.get('/', verifyToken, userController.getAllUsers);
