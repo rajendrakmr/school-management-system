@@ -92,7 +92,7 @@ exports.login = async (req, res) => {
     const permissionID = menu.length > 0 ? menu[0]?.permissionID : [];
 
     const modules = await ModuleModel.findAll({
-      attributes: ["module_name", "has_child"],
+      attributes: ["module_name", "has_child","font_icon"],
       order: [["mst_module_id", "ASC"]],
       include: [
         {
@@ -111,7 +111,7 @@ exports.login = async (req, res) => {
         return {
           name: mod.module_name,
           path: `/${mod.module_name.toLowerCase().replace(/\s+/g, "-")}`,
-          icon: null,
+          icon: mod?.font_icon,
           children: mod.permissions.map((p) => ({
             name: p.permission_name,
             path: p.path_url,
@@ -121,7 +121,7 @@ exports.login = async (req, res) => {
         return {
           name: mod.module_name,
           path: mod.permissions[0]?.path_url || "/",
-          icon: null,
+          icon:  mod?.font_icon,
           isParent: true,
         };
       }

@@ -3,11 +3,57 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     const columns = [
+
+
+      { key_type: "discounts", column_key: "name", column_label: "Name", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "code", column_label: "Coupon Code", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "discount_type", column_label: "Discount Type", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "discount_value", column_label: "Discount Amount", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "plans", column_label: "Applicable Plan", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "start_date", column_label: "Start From", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "end_date", column_label: "Last Date", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "usage_limit", column_label: "Usage Limit", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "is_active", column_label: "Status", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "action", column_label: "Action", is_admin_only: "Y" },
+      { key_type: "discounts", column_key: "page_size", column_label: "Page Size", is_admin_only: "Y" },
+
+      { key_type: "payments", column_key: "payment_method", column_label: "Payment Method", is_admin_only: "Y" },
+      { key_type: "payments", column_key: "amount", column_label: "Amount", is_admin_only: "Y" },
+      { key_type: "payments", column_key: "payment_date", column_label: "Payment Date", is_admin_only: "Y" },
+      { key_type: "payments", column_key: "invoice_number", column_label: "Invoice Number", is_admin_only: "Y" },
+      { key_type: "payments", column_key: "notes", column_label: "Notes", is_admin_only: "Y" },
+      { key_type: "payments", column_key: "payment_status", column_label: "Payment Status", is_admin_only: "Y" },
+      { key_type: "payments", column_key: "action", column_label: "Action", is_admin_only: "Y" },
+      { key_type: "payments", column_key: "page_size", column_label: "Page Size", is_admin_only: "Y" },
+
+      { key_type: "subscribers", column_key: "branch", column_label: "School", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "plan", column_label: "Plan", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "admin_name", column_label: "Admin Name", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "admin_email", column_label: "Admin Email", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "subscription_start", column_label: "Subscription Start From", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "subscription_end", column_label: "Subscription End", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "payment_status", column_label: "Payment Status", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "status", column_label: "Status", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "action", column_label: "Action", is_admin_only: "Y" },
+      { key_type: "subscribers", column_key: "page_size", column_label: "Page Size", is_admin_only: "Y" },
+
+      { key_type: "plans", column_key: "name", column_label: "Name", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "code", column_label: "Code", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "description", column_label: "About Plan", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "currency", column_label: "Currency", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "max_students", column_label: "Maximum Students", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "max_teachers", column_label: "Maximum Teachers", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "trial_days", column_label: "Trial Days", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "features", column_label: "Features", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "is_active", column_label: "Status", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "action", column_label: "Action", is_admin_only: "Y" },
+      { key_type: "plans", column_key: "page_size", column_label: "Page Size", is_admin_only: "Y" },
+
       { key_type: "sessions", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "sessions", column_key: "name", column_label: "Name" },
       { key_type: "sessions", column_key: "start_date", column_label: "From" },
       { key_type: "sessions", column_key: "end_date", column_label: "To" },
-      { key_type: "sessions", column_key: "code", column_label: "Code"},
+      { key_type: "sessions", column_key: "code", column_label: "Code" },
       { key_type: "sessions", column_key: "is_active", column_label: "Status" },
       { key_type: "sessions", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "sessions", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -18,7 +64,7 @@ module.exports = {
 
       { key_type: "mediums", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "mediums", column_key: "name", column_label: "Name" },
-      { key_type: "mediums", column_key: "code", column_label: "Code"},
+      { key_type: "mediums", column_key: "code", column_label: "Code" },
       { key_type: "mediums", column_key: "is_active", column_label: "Status" },
       { key_type: "mediums", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "mediums", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -31,7 +77,7 @@ module.exports = {
 
       { key_type: "departments", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "departments", column_key: "name", column_label: "Name" },
-      { key_type: "departments", column_key: "code", column_label: "Code"},
+      { key_type: "departments", column_key: "code", column_label: "Code" },
       { key_type: "departments", column_key: "is_active", column_label: "Status" },
       { key_type: "departments", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "departments", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -47,7 +93,7 @@ module.exports = {
       { key_type: "subjects", column_key: "practical_marks", column_label: "Practical Marks", is_active: "N", is_admin_only: "Y" },
       { key_type: "subjects", column_key: "department", column_label: "Department" },
       { key_type: "subjects", column_key: "name", column_label: "Name" },
-      { key_type: "subjects", column_key: "code", column_label: "Code"},
+      { key_type: "subjects", column_key: "code", column_label: "Code" },
       { key_type: "subjects", column_key: "is_active", column_label: "Status" },
       { key_type: "subjects", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },
       { key_type: "subjects", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },
@@ -230,7 +276,7 @@ module.exports = {
 
       { key_type: "students", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "students", column_key: "session", column_label: "Session", is_admin_only: "Y" },
-      { key_type: "students", column_key: "addmission_no", column_label: "Admission No" }, 
+      { key_type: "students", column_key: "addmission_no", column_label: "Admission No" },
       { key_type: "students", column_key: "name", column_label: "Student Name" },
       { key_type: "students", column_key: "dob", column_label: "DOB" },
       { key_type: "students", column_key: "mobile_no", column_label: "Mobile No" },
@@ -248,9 +294,9 @@ module.exports = {
       { key_type: "student-promotions", column_key: "branch", column_label: "Branch", is_active: "N", is_admin_only: "Y" },
       { key_type: "student-promotions", column_key: "session", column_label: "Session", is_admin_only: "Y" },
       { key_type: "student-promotions", column_key: "student_name", column_label: "Student Name" },
-      { key_type: "student-promotions", column_key: "addmission_no", column_label: "Admission No" }, 
+      { key_type: "student-promotions", column_key: "addmission_no", column_label: "Admission No" },
       { key_type: "student-promotions", column_key: "class", column_label: "Class" },
-      { key_type: "student-promotions", column_key: "roll_no", column_label: "Roll No" }, 
+      { key_type: "student-promotions", column_key: "roll_no", column_label: "Roll No" },
       { key_type: "student-promotions", column_key: "is_active", column_label: "Status" },
       { key_type: "student-promotions", column_key: "created_by", column_label: "Created By", is_admin_only: "Y" },  //comom
       { key_type: "student-promotions", column_key: "updated_by", column_label: "Updated By", is_admin_only: "Y" },  //comom
@@ -282,7 +328,7 @@ module.exports = {
 
 
 
-   
+
 
 
 

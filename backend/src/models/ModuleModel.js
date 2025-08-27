@@ -11,10 +11,14 @@ const ModuleModel = sequelize.define('ModuleModel', {
         type: DataTypes.STRING(50),
         allowNull: false
     },
-   
+
     has_child: {
         type: DataTypes.ENUM('Y', 'N'),
         defaultValue: 'Y'
+    },
+    font_icon: {
+        type: DataTypes.STRING(20),
+        defaultValue: ''
     },
     is_active: {
         type: DataTypes.ENUM('Y', 'N'),

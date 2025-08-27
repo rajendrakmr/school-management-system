@@ -3,8 +3,10 @@ import { StylesConfig } from 'react-select';
 export const customSelectOption: StylesConfig = {
     control: (base, state) => ({
         ...base,
-        height: 'calc(1em + .50rem + 2px)',
+         height: 'calc(1em + .50rem + 2px)',
         minHeight: 'calc(1em + .50rem + 2px)',
+        // height: 'calc(1em + .50rem + 2px)',
+        // minHeight: 'calc(1em + .50rem + 2px)',
         fontSize: '11px',
         display: 'flex',
         justifyContent: 'space-between',
@@ -230,3 +232,51 @@ export const hasFilledField = (
     return val !== null && val !== undefined && String(val).trim() !== "";
   });
 };
+
+export type PStatusValue =
+  | "credit_card"
+  | "debit_card"
+  | "bank_transfer"
+  | "upi"
+  | "net_banking"
+  | "cheque"
+  | "paypal"
+  | "stripe"
+  | "cash";
+
+export interface PStatusOption {
+  value: PStatusValue;
+  label: string;
+}
+
+
+export const paymentMethodOptions: PStatusOption[] = [
+  { value: "credit_card", label: "Credit Card" },
+  { value: "debit_card", label: "Debit Card" },
+  { value: "bank_transfer", label: "Bank Transfer" },
+  { value: "upi", label: "UPI / Mobile Payment" },
+  { value: "net_banking", label: "Net Banking" },
+  { value: "cheque", label: "Cheque / Demand Draft" },
+  { value: "paypal", label: "PayPal" },
+  { value: "stripe", label: "Stripe" },
+  { value: "cash", label: "Cash / In-Person Payment" }
+];
+
+
+// Payment status
+
+// ------------------- Payment Status -------------------
+
+export type PaymentStatusValue = "pending" | "success" | "failed" | "refunded";
+
+export interface paymentStatusOption {
+  value: PaymentStatusValue;
+  label: string;
+}
+
+export const paymentStatusOptions: paymentStatusOption[] = [
+  { value: "pending", label: "Pending" },
+  { value: "success", label: "Success" },
+  { value: "failed", label: "Failed" },
+  { value: "refunded", label: "Refunded" }
+];

@@ -70,7 +70,7 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
         </label>
 
         <Select
-          classNamePrefix="react-select" // optional, for easier CSS targeting
+          classNamePrefix="react-select"
           id={name}
           name={name}
           options={options}
@@ -78,41 +78,41 @@ const InputSelectField: React.FC<SelectFormInputProps> = ({
           onChange={(selectedOption) =>
             onChange(selectedOption as OptionType | null, name)
           }
-          onMenuScrollToBottom={() => onMenuScroll(formData, pgNo)}
-          onInputChange={(input) => {
-            if (onInputChange) onInputChange(input);
-            return input;
-          }}
-          isLoading={isLoading || isSearchingLoader}
-          isDisabled={isTrue || isEdit}
-          onKeyDown={onKeyDown}
-          menuPortalTarget={document.body}
           styles={{
-            ...(customSelectOption1 as any),
             control: (base, state) => ({
               ...base,
-              borderWidth: '1px',            // thin border
+              minHeight: 35,      // control ki total height
+              height: 30,
+              borderWidth: '1px',
               borderColor: error ? 'red' : state.isFocused ? '#2684FF' : '#CED4DA',
               boxShadow: error ? 'none' : state.isFocused ? '0 0 0 1px #2684FF' : 'none',
               "&:hover": {
                 borderColor: error ? 'red' : state.isFocused ? '#2684FF' : '#CED4DA',
               },
-              borderRadius:"0px"
+              borderRadius: "0px",
             }),
-            menu: (base) => ({
+            valueContainer: (base) => ({
               ...base,
-              maxHeight: height,
-              overflowY: 'auto',
+              height: 30,          // value container height
+              padding: '0 8px',    // vertical padding reduce
+            }),
+            input: (base) => ({
+              ...base,
+              margin: 0,
+              padding: 0,
+            }),
+            indicatorsContainer: (base) => ({
+              ...base,
+              height: 30,         // icon container height
             }),
           }}
-
-          placeholder={isLoading ? "Loading..." : "Select option"}
         />
+
 
         {copySuccess && (
           <span className="text-success ms-2">{copySuccess}</span>
         )}
- 
+
         {error && (
           <span className="text-danger" style={{ fontSize: "12px" }}>
             {error}
