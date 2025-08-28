@@ -20,7 +20,10 @@ spec:
     spec:
       containers:
       - name: frontend-app
-        image: cloudwithrk/erp-frontend-app:v1
+        image: cloudwithrk/erp-frontend-app:v1 
+        env:
+        - name: BACKEND_HOST
+          value: erp-backend-app.erp-ns.svc.cluster.local
         ports:
         - containerPort: 80
         resources:

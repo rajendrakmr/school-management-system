@@ -4,7 +4,7 @@ metadata:
   name: frontend-nginx-config
   namespace: erp-ns
 data:
-  default.conf: |
+  default.conf.template: |
     server {
         listen 80;
         server_name _;
@@ -27,7 +27,7 @@ data:
 
         # Proxy API requests to backend
         location /api {
-            proxy_pass http://erp-backend-app:5000;  # Use your backend service name
+            proxy_pass http://$BACKEND_HOST:5000;  # Dynamic backend host
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
