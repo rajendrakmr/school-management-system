@@ -2,31 +2,29 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('erp_mst_plans', {
-      mst_plan_id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true, },
-      name: { type: Sequelize.STRING(50), allowNull: false, },
-      code: { type: Sequelize.STRING(10), allowNull: false, },
-      description: { type: Sequelize.STRING(255), allowNull: true },
-      price: { type: Sequelize.DECIMAL(10, 2), allowNull: false, },
-      currency: { type: Sequelize.STRING(10), allowNull: false, defaultValue: 'USD', },
-      max_student: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0, },
-      max_teacher: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0, },
-      billing_cycle: { type: Sequelize.ENUM('monthly', 'quarterly', 'yearly'), allowNull: false, defaultValue: 'monthly', },
-      feature: { type: Sequelize.STRING(255), allowNull: true, },
-      is_active: { type: Sequelize.ENUM('Y', 'N'), allowNull: false, defaultValue: 'Y', },
-      created_by: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'erp_trn_users', key: 'trn_user_id' }, onUpdate: 'CASCADE', onDelete: 'CASCADE' },
-      updated_by: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'erp_trn_users', key: 'trn_user_id' }, onUpdate: 'CASCADE', onDelete: 'CASCADE' },
+    await queryInterface.createTable('erp_mst_subscribers', {
+      mst_subscriber_id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
+      admin_name: { type: Sequelize.STRING(50), allowNull: false },
+      email: { type: Sequelize.STRING(100), allowNull: false, unique: true },
+      organization_name: { type: Sequelize.STRING(100), allowNull: true },
+      phone_no: { type: Sequelize.STRING(15), allowNull: true },
+      subscription_start: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      subscription_end: { type: Sequelize.DATE, allowNull: true },
+      is_active: { type: Sequelize.ENUM('Y', 'N'), allowNull: false, defaultValue: 'Y' },
+
+      mst_plan_id: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'erp_mst_plans', key: 'mst_plan_id' }, onUpdate: 'CASCADE', onDelete: 'CASCADE' },
+      created_by: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'erp_trn_users', key: 'trn_user_id' }, onUpdate: 'CASCADE', onDelete: 'SET NULL' },
+      updated_by: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'erp_trn_users', key: 'trn_user_id' }, onUpdate: 'CASCADE', onDelete: 'SET NULL' },
+
       created_at: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updated_at: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
-
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('erp_mst_plans');
+    await queryInterface.dropTable('erp_mst_subscribers');
     if (queryInterface.sequelize.getDialect() === 'postgres') {
-      await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_erp_mst_plans_is_active";');
-      await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_erp_mst_plans_billing_cycle";');
+      await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_erp_mst_subscribers_is_active";');
     }
-  },
+  }
 };

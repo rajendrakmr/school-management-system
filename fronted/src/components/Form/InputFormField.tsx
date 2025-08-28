@@ -40,8 +40,16 @@ const InputFormField: React.FC<InputFormFieldProps> = memo(
     const handleNumberInput = (e: ChangeEvent<HTMLInputElement>) => {
 
       let value = e.target.value;
-      if (type === "num") {
+      if (type === "float") {
         let numericValue = value.replace(/[^0-9.]/g, ''); 
+        const parts = numericValue.split('.');
+        if (parts.length > 2) {
+          numericValue = parts[0] + '.' + parts[1];
+        } 
+        e.target.value = numericValue;
+      }
+      else if (type === "num") {
+        let numericValue = value.replace(/[^0-9]/g, ''); 
         const parts = numericValue.split('.');
         if (parts.length > 2) {
           numericValue = parts[0] + '.' + parts[1];

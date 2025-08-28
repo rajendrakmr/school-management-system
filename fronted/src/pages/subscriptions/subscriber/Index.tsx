@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
 import { FilterKey, Operator } from "@/components/SearchWithOperators";
 import { useGetClassessQuery } from "@/store/slice/academics/classes";
+import { useGetListQuery } from "@/store/slice/commonApi";
 
 const Index: React.FC = () => {
   const dispatch = useDispatch();
@@ -47,11 +48,14 @@ const Index: React.FC = () => {
   }, [referenceRecord]);
 
   // Fetch subjects
-  const { data: dataRecords, isFetching, refetch } = useGetClassessQuery(
-    itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken,
-    { refetchOnMountOrArgChange: true }
-  );
+  // const { data: dataRecords, isFetching, refetch } = useGetClassessQuery(
+  //   itemsPerPage ? { limit: itemsPerPage, page: currentPage, filter } : skipToken,
+  //   { refetchOnMountOrArgChange: true }
+  // );
 
+    const { data:dataRecords, isFetching,refetch } = useGetListQuery({ url: "/subscribers", limit: itemsPerPage, page: currentPage, filter: [] });
+  
+  
   const items = useMemo(() => dataRecords?.items || [], [dataRecords]);
   const totalCount = dataRecords?.totalCount || 0;
   const safeItemsPerPage = itemsPerPage ?? 10;

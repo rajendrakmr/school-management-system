@@ -50,6 +50,7 @@ sequelize
     app.use("/api/v1/auth", require("./src/routes/authRoutes")); // signup, login, refresh
 
     // --- Protected Routes ---
+    app.use("/api/v1/", verifyToken, require("./src/routes/subscriptionRoutes"));
     app.use("/api/v1/users", verifyToken, require("./src/routes/userRoutes"));
     app.use("/api/v1/", verifyToken, require("./src/routes/academicRoutes"));
     app.use("/api/v1/roles", verifyToken, require("./src/routes/rbacRoutes"));

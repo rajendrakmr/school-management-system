@@ -112,6 +112,12 @@ export const dropdown = apiSlice.injectEndpoints({
             },
             providesTags: ["Subject"],
         }),
+        getPlanList: builder.query({ 
+             query: () => {
+                let url = `/plans/list`; 
+                return url;
+            }, 
+        }),
 
 
 
@@ -132,5 +138,6 @@ export const {
     useGetDepartmentListQuery,
     useGetSessionListQuery,
     useGetClassListQuery,
-    useGetSubjectListQuery
+    useGetSubjectListQuery,
+    useGetPlanListQuery
 } = dropdown;

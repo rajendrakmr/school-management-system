@@ -280,3 +280,48 @@ export const paymentStatusOptions: paymentStatusOption[] = [
   { value: "failed", label: "Failed" },
   { value: "refunded", label: "Refunded" }
 ];
+
+
+export type CurrencyCode =
+  | "USD"
+  | "EUR"
+  | "GBP"
+  | "INR"
+  | "JPY"
+  | "AUD"
+  | "CAD"
+  | "CNY"
+  | "SGD"
+  | "AED";
+
+export interface CurrencyOption {
+  value: CurrencyCode;
+  label: string;
+  symbol: string;
+}
+
+export const currencyOptions: CurrencyOption[] = [
+  { value: "USD", label: "US Dollar", symbol: "$" },
+  { value: "EUR", label: "Euro", symbol: "€" },
+  { value: "GBP", label: "British Pound", symbol: "£" },
+  { value: "INR", label: "Indian Rupee", symbol: "₹" },
+  { value: "JPY", label: "Japanese Yen", symbol: "¥" },
+  { value: "AUD", label: "Australian Dollar", symbol: "A$" },
+  { value: "CAD", label: "Canadian Dollar", symbol: "C$" },
+  { value: "CNY", label: "Chinese Yuan", symbol: "¥" },
+  { value: "SGD", label: "Singapore Dollar", symbol: "S$" },
+  { value: "AED", label: "UAE Dirham", symbol: "د.إ" }
+];
+
+export type BillingCycleValue = "monthly" | "quarterly" | "yearly";
+
+export interface BillingCycleOption {
+  value: BillingCycleValue;
+  label: string;
+}
+
+export const billingCycleOptions: BillingCycleOption[] = [
+  { value: "monthly", label: "Monthly" },
+  { value: "quarterly", label: "Quarterly" },
+  { value: "yearly", label: "Yearly" }
+];

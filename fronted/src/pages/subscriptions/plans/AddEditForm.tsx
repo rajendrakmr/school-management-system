@@ -4,14 +4,14 @@ import "react-toastify/dist/ReactToastify.css";
 import SliderForm from "@/components/Form/SliderForm";
 import InputFormField from "@/components/Form/InputFormField";
 import InputSelectField from "@/components/Form/InputSelectField";
-import InputRadioField from "@/components/Form/InputRadioField";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
-import { useGetBracnhListQuery, useGetSectionListQuery, useGetShiftListQuery, useGetStreamListQuery, useGetMediumListQuery, useGetSessionListQuery } from "@/store/slice/dropdown";
-import { isActiveOptions } from "@/utils/helper";
+import { useGetModulesQuery, useGetSectionListQuery, useGetSessionListQuery } from "@/store/slice/dropdown";
+import { billingCycleOptions, currencyOptions, isActiveOptions } from "@/utils/helper";
 import ToggleSwitch from "@/components/pageSettings/ToggleSwitch";
 import { useSaveClassMutation } from "@/store/slice/academics/classes";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { useSaveItemMutation } from "@/store/slice/commonApi";
 
 interface FormRecordItem {
     name: string;
@@ -20,8 +20,8 @@ interface FormRecordItem {
     description?: string;
     currency?: string;
     billing_cycle: string;
-    max_teachers: string;
-    max_students?: string;
+    max_teacher: string;
+    max_student?: string;
     is_active: string;
     trial_days: string;
     features?: string[];
@@ -53,9 +53,9 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
         currency: { label: "Currency", required: true },
         billing_cycle: { label: "Billing Cycle", required: true },
         trial_days: { label: "Trial Days", required: false },
-        max_students: { label: "Maximum Students", required: true },
-        max_teachers: { label: "Maximum Teachers", required: false },
-        features: { label: "Features", required: true },
+        max_student: { label: "Maximum Students", required: true },
+        max_teacher: { label: "Maximum Teachers", required: false },
+        features: { label: "Features", required: false },
         is_active: { label: "Status", required: false },
     };
 
@@ -76,7 +76,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
     const defaultForm: FormRecordItem = useMemo(() => ({
         description: "",
         currency: "",
-        max_teachers: "",
+        max_teacher: "",
         price: "",
         max_student: "",
         billing_cycle: "",
@@ -99,7 +99,6 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
     const [errors, setErrors] = useState<FormErrors>({});
     const timeoutRef = useRef<number | null>(null);
 
-    const [saveClass, { isLoading }] = useSaveClassMutation();
 
     // ------------------- Dropdown Data -------------------
 
@@ -121,42 +120,62 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
         setErrors(prev => ({ ...prev, ['features']: "" }));
     }, []);
 
+    const [saveItem, { isLoading }] = useSaveItemMutation();
     const handleFormSubmit = useCallback(async () => {
         const { isValid, errors } = validationRequest(formData, validationRules);
         setErrors(errors);
-        console.log('errorserrorserrorserrors', errors)
 
         if (!isValid) {
-            toast.error("Please fill in all mandatory fields.", { autoClose: 3000, position: "top-right" });
+            toast.error("Please fill in all mandatory fields.", {
+                autoClose: 3000,
+                position: "top-right",
+            });
             return;
         }
 
         try {
-            const response = await saveClass(formData).unwrap();
-            toast.success(response.message || "Data saved successfully!", { autoClose: 3000, position: "top-right" });
+
+            const response = await saveItem({
+                url: "/plans",
+                body: formData,
+                idField: "mst_plan_id",
+            }).unwrap?.() ?? {};
+
+            toast.success(response.message || "Data saved successfully!", {
+                autoClose: 3000,
+                position: "top-right",
+            });
+
             onSuccess();
             timeoutRef.current = window.setTimeout(onClose, 1000);
         } catch (err: any) {
+            console.log("err.data.errors", err);
             if (err?.data?.errors) {
-                console.log('err.data.errors', err.data.errors)
+                console.log("err.data.errors", err.data.errors);
                 setErrors(err.data.errors);
-                toast.error("Please fix the highlighted errors.", { autoClose: 3000, position: "top-right" });
+
+                toast.error("Please fix the highlighted errors.", {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
+            } else if (err?.data?.error) {
+                toast.error(err?.data?.error, {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
             } else {
-                toast.error(err?.data?.message || "Unable to save details.", { autoClose: 3000, position: "top-right" });
+                toast.error(err?.data?.message || "Unable to save details.", {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
             }
-        } finally {
-            setErrors({});
         }
     }, [formData, onSuccess, onClose]);
 
     // ------------------- JSX -------------------
 
-
-    const { data: sessionOptions } = useGetSessionListQuery(formData?.price, { refetchOnMountOrArgChange: true });
-    const { data: sectionOptions } = useGetSectionListQuery(formData?.currency, { refetchOnMountOrArgChange: true });
-    const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
-    const { data: mediumOptions } = useGetMediumListQuery({ refetchOnMountOrArgChange: true });
-    const { data: shiftOptions } = useGetShiftListQuery(formData?.currency, { refetchOnMountOrArgChange: true });
+    const { data: moduleOptions } = useGetModulesQuery({ refetchOnMountOrArgChange: true });
+    console.log('moduleOptionsmoduleOptionsmoduleOptions', moduleOptions)
 
     // ------------------- Handlers -------------------
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,7 +205,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
                     onChange={handleChange}
                     col="col-md-3"
                 />
-                
+
                 <InputFormField
                     label={fieldConfigs.code.label}
                     name="code"
@@ -210,31 +229,33 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
                 <InputSelectField
                     name="currency"
                     label={fieldConfigs.currency.label}
-                    options={sessionOptions}
+                    options={currencyOptions}
                     value={formData.currency}
                     onChange={handleSelectChange}
-                    isEdit={!!usersInfo?.currency} // disable editing if user has session
+                    // isEdit={!!usersInfo?.currency} // disable editing if user has session
                     error={errors.currency}
                     required={fieldConfigs.currency.required}
                     col="col-md-3"
                 />
                 <InputFormField
-                   label={fieldConfigs.max_students.label}
-                    name="max_students"
-                    inputValue={formData.max_students}
-                    error={errors.max_students}
-                    required={fieldConfigs.max_students.required}
+                    label={fieldConfigs.max_student.label}
+                    name="max_student"
+                    inputValue={formData.max_student}
+                    error={errors.max_student}
+                    required={fieldConfigs.max_student.required}
                     onChange={handleChange}
                     col="col-md-3"
+                    type="num"
                 />
                 <InputFormField
-                    label={fieldConfigs.max_teachers.label}
-                    name="max_teachers"
-                    inputValue={formData.max_teachers}
-                    error={errors.max_teachers}
-                    required={fieldConfigs.max_teachers.required}
+                    label={fieldConfigs.max_teacher.label}
+                    name="max_teacher"
+                    inputValue={formData.max_teacher}
+                    error={errors.max_teacher}
+                    required={fieldConfigs.max_teacher.required}
                     onChange={handleChange}
                     col="col-md-3"
+                    type="num"
                 />
                 <InputFormField
                     label={fieldConfigs.trial_days.label}
@@ -244,21 +265,25 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
                     required={fieldConfigs.trial_days.required}
                     onChange={handleChange}
                     col="col-md-3"
+                    type="num"
                 />
-                 
-                 <InputFormField
-                    label={fieldConfigs.billing_cycle.label}
+                <InputSelectField
                     name="billing_cycle"
-                    inputValue={formData.billing_cycle}
+                    label={fieldConfigs.billing_cycle.label}
+                    options={billingCycleOptions}
+                    value={formData.billing_cycle}
+                    onChange={handleSelectChange}
+                    // isEdit={!!usersInfo?.billing_cycle} // disable editing if user has session
                     error={errors.billing_cycle}
                     required={fieldConfigs.billing_cycle.required}
-                    onChange={handleChange}
                     col="col-md-3"
-                />
-                 
-                 
 
-                
+                />
+
+
+
+
+
 
 
                 <InputFormField
@@ -269,6 +294,17 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
                     required={fieldConfigs.trial_days.required}
                     onChange={handleChange}
                     col="col-md-3"
+                    type="num"
+                />
+                <InputFormField
+                    label={fieldConfigs.price.label}
+                    name="price"
+                    inputValue={formData.price}
+                    error={errors.price}
+                    required={fieldConfigs.price.required}
+                    onChange={handleChange}
+                    col="col-md-3"
+                    type="float"
                 />
                 {isEdit && (
                     <InputSelectField
@@ -282,30 +318,38 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
                         required={fieldConfigs.is_active.required}
                     />
                 )}
- 
 
-                <div className="row"> 
-                    <div className={`col-md-5 mt-4`}>
+                <div className="row">
+                    <div className="col-md-12 mt-4">
                         <div className="form-group">
-                            {fieldConfigs.features.label}{fieldConfigs.features.required && <span className="text-danger">*</span>}
+                            {fieldConfigs.features.label}
+                            {fieldConfigs.features.required && (
+                                <span className="text-danger">*</span>
+                            )}
 
-                            <div className="actions flex gap-2 mt-1">
-                                {sectionOptions?.map(item => (
-                                    <label key={item.value} className="flex items-center gap-2 mx-2">
-                                        <ToggleSwitch
-                                            checked={formData?.features.includes(item.value)}
-                                            onChange={() => handleToggleSection(item.value)}
-                                        />
-                                        {item.label}
-                                    </label>
+                            <div className="actions flex flex-col gap-2 mt-2 row">
+                                {moduleOptions?.map((item) => ( 
+                                    <div className="col-md-3">
+                                        <div className="form-check" key={item.value}>
+                                        <input className="form-check-input custom-checkbox" type="checkbox" value="" id={`checkChecked${item.value}`} checked={formData?.features?.includes(item.value)} />
+                                        <label className="form-check-label" htmlFor={`checkChecked${item.value}`}>
+                                            {item.label}
+                                        </label>
+                                    </div>
+                                    </div>
+
                                 ))}
-                                <br />
-                                {errors.features && <span className="text-danger">{errors.features}</span>}
+
+                                {errors.features && (
+                                    <span className="text-danger">{errors.features}</span>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
+
+
             </div>
         </SliderForm >
     );

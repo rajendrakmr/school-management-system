@@ -6,12 +6,14 @@ import InputFormField from "@/components/Form/InputFormField";
 import InputSelectField from "@/components/Form/InputSelectField";
 import InputRadioField from "@/components/Form/InputRadioField";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
-import { useGetBracnhListQuery, useGetSectionListQuery, useGetShiftListQuery, useGetStreamListQuery, useGetMediumListQuery, useGetSessionListQuery } from "@/store/slice/dropdown";
-import { isActiveOptions } from "@/utils/helper";
+import { useGetBracnhListQuery, useGetSectionListQuery, useGetShiftListQuery, useGetStreamListQuery, useGetMediumListQuery, useGetSessionListQuery, useGetPlanListQuery } from "@/store/slice/dropdown";
+import { isActiveOptions, paymentStatusOptions } from "@/utils/helper";
 import ToggleSwitch from "@/components/pageSettings/ToggleSwitch";
 import { useSaveClassMutation } from "@/store/slice/academics/classes";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import InputDateField from "@/components/Form/InputDateField";
+import { useSaveItemMutation } from "@/store/slice/commonApi";
 
 interface FormRecordItem {
     trn_school_id?: string;
@@ -22,6 +24,7 @@ interface FormRecordItem {
     subscription_end?: string;
     payment_status?: string;
     is_active: string;
+    phone_no: string;
 }
 
 type FormErrors = Partial<Record<keyof FormRecordItem, string>>;
@@ -45,6 +48,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
     const fieldConfigs: Record<keyof FormRecordItem, { label: string; required: boolean; minLength?: number; maxLength?: number }> = {
         trn_school_id: { label: "School", required: true },
         admin_name: { label: "Admin Name", required: true },
+        phone_no: { label: "Phone No", required: true, minLength: 10, maxLength: 12 },
         email: { label: "Admin Email", required: true },
         mst_plan_id: { label: "Subscribed Plan", required: true },
         subscription_start: { label: "Subscription Start", required: true },
@@ -71,6 +75,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
         trn_school_id: "",
         admin_name: "",
         email: "",
+        phone_no: "",
         mst_plan_id: "",
         subscription_start: "",
         subscription_end: "",
@@ -106,31 +111,55 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
 
 
 
+    const [saveItem, { isLoading:Submitting }] = useSaveItemMutation();
     const handleFormSubmit = useCallback(async () => {
         const { isValid, errors } = validationRequest(formData, validationRules);
         setErrors(errors);
-        console.log('errorserrorserrorserrors', errors)
 
         if (!isValid) {
-            toast.error("Please fill in all mandatory fields.", { autoClose: 3000, position: "top-right" });
+            toast.error("Please fill in all mandatory fields.", {
+                autoClose: 3000,
+                position: "top-right",
+            });
             return;
         }
 
         try {
-            const response = await saveClass(formData).unwrap();
-            toast.success(response.message || "Data saved successfully!", { autoClose: 3000, position: "top-right" });
+
+            const response = await saveItem({
+                url: "/subscribers",
+                body: formData,
+                idField: "mst_subscriber_id",
+            }).unwrap?.() ?? {};
+
+            toast.success(response.message || "Data saved successfully!", {
+                autoClose: 3000,
+                position: "top-right",
+            });
+
             onSuccess();
             timeoutRef.current = window.setTimeout(onClose, 1000);
         } catch (err: any) {
+            console.log("err.data.errors", err);
             if (err?.data?.errors) {
-                console.log('err.data.errors', err.data.errors)
+                console.log("err.data.errors", err.data.errors);
                 setErrors(err.data.errors);
-                toast.error("Please fix the highlighted errors.", { autoClose: 3000, position: "top-right" });
+
+                toast.error("Please fix the highlighted errors.", {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
+            } else if (err?.data?.error) {
+                toast.error(err?.data?.error, {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
             } else {
-                toast.error(err?.data?.message || "Unable to save details.", { autoClose: 3000, position: "top-right" });
+                toast.error(err?.data?.message || "Unable to save details.", {
+                    autoClose: 3000,
+                    position: "top-right",
+                });
             }
-        } finally {
-            setErrors({});
         }
     }, [formData, onSuccess, onClose]);
 
@@ -140,6 +169,7 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
     // const { data: sessionOptions } = useGetSessionListQuery(formData?.price, { refetchOnMountOrArgChange: true });
     // const { data: sectionOptions } = useGetSectionListQuery(formData?.currency, { refetchOnMountOrArgChange: true });
     const { data: branchOptions } = useGetBracnhListQuery({ refetchOnMountOrArgChange: true });
+    const { data: plansOptions } = useGetPlanListQuery({ refetchOnMountOrArgChange: true });
     // const { data: mediumOptions } = useGetMediumListQuery({ refetchOnMountOrArgChange: true });
     // const { data: shiftOptions } = useGetShiftListQuery(formData?.currency, { refetchOnMountOrArgChange: true });
 
@@ -162,10 +192,10 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
             isSubmitting={isLoading}
         >
             <div className="row">
-                 <InputSelectField
+                <InputSelectField
                     name="mst_plan_id"
                     label={fieldConfigs.mst_plan_id.label}
-                    options={branchOptions}
+                    options={plansOptions}
                     value={formData.mst_plan_id}
                     onChange={handleSelectChange}
                     isEdit={false}
@@ -182,6 +212,24 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
                     isEdit={false}
                     error={errors.trn_school_id}
                     required={fieldConfigs.trn_school_id.required}
+                    col="col-md-3"
+                />
+                <InputDateField
+                    label={fieldConfigs.subscription_start.label}
+                    name="subscription_start"
+                    inputValue={formData.subscription_start}
+                    error={errors.subscription_start}
+                    required={fieldConfigs.subscription_start.required}
+                    onChange={handleChange}
+                    col="col-md-3"
+                />
+                <InputDateField
+                    label={fieldConfigs.subscription_end.label}
+                    name="subscription_end"
+                    inputValue={formData.subscription_end}
+                    error={errors.subscription_end}
+                    required={fieldConfigs.subscription_end.required}
+                    onChange={handleChange}
                     col="col-md-3"
                 />
                 <InputFormField
@@ -201,40 +249,34 @@ const AddEditForm: React.FC<AddEditFormProps> = ({ open, onClose, initialData, i
                     error={errors.email}
                     required={fieldConfigs.email.required}
                     onChange={handleChange}
+                    type="email"
                     col="col-md-3"
                 />
                 <InputFormField
-                    label={fieldConfigs.subscription_start.label}
-                    name="subscription_start"
-                    inputValue={formData.subscription_start}
-                    error={errors.subscription_start}
-                    required={fieldConfigs.subscription_start.required}
+                    label={fieldConfigs.phone_no.label}
+                    name="phone_no"
+                    inputValue={formData.phone_no}
+                    error={errors.phone_no}
+                    required={fieldConfigs.phone_no.required}
                     onChange={handleChange}
-                    col="col-md-3"
-                />
-                <InputFormField
-                    label={fieldConfigs.subscription_end.label}
-                    name="subscription_end"
-                    inputValue={formData.subscription_end}
-                    error={errors.subscription_end}
-                    required={fieldConfigs.subscription_end.required}
-                    onChange={handleChange}
+                    type="num"
                     col="col-md-3"
                 />
 
-                 
+
+
 
                 <InputSelectField
                     name="payment_status"
                     label={fieldConfigs.payment_status.label}
-                    options={isActiveOptions}
+                    options={paymentStatusOptions}
                     value={formData.payment_status}
                     onChange={handleSelectChange}
                     isEdit={false}
                     error={errors.payment_status}
-                    required={fieldConfigs.payment_status.required} 
+                    required={fieldConfigs.payment_status.required}
                     col="col-md-3"
-                /> 
+                />
                 <InputSelectField
                     name="is_active"
                     label={fieldConfigs.is_active.label}

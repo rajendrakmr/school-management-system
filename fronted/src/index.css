@@ -1,9 +1,9 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 body {
   font-family: 'Roboto', sans-serif;
 }
+
 * {
   margin: 0;
   padding: 0;
@@ -20,13 +20,16 @@ body {
   overflow-x: hidden;
   /* scroll-behavior: smooth; */
 }
-.form-control{
+
+.form-control {
   border-radius: 0px !important;
 }
+
 .submenu_item {
   margin-left: -18px;
 }
-thead > tr >th{
+
+thead>tr>th {
   background-color: #e4e6e9 !important;
 }
 
@@ -551,7 +554,7 @@ thead > tr >th{
   transform: translateY(-50%);
 }
 
- 
+
 .child-route-con {
   background-color: #c7c7d1 !important;
 }
@@ -597,8 +600,8 @@ thead > tr >th{
   color: #4635c5;
 }
 
- 
- 
+
+
 
 
 .child-route-check {
@@ -675,9 +678,9 @@ thead > tr >th{
   position: sticky;
   top: 0;
   width: 100%;
-  height: 60px; 
-  background-color: #fff; 
-  z-index: 1000; 
+  height: 60px;
+  background-color: #fff;
+  z-index: 1000;
 }
 
 .custom-modal-height {
@@ -769,14 +772,18 @@ thead > tr >th{
 .activeColor {
   color: #e8feff !important;
 }
-.childActiveColor{
+
+.childActiveColor {
   color: #080925;
   font-weight: bold;
 }
+
 .accordion {
-  --bs-accordion-border-radius: 0px !important; /* or your value */
+  --bs-accordion-border-radius: 0px !important;
+  /* or your value */
   --bs-accordion-inner-border-radius: 0px !important;
 }
+
 body.dark-mode {
   background-color: #2b2b2b;
   color: #ffffff;
@@ -862,7 +869,7 @@ input[type="url"] {
   transition: all 0.3s ease;
 }
 
-.form-group > label {
+.form-group>label {
   font-size: 12px;
 }
 
@@ -883,38 +890,53 @@ input[type="url"] {
 }
 
 @keyframes blink {
-  0%, 50%, 100% { opacity: 1; }
-  25%, 75% { opacity: 0; }
+
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0;
+  }
 }
 
 .sidebar-icon {
-  width: 15px;       /* fixed width */
-  height: 15px;      /* fixed height */
+  width: 15px;
+  /* fixed width */
+  height: 15px;
+  /* fixed height */
   display: inline-block;
   text-align: center;
 }
 
 /* For Chrome, Edge, Safari */
 .sidebar_routes_container::-webkit-scrollbar {
-  width: 1px;               /* Thin scrollbar */
+  width: 1px;
+  /* Thin scrollbar */
   background-color: #a8a9ab;
 }
 
 .sidebar_routes_container::-webkit-scrollbar-track {
-  background: #a8a9ab;  /* Track color */
+  background: #a8a9ab;
+  /* Track color */
   border-radius: 3px;
 }
 
 .sidebar_routes_container::-webkit-scrollbar-thumb {
-  background-color: rgb(150, 150, 150); /* Thumb color */
+  background-color: rgb(150, 150, 150);
+  /* Thumb color */
   border-radius: 1px;
-  border: 1px solid rgb(100, 100, 100); /* Optional border for better visibility */
+  border: 1px solid rgb(100, 100, 100);
+  /* Optional border for better visibility */
 }
 
 /* For Firefox */
 .sidebar_routes_container {
   scrollbar-width: thin;
- 
+
 }
 
 
@@ -928,4 +950,44 @@ input[type="url"] {
   to {
     opacity: 1;
   }
+}
+
+
+/* Hide Bootstrap default background */
+.form-check-input.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #279ae7;
+  /* red border */
+  border-radius: 0px !important;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  /* remove default browser style */
+}
+
+.form-check-label {
+  cursor: pointer;
+}
+
+/* Checked state */
+.form-check-input.custom-checkbox:checked {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  position: relative;
+  
+}
+
+/* White tick */
+.form-check-input.custom-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px; 
+  height: 7px;
+    width: 9px; 
+  border: solid #fff;
+  border-width: 0 3px 0px 0;
+  transform: rotate(45deg);
 }
