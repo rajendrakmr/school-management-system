@@ -4,7 +4,7 @@ metadata:
   name: mysql-svc
   namespace: erp-ns
 spec:
-  clusterIP: None 
+  type: ClusterIP
   selector:
     app: mysql
   ports:
