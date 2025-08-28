@@ -4,11 +4,15 @@ metadata:
   name: mysql-svc
   namespace: erp-ns
 spec:
-  type: ClusterIP
   selector:
     app: mysql
+  type: ClusterIP
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
   ports:
-    - port: 3306 
-      targetPort: 3306
-      protocol: TCP
-      nodePort: 300306
+  - name: mysql-svc
+    protocol: TCP
+    port: 3306
+    targetPort: 3306 
