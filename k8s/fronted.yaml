@@ -32,7 +32,7 @@ spec:
         - containerPort: 80
         env:
           - name: BACKEND_HOST
-            value: erp-backend-app.erp-ns.svc.cluster.local
+            value: backend-app-svc.erp-ns.svc.cluster.local
         volumeMounts:
           - name: nginx-config
             mountPath: /tmp/default.conf.template   # temporary location
