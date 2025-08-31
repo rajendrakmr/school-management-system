@@ -2,15 +2,15 @@ pipeline {
   agent any
 
   environment {
-    EMAILID = 'cloudwithrk@gmail.com'
-    FROMEMAIL = 'cloudwithrk@gmail.com'
+    EMAILID = 'rajendraakmr@gmail.com'
+    FROMEMAIL = 'rk061720224@gmail.com'
   }
 
   parameters {
-    string(name: 'FRONTEND_TAG', defaultValue: '', description: 'Docker tag for frontend image')
-    string(name: 'BACKEND_TAG', defaultValue: '', description: 'Docker tag for backend image')
-    string(name: 'GIT_URL', defaultValue: '', description: 'GitHub repository')
-    string(name: 'BRANCH_NAME', defaultValue: '', description: 'GitHub repository branch')
+    string(name: 'FRONTEND_TAG', defaultValue: 'latest', description: 'Docker tag for frontend image')
+    string(name: 'BACKEND_TAG', defaultValue: 'latest', description: 'Docker tag for backend image')
+    string(name: 'GIT_URL', defaultValue: '', description: 'GitHub repository URL')
+    string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'GitHub branch')
   }
 
   stages {
@@ -20,68 +20,68 @@ pipeline {
       }
     }
 
-    stage('Git: Code Checkout') {
+    stage('Git: Checkout') {
       steps {
         git branch: "${params.BRANCH_NAME}", url: "${params.GIT_URL}"
       }
     }
 
-    stage("Update: Kubernetes manifest") {
+    stage("Update Kubernetes Manifests") {
       steps {
         script {
           dir('k8s') {
             sh """
               echo "🔄 Updating K8s manifests with new Docker image tags..."
-
-              # Update frontend deployment
-              sed -i -e 's|cloudwithrk/erp-frontend-app:.*|cloudwithrk/erp-frontend-app:${params.FRONTEND_TAG}|g' frontend.yaml
-
-              # Update backend deployment
-              sed -i -e 's|cloudwithrk/erp-backend-app:.*|cloudwithrk/erp-backend-app:${params.BACKEND_TAG}|g' backend.yaml
+              sed -i -e 's|cloudwithrk/erp-frontend-app:.*|rk0617/erp-frontend-app:${params.FRONTEND_TAG}|g' fronted.yaml
+              sed -i -e 's|cloudwithrk/erp-backend-app:.*|rk0617/erp-backend-app:${params.BACKEND_TAG}|g' backend.yaml
             """
           }
         }
       }
     }
 
-    stage("Git: Commit and Push Changes") {
+    stage("Git: Commit & Push") {
       steps {
         script {
           withCredentials([usernamePassword(
-            credentialsId: 'GithubCreds',
+            credentialsId: 'gitHubCreds',
             usernameVariable: 'GIT_USERNAME',
             passwordVariable: 'GIT_PASSWORD'
           )]) {
             sh """
-              git config user.email "${FROMEMAIL}"
-              git config user.name "Jenkins-CD"
+              
 
-              echo "✅ Adding manifest changes to Git..."
-              git add k8s/
-
-              echo "✅ Committing changes..."
-              git commit -m "Updated K8s manifests with Frontend:${params.FRONTEND_TAG}, Backend:${params.BACKEND_TAG}" || echo "Nothing to commit"
-
-              echo "📤 Pushing changes to GitHub..."
-              git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${GIT_URL.split('github.com/')[1]} ${params.BRANCH_NAME}
+              # Only commit if there are changes
+              if ! git diff --quiet; then
+                echo "✅ Adding changes..."
+                git add k8s/
+                git commit -m "Updated K8s manifests: Frontend:${params.FRONTEND_TAG}, Backend:${params.BACKEND_TAG}"
+                echo "📤 Pushing to GitHub..."
+                git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${GIT_URL.split('github.com/')[1]} ${params.BRANCH_NAME}
+              else
+                echo "ℹ️ No changes detected in K8s manifests. Skipping commit."
+              fi
             """
           }
         }
       }
     }
   }
-post {
-  always {
-    script {
-      emailext(
-        attachLog: true,
-        from: "${FROMEMAIL}",
-        subject: "🚀 ERP-SMS CD Pipeline Status: ${currentBuild.result}",
-        body: """
-          <html>
+
+  post {
+    always {
+      script {
+        def result = currentBuild.currentResult ?: 'SUCCESS'
+        emailext(
+          attachLog: true,
+          from: "${FROMEMAIL}",
+          subject: "🚀 ERP-SMS CD Pipeline Status: ${result}",
+          mimeType: 'text/html',
+          to: "${EMAILID}",
+          body: """
+            <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6;">
               <h2 style="color:#2E86C1;">📢 ERP-SMS Deployment Report</h2>
-
               <table style="border-collapse: collapse; width: 100%; max-width: 600px; border: 1px solid #ddd;">
                 <tr style="background-color: #f8f9fa;">
                   <td style="padding: 8px; font-weight: bold;">Frontend Image Tag</td>
@@ -101,8 +101,8 @@ post {
                 </tr>
                 <tr style="background-color: #f8f9fa;">
                   <td style="padding: 8px; font-weight: bold;">Status</td>
-                  <td style="padding: 8px; font-weight: bold; color:${currentBuild.result == 'SUCCESS' ? 'green' : 'red'};">
-                    ${currentBuild.result}
+                  <td style="padding: 8px; font-weight: bold; color:${result == 'SUCCESS' ? 'green' : 'red'};">
+                    ${result}
                   </td>
                 </tr>
                 <tr>
@@ -126,11 +126,10 @@ post {
 
               <p style="color: #999;">-- DevOps Automation Team</p>
             </body>
-          </html>
-        """,
-        to: "${EMAILID}",
-        mimeType: 'text/html'
-      )
+            </html>
+          """
+        )
+      }
     }
   }
 }

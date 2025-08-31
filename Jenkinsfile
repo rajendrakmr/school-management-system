@@ -8,18 +8,18 @@ pipeline {
     BACKEND_IMAGE_NAME  = 'erp-backend-app'
     REGISTRY = 'docker.io'
     DOCKER_CREDENTIALS = 'dockerHubCreds'
-    DOCKER_USERNAME = 'cloudwithrk'
+    DOCKER_USERNAME = 'rk0617'
   }
 
   parameters {
     string(
       name: 'FRONTEND_IMAGE_TAG',
-      defaultValue: getLastValue('FRONTEND_IMAGE_TAG', '1'),
+      defaultValue: "latest",
       description: 'Frontend image tag (defaults to last build value).'
     )
     string(
       name: 'BACKEND_IMAGE_TAG',
-      defaultValue: getLastValue('BACKEND_IMAGE_TAG', '1'),
+      defaultValue: "latest",
       description: 'Backend image tag (defaults to last build value).'
     )
   }
@@ -59,21 +59,21 @@ pipeline {
         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
       }
     }
-
-    stage('SonarQube: Code Analysis') {
-      steps {
-        withSonarQubeEnv('Sonar') {
-          sh '''
-            sonar-scanner \
-              -Dsonar.projectKey=school-management-system \
-              -Dsonar.projectName=school-management-system \
-              -Dsonar.sources=. \
-              -Dsonar.java.binaries=. \
-              -X
-          '''
+  stage('SonarQube: Code Analysis') {
+    steps {
+      withSonarQubeEnv('Sonar') { 
+        script {
+          def scannerHome = tool name: 'Sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+          sh "${scannerHome}/bin/sonar-scanner \
+                -Dsonar.projectKey=school-management-system \
+                -Dsonar.projectName=school-management-system \
+                -Dsonar.sources=. \
+                -Dsonar.java.binaries=. \
+                -X"
         }
       }
     }
+  }
 
     stage('SonarQube: Quality Gate') {
       steps {
@@ -92,7 +92,7 @@ pipeline {
           env.FULL_FRONTEND_IMAGE_NAME = "${DOCKER_USERNAME}/${FRONTEND_IMAGE_NAME}:${FRONTEND_IMAGE_TAG_FINAL}"
           env.FULL_BACKEND_IMAGE_NAME  = "${DOCKER_USERNAME}/${BACKEND_IMAGE_NAME}:${BACKEND_IMAGE_TAG_FINAL}"
 
-          dir('frontend') {
+          dir('fronted') {
             sh "docker build -t ${FULL_FRONTEND_IMAGE_NAME} ."
           }
           dir('backend') {
@@ -117,32 +117,20 @@ pipeline {
     }
   }
 
-  post {
-    success {
-      archiveArtifacts artifacts: '*.xml', followSymlinks: false
-      build job: "ErpSms-CD", parameters: [
-        string(name: 'FRONTEND_TAG', value: "${FRONTEND_IMAGE_TAG_FINAL}"),
-        string(name: 'BACKEND_TAG',  value: "${BACKEND_IMAGE_TAG_FINAL}"),
-        string(name: 'GIT_URL', value: "${REPO_URL}"),
-        string(name: 'BRANCH_NAME', value: "${BRANCH}")
-      ]
-    }
+ post {
+  success {
+    // Archive the XML artifacts
+    archiveArtifacts artifacts: '*.xml', followSymlinks: false
+
+    // Trigger the downstream job
+    build job: "ErpSms-CD", parameters: [
+      string(name: 'FRONTEND_TAG', value: "${FRONTEND_IMAGE_TAG_FINAL}"),
+      string(name: 'BACKEND_TAG', value: "${BACKEND_IMAGE_TAG_FINAL}"),
+      string(name: 'GIT_URL', value: "${REPO_URL}"),
+      string(name: 'BRANCH_NAME', value: "${BRANCH}")
+    ] 
   }
 }
 
-/**
- * Utility function to fetch last build parameter values
- */
-def getLastValue(paramName, fallback) {
-  def lastBuild = currentBuild?.rawBuild?.getPreviousBuild()
-  if (lastBuild) {
-    def action = lastBuild.getAction(hudson.model.ParametersAction)
-    if (action) {
-      def param = action.getParameter(paramName)
-      if (param) {
-        return param.value
-      }
-    }
-  }
-  return fallback
 }
+ 

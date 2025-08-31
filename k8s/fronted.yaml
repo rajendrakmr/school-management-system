@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: frontend-app
-        image: cloudwithrk/erp-frontend-app:v1
+        image: rk0617/erp-frontend-app:v1
         resources:
           requests:
             memory: "128Mi"
