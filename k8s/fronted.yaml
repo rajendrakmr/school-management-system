@@ -4,7 +4,7 @@ metadata:
   name: erp-frontend-app
   namespace: erp-ns
 spec:
-  replicas: 2
+  replicas: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
