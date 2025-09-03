@@ -5,11 +5,14 @@ metadata:
   namespace: erp-ns 
   anotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "Canary"   # optional header-based routing
+    nginx.ingress.kubernetes.io/canary-weight: "10" 
 
 spec:
   ingressClassName: nginx
   rules:
-  - host: erp.hicloud.co.in
+  - host: myapp.local #erp.hicloud.co.in 
     http:
       paths:
       - path: / 
