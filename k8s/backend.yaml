@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: backend-app
-        image: rk0617/erp-backend-app:v1.0
+        image: rk0617/erp-backend-app:v3.0
         env:
         - name: DB_HOST
           valueFrom:

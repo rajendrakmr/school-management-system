@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: frontend-app
-        image: rk0617/erp-frontend-app:v1.0
+        image: rk0617/erp-fronted-app:v1.0
         resources:
           requests:
             memory: "128Mi"

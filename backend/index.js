@@ -8,13 +8,12 @@ const verifyToken = require('./src/middlewares/authMiddleware'); // JWT middlewa
 const app = express();
 const PORT = process.env.PORT || 5000;
 
- 
+
 app.use(
   cors({
-    origin: [
-      "http://localhost", 
-      "http://localhost:5173" // dev frontend
-    ],
+    origin: function (origin, callback) {
+      callback(null, origin || "*"); // allow all origins
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // 👈 allow cookies
   })
@@ -33,7 +32,7 @@ sequelize
     console.log("✅ DB Synced");
 
     // --- Health & Readiness ---
-    app.get("/health", (req, res) => res.status(200).send("OK")); 
+    app.get("/health", (req, res) => res.status(200).send("OK"));
     app.get("/ready", async (req, res) => {
       try {
         await sequelize.authenticate();

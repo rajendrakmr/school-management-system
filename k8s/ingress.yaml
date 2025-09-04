@@ -3,11 +3,11 @@ kind: Ingress
 metadata:
   name: erp-ing 
   namespace: erp-ns 
-  anotations:
+  annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/canary: "true"
-    nginx.ingress.kubernetes.io/canary-by-header: "Canary"   # optional header-based routing
-    nginx.ingress.kubernetes.io/canary-weight: "10" 
+    # nginx.ingress.kubernetes.io/canary: "true"
+    # nginx.ingress.kubernetes.io/canary-by-header: "Canary"   # optional header-based routing
+    # nginx.ingress.kubernetes.io/canary-weight: "10" 
 
 spec:
   ingressClassName: nginx
@@ -19,14 +19,14 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: erp-fronted-svc
+            name: frontend-app-svc
             port:
               number: 80
       - path: /api 
         pathType: Prefix
         backend:
           service:
-            name: erp-backend-svc
+            name: backend-app-svc
             port:
               number: 5000
 
