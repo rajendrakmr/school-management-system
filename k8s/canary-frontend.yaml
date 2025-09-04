@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: erp-frontend-app
+  name: canary-erp-frontend-app
   namespace: erp-ns
 spec:
   replicas: 3
@@ -13,14 +13,16 @@ spec:
   selector:
     matchLabels:
       app: erp-frontend-app
+      version: v2
   template:
     metadata:
       labels:
         app: erp-frontend-app
+        version: v2
     spec:
       containers:
       - name: frontend-app
-        image: rk0617/erp-fronted-app:v1.0
+        image: rk0617/erp-frontend-app:v1.0
         resources:
           requests:
             memory: "128Mi"
