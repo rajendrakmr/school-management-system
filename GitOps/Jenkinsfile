@@ -32,8 +32,8 @@ pipeline {
           dir('k8s') {
             sh """
               echo "🔄 Updating K8s manifests with new Docker image tags..."
-              sed -i -e 's|cloudwithrk/erp-frontend-app:.*|rk0617/erp-frontend-app:${params.FRONTEND_TAG}|g' fronted.yaml
-              sed -i -e 's|cloudwithrk/erp-backend-app:.*|rk0617/erp-backend-app:${params.BACKEND_TAG}|g' backend.yaml
+              sed -i -e 's|rk0617/erp-frontend-app:.*|rk0617/erp-frontend-app:${params.FRONTEND_TAG}|g' fronted.yaml
+              sed -i -e 's|rk0617/erp-backend-app:.*|rk0617/erp-backend-app:${params.BACKEND_TAG}|g' backend.yaml
             """
           }
         }
