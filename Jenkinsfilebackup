@@ -1,0 +1,136 @@
+pipeline {
+  agent any
+  environment { 
+    REPO_URL = 'https://github.com/rajendrakmr/school-management-system.git'
+    BRANCH = 'main'
+    FRONTEND_IMAGE_NAME = 'erp-frontend-app'
+    BACKEND_IMAGE_NAME  = 'erp-backend-app'
+    REGISTRY = 'docker.io'
+    DOCKER_CREDENTIALS = 'dockerHubCreds'
+    DOCKER_USERNAME = 'rk0617'
+  }
+
+  parameters {
+    string(
+      name: 'FRONTEND_IMAGE_TAG',
+      defaultValue: "latest",
+      description: 'Frontend image tag (defaults to last build value).'
+    )
+    string(
+      name: 'BACKEND_IMAGE_TAG',
+      defaultValue: "latest",
+      description: 'Backend image tag (defaults to last build value).'
+    )
+  }
+
+  stages {
+    stage("Validate Parameters") {
+      steps {
+        script {
+          if (params.FRONTEND_IMAGE_TAG == '' || params.BACKEND_IMAGE_TAG == '') {
+            error("FRONTEND_IMAGE_TAG and BACKEND_IMAGE_TAG must be provided.")
+          }
+        }
+      }
+    }
+
+    stage('Clean Workspace') {
+      steps {
+        cleanWs()
+      }
+    }
+
+    stage('Git: Clone Repository') {
+      steps {
+        git branch: "${BRANCH}", url: "${REPO_URL}"
+      }
+    }
+
+    stage('Trivy: Filesystem & Image Scan') {
+      steps {
+        sh 'trivy fs .'
+      }
+    }
+
+    stage('OWASP: Dependency Check') {
+      steps {
+        dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'OWASP'
+        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+      }
+    }
+  stage('SonarQube: Code Analysis') {
+    steps {
+      withSonarQubeEnv('Sonar') { 
+        script {
+          def scannerHome = tool name: 'Sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+          sh "${scannerHome}/bin/sonar-scanner \
+                -Dsonar.projectKey=school-management-system \
+                -Dsonar.projectName=school-management-system \
+                -Dsonar.sources=. \
+                -Dsonar.java.binaries=. \
+                -X"
+        }
+      }
+    }
+  }
+
+    stage('SonarQube: Quality Gate') {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+
+    
+
+    stage("Docker: Build Images") {
+      steps {
+        script {
+          env.FRONTEND_IMAGE_TAG_FINAL = params.FRONTEND_IMAGE_TAG ?: "${BUILD_NUMBER}"
+          env.BACKEND_IMAGE_TAG_FINAL  = params.BACKEND_IMAGE_TAG  ?: "${BUILD_NUMBER}"
+
+          env.FULL_FRONTEND_IMAGE_NAME = "${DOCKER_USERNAME}/${FRONTEND_IMAGE_NAME}:${FRONTEND_IMAGE_TAG_FINAL}"
+          env.FULL_BACKEND_IMAGE_NAME  = "${DOCKER_USERNAME}/${BACKEND_IMAGE_NAME}:${BACKEND_IMAGE_TAG_FINAL}"
+
+          dir('fronted') {
+            sh "docker build -t ${FULL_FRONTEND_IMAGE_NAME} ."
+          }
+          dir('backend') {
+            sh "docker build -t ${FULL_BACKEND_IMAGE_NAME} ."
+          }
+        }
+      }
+    }
+
+    stage('DockerHub: Push Images') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: "${DOCKER_CREDENTIALS}",
+          usernameVariable: 'DOCKER_USERNAME',
+          passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+          sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+          sh "docker push ${FULL_FRONTEND_IMAGE_NAME}"
+          sh "docker push ${FULL_BACKEND_IMAGE_NAME}"
+        }
+      }
+    }
+  }
+
+ post {
+  success {
+    // Archive the XML artifacts
+    archiveArtifacts artifacts: '*.xml', followSymlinks: false 
+    // Trigger the downstream job
+    build job: "ErpSms-CD", parameters: [
+      string(name: 'FRONTEND_TAG', value: "${FRONTEND_IMAGE_TAG_FINAL}"),
+      string(name: 'BACKEND_TAG', value: "${BACKEND_IMAGE_TAG_FINAL}"),
+      string(name: 'GIT_URL', value: "${REPO_URL}"),
+      string(name: 'BRANCH_NAME', value: "${BRANCH}")
+    ] 
+  }
+}
+
+}
+ 
