@@ -51,16 +51,22 @@ pipeline{
               --format XML
               --prettyPrint
               --failOnCVSS 7.0
+              --nvdApiDelay 10000
+
                 """,
               odcInstallation: env.OWASPENV 
           }
       } 
-    stage("OWASP: Publish Dependency Check Report"){
+     stage("OWASP: Publish Dependency Check Report"){
+      when {
+        expression { fileExists('dependency-check-report/dependency-check-report.xml') }
+      }
       steps{
-        dependencyCheckPublisher pattern: 'dependency-check-report/dependency-check-report.xml'
+        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
         archiveArtifacts artifacts: 'dependency-check-report/*.html, dependency-check-report/*.xml'
       }
     }
+
     stage("SonarQube: Code Analysis"){
       withSonarQubeEnv("Sonar"){
         sh "$SONAR_HOME/bin/sonar-scanner -Dsonar.projectName=${env.PROJECT} -Dsonar.projectKey=${env.PROJECT}-${env.BRANCH} -X"
@@ -76,7 +82,6 @@ pipeline{
         }
       }
     }
-     
     stage("Build: Docker Images"){
       parallel{
         stage("Build: Frontend Image"){
