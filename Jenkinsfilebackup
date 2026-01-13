@@ -54,7 +54,8 @@ pipeline{
                 """,
               odcInstallation: env.OWASPENV 
           }
-      } 
+      }
+    }
     stage("OWASP: Publish Dependency Check Report"){
       steps{
         dependencyCheckPublisher pattern: 'dependency-check-report/dependency-check-report.xml'
@@ -65,7 +66,8 @@ pipeline{
       withSonarQubeEnv("Sonar"){
         sh "$SONAR_HOME/bin/sonar-scanner -Dsonar.projectName=${env.PROJECT} -Dsonar.projectKey=${env.PROJECT}-${env.BRANCH} -X"
         }
-      } 
+      }
+    }
     stage("SonarQube: Quality Gate"){
     steps{
       timeout(time: 1, unit: 'HOURS') {
