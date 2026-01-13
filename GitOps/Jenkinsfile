@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     EMAILID = 'rajendraakmr@gmail.com'
-    FROMEMAIL = 'rk061720224@gmail.com'
+    FROMEMAIL = 'rk06172024@gmail.com'
   }
 
   parameters {
