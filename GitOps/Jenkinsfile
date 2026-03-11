@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    EMAILID = 'rajendraakmr@gmail.com'
+    EMAILID = 'cloudwithrk@gmail.com'
     FROMEMAIL = 'rk06172024@gmail.com'
   }
 
