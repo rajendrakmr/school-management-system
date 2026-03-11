@@ -1,249 +1,332 @@
-# 📘 School ERP SaaS – React + TypeScript + Vite
+# 📘 School ERP SaaS Platform
 
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Frontend](https://img.shields.io/badge/Frontend-React-blue)](https://reactjs.org/)
-[![Backend](https://img.shields.io/badge/Backend-Node.js-brightgreen)](https://nodejs.org/)
-[![Database](https://img.shields.io/badge/Database-MySQL-orange)](https://www.mysql.com/)
-[![Deployed](https://img.shields.io/badge/Deployed-AWS%20EKS-yellowgreen)]()
+> A production-grade, multi-tenant School Management System built from scratch and deployed on AWS EKS using a full DevSecOps pipeline.
 
-![school-management-software](assets/school-management-software.jpg) 
-
-This is a **School ERP SaaS Platform** built with **React + TypeScript + Vite**.  
-The system allows multi-school management, subscription-based SaaS packages, and complete ERP modules (Students, Teachers, Fees, Exams, Library, etc.).  
-
-**Goal:** Build a SaaS platform that allows every school to **smoothly use the application**, manage their administrative and academic operations efficiently, and scale as per their requirements.
-
----
-
-## 🚀 Key Highlights
-- Built **from scratch** ✅  
-- Fully **deployed on AWS EKS** using DevSecOps pipeline ✅  
-- **Multi-school SaaS platform** with role-based authentication ✅  
-- **CI/CD pipeline** integrated (Docker, Jenkins, ArgoCD, Helm) ✅  
-- Modern **UI/UX** using TailwindCSS / Bootstrap / ShadCN ✅  
-- Secure **DevSecOps practices** (OWASP, SonarQube, Trivy)  
-
---- 
-> Optional: You can add a GIF here showing login/dashboard flow:  
-> `![Demo](assets/demo.gif)`
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+[![AWS EKS](https://img.shields.io/badge/AWS_EKS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](https://aws.amazon.com/eks/)
+[![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)](https://www.jenkins.io/)
+[![ArgoCD](https://img.shields.io/badge/ArgoCD-EF7B4D?style=for-the-badge&logo=argo&logoColor=white)](https://argo-cd.readthedocs.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🏗 Architecture Overview
-![SaaS Architecture Diagram](assets/saas_architecture.png)  
+## 📌 Table of Contents
 
-> [!Note]
-> This project will be implemented on Ireland region (eu-west-1).
-- <b>Create 1 Master machine on AWS (t2.medium) and 29 GB of storage.</b>
- 
- 
-- <b id="EKS">Create EKS Cluster on AWS</b>
-- IAM user with **access keys and secret access keys**
-- AWSCLI should be configured  
-  ```bash
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-  sudo apt install unzip
-  unzip awscliv2.zip
-  sudo ./aws/install
-  aws configure
-  - Install **kubectl** 
-  ```bash
-  curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
-  chmod +x ./kubectl
-  sudo mv ./kubectl /usr/local/bin
-  kubectl version --short --client
-  ```
+- [Overview](#-overview)
+- [Live Demo](#-live-demo)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [CI/CD Pipeline](#-cicd-pipeline)
+- [Features](#-features)
+- [Screenshots](#-screenshots)
+- [Getting Started](#-getting-started)
+  - [Run Locally](#1-run-locally)
+  - [Run with Docker](#2-run-with-docker-compose)
+  - [Deploy to Kubernetes](#3-deploy-to-kubernetes)
+- [DevSecOps Setup](#-devsecops-setup)
+- [Project Structure](#-project-structure)
+- [Author](#-author)
 
-- Install **eksctl** 
-  ```bash
-  curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-  sudo mv /tmp/eksctl /usr/local/bin
-  eksctl version
-  ```
-- <b>Create EKS Cluster</b>
-  ```bash
-  eksctl create cluster --name=sms-erp --region=ec-west-1  --version=1.33  --without-nodegroup
-- <b>Associate IAM OIDC Provider</b>
-  ```bash
-  eksctl utils associate-iam-oidc-provider --region eu-west-1 --cluster bankapp --approve
-  ```
+---
 
- 
-- <b>Create Nodegroup</b>
-  ```bash
-  eksctl create nodegroup --cluster=sms-erp \
-                       --region=eu-west-1 \
-                       --name=sms-erp \
-                       --node-type=t2.medium \
-                       --nodes=1 \
-                       --nodes-min=1 \
-                       --nodes-max=1 \
-                       --node-volume-size=29 \
-                       --ssh-access \
-                       --ssh-public-key=eks-sms-erp-key
-   ```
-> [!Note]
-> Before create node group make sure the ssh-public-key ""eks-sms-erp-key is available in your aws account"".
+## 🧭 Overview
 
-- <b>Install Jenkins for CI/CD</b>
-> [!Note]
-> If java already configured then skip
-```bash
-    sudo apt update
-    sudo apt install fontconfig openjdk-21-jre
-    java -version
-    openjdk version "21.0.3" 2024-04-16
-    OpenJDK Runtime Environment (build 21.0.3+11-Debian-2)
-    OpenJDK 64-Bit Server VM (build 21.0.3+11-Debian-2, mixed mode, sharing)
+**School ERP SaaS** is a full-stack, multi-tenant school management platform that I built from scratch — both the application and the complete DevOps infrastructure.
+
+The goal was to simulate a real-world production deployment: starting from a React + Node.js app, containerizing it with Docker, securing it with DevSecOps tools (SonarQube + Trivy), and deploying it on AWS EKS via a Jenkins + ArgoCD GitOps pipeline.
+
+**This project demonstrates:**
+- Full-stack development with React (TypeScript) + Node.js + MySQL
+- Containerization with Docker and Docker Compose
+- Kubernetes deployment with Helm charts on AWS EKS
+- End-to-end CI/CD pipeline: Jenkins → SonarQube → Trivy → DockerHub → ArgoCD → EKS
+- GitOps workflow with ArgoCD for continuous delivery
+- Role-based access control (Admin, Teacher, Student, Parent)
+- Multi-school SaaS architecture with subscription-based plans
+
+---
+
+## 🚀 Live Demo
+
+> _Screenshots of the running application below. A live demo video is coming soon._
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, TypeScript, Vite, TailwindCSS, ShadCN UI |
+| Backend | Node.js, Express.js, Sequelize ORM |
+| Database | MySQL 8.0 |
+| Containerization | Docker, Docker Compose |
+| Orchestration | Kubernetes (AWS EKS), Helm |
+| CI/CD | Jenkins, GitHub Webhooks |
+| GitOps | ArgoCD |
+| Security Scanning | SonarQube (SAST), Trivy (container vulnerability) |
+| Monitoring | Prometheus, Grafana |
+| Cloud | AWS EC2, AWS EKS, IAM |
+
+---
+
+## 🏗 Architecture
+
 ```
- 
-> Install Jenkins
-```bash
-    sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
-    https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-    echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
-    https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-    /etc/apt/sources.list.d/jenkins.list > /dev/null
-    sudo apt-get update
-    sudo apt-get install jenkins
+┌─────────────────────────────────────────────────────┐
+│                   Developer Machine                  │
+│         React + TypeScript + Node.js + MySQL         │
+└────────────────────┬────────────────────────────────┘
+                     │ Git Push
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│                    GitHub Repo                       │
+│              Webhook triggers Jenkins                │
+└────────────────────┬────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│                Jenkins CI Pipeline                   │
+│  Build → SonarQube Scan → Trivy Scan → Docker Build  │
+│           → Push to DockerHub → Update GitOps Repo   │
+└────────────────────┬────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│                ArgoCD (GitOps CD)                    │
+│     Watches GitOps repo → Syncs to AWS EKS cluster  │
+└────────────────────┬────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│               AWS EKS Cluster (eu-west-1)            │
+│   Frontend Pod | Backend Pod | MySQL Pod | Ingress   │
+│        Prometheus + Grafana for monitoring           │
+└─────────────────────────────────────────────────────┘
 ```
 
-- This part is optional(If you want change the default port) change the default port of jenkins from 8080 to 8081. Because our bankapp application will be running on 8080.
-    - Open /usr/lib/systemd/system/jenkins.service file and change JENKINS_PORT environment variable 
-    **Enviroment="JENKINS_PORT=8080" 
-    - Reload daemon
-    ```bash
-    sudo systemctl daemon-reload 
-    ```
-    - Restart Jenkins
-    ```bash
-    sudo systemctl restart jenkins
-    ```
-- Install docker
-  ```bash
-  sudo apt-get install docker.io -y 
-  sudo usermod -aG docker $USER && newgrp docker 
-  ```
-- Install SonarQube and configure
-  ```bash
-  docker run -itd --name=sonarqube -p 900:9000 sonarqube:lts-community
-   ``` 
-- Install Trivy and configure
-  ```bash
-    sudo apt-get install wget apt-transport-https gnupg lsb-release -y
-    wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-    echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-    sudo apt-get update -y
-    sudo apt-get install trivy -y
-   ``` 
-- Install ArgoCD and configure
-    - Create namespace 
-    ```bash
-        kubectl create namespace argocd
-    ```
-    - Apply menifest file 
-    ```bash
-        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-    ```
-    - Check pods are running argocd
-    ```bash
-    watch kubectl get pods -n argocd
-    ```
-    - Install argocd CLI
-    ```bash
-        curl --silent --location -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.4.7/argocd-linux-amd64
-    ```
-    - Change Permission 
-    ```bash 
-        chmod +x /usr/local/bin/argocd
-    ```
-    - Check argocd services
-    ```bash 
-        kubectl get svc -n argocd
-    ```
-    - Change argocd server's service from ClusterIP to NodePort
-    ```bash 
-        kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"NodePort"}}'
-    ```
-    - Confirm changes services
-    ```bash 
-        kubectl get svc -n argocd
-    ```
+---
 
-    - Initial password of arocd
-    ```bash 
-        kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
-    ```
-    - Username : admin
- 
-- Add our own eks cluster to argocd for application deployment using cli
-    - Login to argoCD from CLI
-    ```bash 
-        argocd login 32.34.156.178:32738 --username admin
-    ```
-    - Check how many clusters are available in argocd
-    ```bash 
-        argocd cluster list
-    ```
-    - Your cluster lists
-    ```bash 
-        argocd cluster list
-    ```
-     - Add your cluster to argocd
-    ```bash 
-         
-    ```
-   
+## 🔄 CI/CD Pipeline
 
+```
+Code Push
+   │
+   ├─► Jenkins triggered via GitHub Webhook
+   │
+   ├─► Maven/npm Build & Unit Tests
+   │
+   ├─► SonarQube — Static code analysis (SAST)
+   │
+   ├─► Trivy — Docker image vulnerability scan
+   │
+   ├─► Docker Build & Push to DockerHub
+   │
+   ├─► Update image tag in GitOps repo (Helm values)
+   │
+   └─► ArgoCD detects change → Deploys to AWS EKS ✅
+```
 
-
-**Components:**  
-- Frontend: React + TypeScript + Vite  
-- Backend: Node.js + Express + Sequelize  
-- Database: MySQL / PostgreSQL / Oracle  
-- Multi-tenancy & SaaS subscription  
-- CI/CD: GitHub → Jenkins → Docker → ArgoCD → AWS EKS  
-- Monitoring: Prometheus + Grafana  
+> Jenkins pipeline defined in [`Jenkinsfile`](./Jenkinsfile)  
+> Kubernetes manifests and Helm values in [`GitOps/`](./GitOps)  
+> K8s deployment files in [`k8s/`](./k8s)
 
 ---
 
-## 📦 Features
-✅ Role-based authentication (Admin, Teacher, Student, Parent)  
-✅ Multi-school support (multi-tenancy)  
-✅ SaaS subscription packages (Plans, Billing, Subscriptions)  
+## ✅ Features
 
-### ⏳ Coming Soon Features
-- Student Management (admissions, attendance, ID cards, report cards)  
-- Teacher & Employee Management (payroll, leaves, attendance)  
-- Fees & Finance Module (collection, dues, scholarships, reports)  
-- Exams & Grading  
-- Library Management  
-- Transport & Hostel  
-- Events & Academic Calendar  
-- Communication (messages, notices, announcements)  
-- Reports & Analytics  
-- System Settings (Roles, Permissions, Integrations, API access)  
-- Mobile App (iOS & Android)  
-- AI-based Student Performance Analytics  
-- Parent-Teacher Chat & Notification System  
-- Biometric Attendance Integration  
-- Online Exams & Automated Grading  
-- Payment Gateway Integration  
-- Cloud Backup & Disaster Recovery  
-- Advanced Role & Permission Management  
-- Multi-language Support  
+### Implemented
+- 🔐 Role-based authentication — Admin, Teacher, Student, Parent
+- 🏫 Multi-school SaaS support (multi-tenancy)
+- 💳 Subscription-based SaaS plans (Basic, Pro, Enterprise)
+- 📊 Admin dashboard with school-level analytics
+- 🐳 Dockerized frontend + backend + database
+- ☸️ Deployed on AWS EKS with Kubernetes manifests
+- 🔄 Full GitOps CD pipeline with ArgoCD
+- 🔍 Security scanning integrated in CI (SonarQube + Trivy)
+- 📈 Monitoring with Prometheus + Grafana
+
+### Roadmap
+- 📚 Student & Teacher management modules
+- 💰 Fees & Finance module
+- 📝 Exam & Grading system
+- 📱 Mobile app (React Native)
 
 ---
 
-## 🖼 Screenshots & Demo
-![Login Screenshot](assets/login.png)  
-![Homepage Screenshot](assets/roles.png)  
-![Pagination Screenshot](assets/pagination.png)  
+## 🖼 Screenshots
+
+### Login Page
+![Login](assets/login.png)
+
+### Role Selection
+![Roles](assets/roles.png)
+
+### Dashboard Pagination
+![Pagination](assets/pagination.png)
+
+### Architecture Diagram
+![Architecture](assets/saas_architecture.png)
+
+---
 
 ## ⚡ Getting Started
 
-### 1️⃣ Clone the repo
+### Prerequisites
+- Node.js 18+
+- Docker & Docker Compose
+- MySQL 8.0 (for local run)
+- kubectl + eksctl (for K8s deployment)
+- AWS CLI configured (for EKS)
+
+---
+
+### 1. Run Locally
 
 ```bash
+# Clone the repo
 git clone https://github.com/rajendrakmr/school-management-system.git
 cd school-management-system
+
+# Start the backend
+cd backend
+npm install
+npm run dev
+
+# Start the frontend (new terminal)
+cd frontend
+npm install
+npm run dev
+```
+
+Visit: `http://localhost:5173`
+
+---
+
+### 2. Run with Docker Compose
+
+```bash
+# From root of the project
+docker compose up -d --build
+
+# Visit the app
+http://localhost:3000
+```
+
+This spins up: **Frontend + Backend + MySQL** in isolated containers.
+
+---
+
+### 3. Deploy to Kubernetes (AWS EKS)
+
+#### Step 1 — Set up AWS infrastructure
+
+```bash
+# Configure AWS CLI
+aws configure
+
+# Create EKS Cluster
+eksctl create cluster --name=sms-erp \
+  --region=eu-west-1 \
+  --version=1.33 \
+  --without-nodegroup
+
+# Associate IAM OIDC Provider
+eksctl utils associate-iam-oidc-provider \
+  --region eu-west-1 \
+  --cluster sms-erp \
+  --approve
+
+# Create Node Group
+eksctl create nodegroup --cluster=sms-erp \
+  --region=eu-west-1 \
+  --name=sms-erp-ng \
+  --node-type=t2.medium \
+  --nodes=2 \
+  --nodes-min=1 \
+  --nodes-max=3 \
+  --node-volume-size=29 \
+  --ssh-access \
+  --ssh-public-key=eks-sms-erp-key
+```
+
+#### Step 2 — Install ArgoCD
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Expose ArgoCD UI
+kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"NodePort"}}'
+
+# Get initial admin password
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d
+```
+
+#### Step 3 — Apply Kubernetes manifests
+
+```bash
+kubectl apply -f k8s/
+```
+
+---
+
+## 🔐 DevSecOps Setup
+
+### SonarQube (Code Quality)
+
+```bash
+docker run -itd --name=sonarqube -p 9000:9000 sonarqube:lts-community
+```
+
+Access at `http://localhost:9000` — configure your project token and add it to Jenkins credentials.
+
+### Trivy (Container Security Scan)
+
+```bash
+sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main \
+  | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update && sudo apt-get install trivy -y
+
+# Scan a Docker image
+trivy image rajendrakmr/school-management-system:latest
+```
+
+---
+
+## 📁 Project Structure
+
+```
+school-management-system/
+├── frontend/               # React + TypeScript + Vite
+├── backend/                # Node.js + Express + Sequelize
+├── k8s/                    # Kubernetes manifests (Deployments, Services, Ingress)
+├── GitOps/                 # ArgoCD app config + Helm values
+├── assets/                 # Screenshots and architecture diagrams
+├── Jenkinsfile             # Jenkins CI pipeline definition
+├── docker-compose.yml      # Local multi-container setup
+├── setup.sh                # Environment setup script
+└── README.md
+```
+
+---
+
+## 👨‍💻 Author
+
+**Rajendra Kumar Marandi**  
+Frontend Developer → DevOps Engineer  
+📍 Kolkata, India
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rajendraakmr/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/rajendrakmr)
+
+---
+
+> ⭐ If you found this project helpful or interesting, please consider giving it a star — it helps others find it too!
